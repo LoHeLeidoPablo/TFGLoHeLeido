@@ -161,7 +161,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   JComponent[] jComponentA = {panelPrestamo, panelEstadisticas};
 
   public IntfzCuenta() {
-    recargar();
+   // recargar();
   }
 
   public void iniciar( ) {
@@ -524,7 +524,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     lblQuieroLeer.setForeground(lblGris.getBackground());
     panelEstadisticas.add(lblQuieroLeer);
   }
-  private void recargar(){
+  /*private void recargar(){
     panelEstadisticas.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -532,7 +532,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         dispose();
       }
     });
-  }
+  }*/
 
   public void cambioTema(String color) {
     Temas.cambioTema(color, jPanelA, jLabelsA, null, btnDevolver, null, null, null);
