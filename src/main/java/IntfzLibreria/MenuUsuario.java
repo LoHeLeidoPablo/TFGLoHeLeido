@@ -499,8 +499,6 @@ public class MenuUsuario extends JFrame {
     lblPortada.addMouseListener(
         new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
-            //lstCoincidencias = (JList) evt.getSource();
-
             String enlace = lstCoincidencias.getSelectedValue().toString();
             Document libro = collecLibro.find(eq(elemento, enlace)).first();
 
