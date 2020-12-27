@@ -68,12 +68,11 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
     intfzPrincipal.setState(JFrame.ICONIFIED);
     // Empaquetado, tamaño y visualizazion
-    final JDialog frame = new JDialog(intfzPrincipal, this.getTitle(), true);
-    frame.getContentPane().add(panel);
-    frame.setResizable(false);
-    frame.pack();
-    frame.setSize(1600, 1000);
-    frame.setVisible(true);
+    getContentPane().add(panel);
+    setResizable(false);
+    pack();
+    setSize(1600, 1000);
+    setVisible(true);
   }
 
   public void rellenarTabla() {

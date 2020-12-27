@@ -10,10 +10,7 @@ import org.bson.Document;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
@@ -164,9 +161,10 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   JComponent[] jComponentA = {panelPrestamo, panelEstadisticas};
 
   public IntfzCuenta() {
+    recargar();
   }
 
-  public void iniciar(JFrame intfzPrincipal) {
+  public void iniciar( ) {
     setTitle("¿Lo he leído? - Mi Cuenta");
     getContentPane().setLayout(new GridLayout(1, 10));
 
@@ -190,12 +188,11 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     getContentPane().add(panel);
 
     // Empaquetado, tamaño y visualizazion
-    final JDialog frame = new JDialog(intfzPrincipal, this.getTitle(), true);
-    frame.getContentPane().add(panel);
-    frame.setResizable(false);
-    frame.pack();
-    frame.setSize(1600, 1000);
-    frame.setVisible(true);
+    getContentPane().add(panel);
+    setResizable(false);
+    pack();
+    setSize(1600, 1000);
+    setVisible(true);
   }
 
   public void crearComponentes() {
@@ -277,6 +274,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   }
 
   public void mostrarPrestamo() {
+
     MongoCursor<Document> prestamosUsuario =
         collecDetPrestamo
             .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Prestado", true)))
@@ -303,9 +301,23 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         lblRestante[pos].setForeground(Color.BLACK);
       }
     }
+    repaint();
+    prueba();
+  }
+
+  public void prueba(){
+    for(JLabel jLabel: lblPortada){
+      jLabel.repaint();
+      System.out.println(jLabel.getText());
+    }
   }
 
   public void añadirPortada(String urlPortada, int posi) {
+    for (JLabel jLabel : lblPortada) {
+      jLabel.setBounds(10, 10, 100, 150);
+      jLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+      jLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    }
     try {
       URL url = new URL(urlPortada);
       Image portada = ImageIO.read(url);
@@ -319,6 +331,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
                       lblPortada[posi].getHeight(),
                       Image.SCALE_DEFAULT));
       lblPortada[posi].setIcon(icono);
+      lblPortada[posi].setText("");
       lblPortada[posi].setBorder(null);
       repaint();
 
@@ -371,7 +384,10 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     panelEstadisticas.add(lblAntiguedad);
     lblAntiguedad.setFont(antiguedad);
     Document tiempoRegistro =
-        collecUsuario.find(eq("Nombre", IntfzLogin.id_Usuario)).projection(include("fCreacionCuenta")).first();
+        collecUsuario
+            .find(eq("Nombre", IntfzLogin.id_Usuario))
+            .projection(include("fCreacionCuenta"))
+            .first();
     lblAntiguedad.setText("Antiguedad en Lo he Leído: X días ");
 
     if (tiempoRegistro != null) {
@@ -432,19 +448,25 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     lblGris.setBorder(BorderFactory.createLineBorder(lblGris.getBackground(), 2));
 
     MongoCursor<Document> countLeyendo =
-        collecDetBiblio.find(and(eq("Estado", "Leyendo"), eq("Usuario", IntfzLogin.id_Usuario))).iterator();
+        collecDetBiblio
+            .find(and(eq("Estado", "Leyendo"), eq("Usuario", IntfzLogin.id_Usuario)))
+            .iterator();
     while (countLeyendo.hasNext()) {
       Document coley = countLeyendo.next();
       conteoLeyendo++;
     }
     MongoCursor<Document> countLeido =
-        collecDetBiblio.find(and(eq("Estado", "Leído"), eq("Usuario", IntfzLogin.id_Usuario))).iterator();
+        collecDetBiblio
+            .find(and(eq("Estado", "Leído"), eq("Usuario", IntfzLogin.id_Usuario)))
+            .iterator();
     while (countLeido.hasNext()) {
       Document colei = countLeido.next();
       conteoLeido++;
     }
     MongoCursor<Document> countAbandonado =
-        collecDetBiblio.find(and(eq("Estado", "Abandonado"), eq("Usuario", IntfzLogin.id_Usuario))).iterator();
+        collecDetBiblio
+            .find(and(eq("Estado", "Abandonado"), eq("Usuario", IntfzLogin.id_Usuario)))
+            .iterator();
     while (countAbandonado.hasNext()) {
       Document coab = countAbandonado.next();
       conteoAbandonado++;
@@ -501,6 +523,15 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     lblQuieroLeer.setBounds(50, 140, 200, 20);
     lblQuieroLeer.setForeground(lblGris.getBackground());
     panelEstadisticas.add(lblQuieroLeer);
+  }
+  private void recargar(){
+    panelEstadisticas.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        iniciar();
+        dispose();
+      }
+    });
   }
 
   public void cambioTema(String color) {

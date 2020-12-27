@@ -32,6 +32,7 @@ public class MenuUsuario extends JFrame {
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
 
   IntfzInfoLibro infoLibro = new IntfzInfoLibro();
+  IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
   IntfzLogin intfzLogin = new IntfzLogin();
   IntfzBiblioteca intfzBiblioteca = new IntfzBiblioteca();
   IntfzCuenta intfzCuenta = new IntfzCuenta();
@@ -135,6 +136,7 @@ public class MenuUsuario extends JFrame {
             queryLike();
           }
         });
+
     panelBusqueda.add(jcbElementos);
     btnEscape = new JButton();
     btnEscape.setBounds(5, 5, 25, 25);
@@ -284,8 +286,8 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            // disposeAll();
-            intfzCuenta.iniciar(intfzPrincipal);
+            disposeAll();
+            intfzCuenta.iniciar();
           }
         });
 
@@ -293,7 +295,7 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            // disposeAll();
+            disposeAll();
 
             intfzBiblioteca.iniciar(intfzPrincipal);
           }
@@ -494,19 +496,40 @@ public class MenuUsuario extends JFrame {
             }
           }
         });
+    lblPortada.addMouseListener(
+        new MouseAdapter() {
+          public void mouseClicked(MouseEvent evt) {
+            //lstCoincidencias = (JList) evt.getSource();
+
+            String enlace = lstCoincidencias.getSelectedValue().toString();
+            Document libro = collecLibro.find(eq(elemento, enlace)).first();
+
+            if (elemento.equals("ISBN")) {
+              String isbn = enlace.substring(0, enlace.indexOf(" "));
+              Document libroISBN = collecLibro.find(eq(elemento, isbn)).first();
+              infoLibro.iniciar(libroISBN);
+            }
+            if (elemento.equals("Titulo")) {
+              infoLibro.iniciar(libro);
+            }
+            if (elemento.equals("Autor")) {
+              Document libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+            }
+            if (elemento.equals("Saga")) {
+              infoLibro.iniciar(libro);
+              infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
+            }
+          }
+        });
   }
 
   public void disposeAll() {
-
-    if (intfzPrincipal.isShowing()) {
-      intfzPrincipal.dispose();
-    }
 
     if (intfzBiblioteca.isShowing()) intfzBiblioteca.dispose();
 
     if (intfzCuenta.isShowing()) intfzCuenta.dispose();
 
-    if (intfzRegistro.isShowing()) intfzRegistro.dispose();
+    if (intfzInfoLibro.isShowing()) intfzInfoLibro.dispose();
 
     if (intfzRegLibro.isShowing()) intfzRegLibro.dispose();
   }

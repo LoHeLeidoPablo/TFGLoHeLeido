@@ -30,8 +30,6 @@ public class IntfzLogin extends JFrame {
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
-  // MenuUsuario menuUsuario = new MenuUsuario(); // TODO Esto hace petar la aplicación entera
-
   JPanel panel = new JPanel();
 
   JLabel lblTituloProyecto = new JLabel("¿Lo he leído?");
@@ -164,7 +162,8 @@ public class IntfzLogin extends JFrame {
               }
               id_Usuario = UsuCuenta.getString("Nombre");
               dispose();
-              // menuUsuario.setLblUsuario(id_Usuario);
+              /* MenuUsuario menuUsuario = new MenuUsuario(); // TODO Esto hace petar la aplicación entera
+              menuUsuario.setLblUsuario(id_Usuario);*/
               intfzPrincipal.iniciar();
 
             } else {
