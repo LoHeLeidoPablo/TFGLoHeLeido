@@ -11,10 +11,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 
-public class IntfzMiBiblioteca extends JFrame implements Interfaz {
+public class IntfzBiblioteca extends JFrame implements Interfaz {
 
   MongoClientURI uri =
       new MongoClientURI(
@@ -29,11 +28,11 @@ public class IntfzMiBiblioteca extends JFrame implements Interfaz {
   JPanel panel = new JPanel();
   JPanel[] jPanelA = {panel};
 
-  JTable myBibiblioTable;
+  JTable myBiblioTable;
   DefaultTableModel modelT;
   JScrollPane scrollPane;
 
-  public IntfzMiBiblioteca() {}
+  public IntfzBiblioteca() {}
 
   public void iniciar(JFrame intfzPrincipal) {
     setTitle("¿Lo he leído? - Mi IntfzLibreria");
@@ -45,27 +44,25 @@ public class IntfzMiBiblioteca extends JFrame implements Interfaz {
     // JTable MyBibilio
     String[] cabecera = {"Estado", "Conteo", "Titulo", "Paginas", "Capitulos"};
     modelT = new DefaultTableModel(cabecera, 0);
-    myBibiblioTable = new ColorEstadoTabla();
-    // myBibiblioTable.setBounds(200, 100, 1200, 825);
-    myBibiblioTable.setBounds(0, 0, 1200, 825);
+    myBiblioTable = new ColorEstadoTabla();
+    // myBiblioTable.setBounds(200, 100, 1200, 825);
+    myBiblioTable.setBounds(0, 0, 1200, 825);
 
     for (int i = 0; i >= cabecera.length; i++) {
-      myBibiblioTable
+      myBiblioTable
           .getColumnModel()
           .getColumn(i)
-          .setMaxWidth(myBibiblioTable.getWidth() / cabecera.length);
+          .setMaxWidth(myBiblioTable.getWidth() / cabecera.length);
     }
 
     rellenarTabla();
 
-    myBibiblioTable.setModel(modelT);
-    myBibiblioTable.getColumnModel().getColumn(0).setMaxWidth(10);
-    myBibiblioTable.getColumnModel().getColumn(1).setMaxWidth(12);
+    myBiblioTable.setModel(modelT);
+    myBiblioTable.getColumnModel().getColumn(0).setMaxWidth(10);
+    myBiblioTable.getColumnModel().getColumn(1).setMaxWidth(12);
+    myBiblioTable.setRowHeight(35);
 
-    myBibiblioTable.setRowHeight(35);
-
-    // Scroll Panel
-    scrollPane = new JScrollPane(myBibiblioTable);
+    scrollPane = new JScrollPane(myBiblioTable);
     scrollPane.setBounds(200, 100, 1200, 825);
     panel.add(scrollPane);
 
@@ -100,7 +97,7 @@ public class IntfzMiBiblioteca extends JFrame implements Interfaz {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, null, null, null, myBibiblioTable, null, null);
+    Temas.cambioTema(color, jPanelA, null, null, null, myBiblioTable, null, null);
   }
 
   public void crearComponentes() {}

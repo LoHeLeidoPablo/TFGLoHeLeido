@@ -13,14 +13,16 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzActLibro extends JFrame {
 
@@ -263,7 +265,7 @@ public class IntfzActLibro extends JFrame {
                 intfzInfoLibro.iniciar(libro);
                 mensajeEmergente(1);
                 dispose();
-                //TODO REPINTAR - CUENTA/BIBLIOTECA/PRINCIPAL - LA QUE ESTA ABIIERTA
+                // TODO REPINTAR - CUENTA/BIBLIOTECA/PRINCIPAL - LA QUE ESTA ABIIERTA
               } catch (Exception ex) {
                 mensajeEmergente(2);
               }

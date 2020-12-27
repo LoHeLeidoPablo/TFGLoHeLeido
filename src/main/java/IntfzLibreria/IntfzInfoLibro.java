@@ -8,7 +8,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
@@ -374,8 +373,11 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       }
       jchReleido.setSelected(estado.getBoolean("Releido"));
       if (jchReleido.isSelected() == true) spVecesRele.setEnabled(true);
-      if(estado.get("VecesReleido") !=null){
-      spVecesRele.setValue(estado.get("VecesReleido"));}else{ spVecesRele.setValue(0);}
+      if (estado.get("VecesReleido") != null) {
+        spVecesRele.setValue(estado.get("VecesReleido"));
+      } else {
+        spVecesRele.setValue(0);
+      }
     } else {
       jcbEstados.setSelectedIndex(0);
       spCapL.setValue(0);
@@ -426,7 +428,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   }
 
   public void prestarLibro(Document libro) {
-    //TODO RELANZAR o REPINTAR CUENTA
+
     btnPrestamo.addActionListener(
         new ActionListener() {
           @Override
@@ -459,6 +461,10 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                       eq("Email", usuario.getString("Email")),
                       set("NPrestados", usuario.getInteger("NPrestados") + 1));
                   mensajeEmergente(1);
+                  IntfzCuenta intfzCuenta = new IntfzCuenta();
+                  // TODO RELANZAR o REPINTAR CUENTA Terminado
+                  intfzCuenta.mostrarPrestamo();
+
                 } else {
                   mensajeEmergente(4);
                 }
@@ -478,7 +484,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            dispose(); //Cerrar la ventana y reabrirla con los datos cambiados o repintar
+            dispose(); // Cerrar la ventana y reabrirla con los datos cambiados o repintar
             IntfzActLibro intfzActLibro = new IntfzActLibro();
             intfzActLibro.iniciar(libro);
           }
@@ -513,7 +519,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   }
 
   public void actualizarEstado(Document libro) {
-     //TODO RELANZAR o REPINTAR BIBLIOTECA
+    // TODO RELANZAR o REPINTAR BIBLIOTECA
     btnUpdate.addActionListener(
         new ActionListener() {
           @Override
@@ -527,7 +533,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
             Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
             Document estadoLibro =
-                collecDetBiblio.find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro))).first();
+                collecDetBiblio
+                    .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro)))
+                    .first();
             if (estadoLibro != null) {
               if (jcbEstados.getSelectedItem().toString().equals("Sin Añadir")) {
                 int confirmado =
@@ -613,7 +621,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             String isbnLibro = lblISBN.getText().substring(lblISBN.getText().indexOf(" ") + 1);
             Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
             Document estado =
-                collecDetBiblio.find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro))).first();
+                collecDetBiblio
+                    .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro)))
+                    .first();
             if (estado != null) {
               jcbEstados.setSelectedItem(estado.getString("Estado"));
               spCapL.setValue(estado.get("Capitulos"));

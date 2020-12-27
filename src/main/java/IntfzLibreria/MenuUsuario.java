@@ -17,7 +17,6 @@ import java.awt.font.TextAttribute;
 import java.net.URL;
 import java.util.Map;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
 
@@ -34,8 +33,8 @@ public class MenuUsuario extends JFrame {
 
   IntfzInfoLibro infoLibro = new IntfzInfoLibro();
   IntfzLogin intfzLogin = new IntfzLogin();
-  IntfzMiBiblioteca intfzMiBiblioteca = new IntfzMiBiblioteca();
-  IntfzMiCuenta intfzMiCuenta = new IntfzMiCuenta();
+  IntfzBiblioteca intfzBiblioteca = new IntfzBiblioteca();
+  IntfzCuenta intfzCuenta = new IntfzCuenta();
   IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
   IntfzRegistro intfzRegistro = new IntfzRegistro();
   IntfzRegLibro intfzRegLibro = new IntfzRegLibro();
@@ -80,6 +79,9 @@ public class MenuUsuario extends JFrame {
   JPanel[] jPanelA = {panelMenuUsuario, panelBusqueda};
   JLabel[] jLabelA = {lblTituloProyecto, lblUsuario};
   JButton[] jButtonA = {btnLogIn, btnCuenta, btnBiblioteca, btnLogOut, btnClose};
+
+  public MenuUsuario() {}
+  ;
 
   public MenuUsuario(JPanel jpanel, Interfaz interfazActiva, Boolean panelUsuarioEsDesplegable) {
     this.interfazActiva = interfazActiva;
@@ -129,6 +131,7 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             elemento = jcbElementos.getSelectedItem().toString();
+            lblPortada.setVisible(false);
             queryLike();
           }
         });
@@ -237,6 +240,11 @@ public class MenuUsuario extends JFrame {
     }
   }
 
+  public void setLblUsuario(String newUsuario) {
+    lblUsuario.setText(newUsuario);
+    btnLog();
+  }
+
   public void despliegePaneles() {
     txtBuscador.addMouseListener(
         new MouseAdapter() {
@@ -277,8 +285,7 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             // disposeAll();
-            intfzPrincipal.setState(JFrame.ICONIFIED);
-            intfzMiCuenta.iniciar(intfzPrincipal);
+            intfzCuenta.iniciar(intfzPrincipal);
           }
         });
 
@@ -288,7 +295,7 @@ public class MenuUsuario extends JFrame {
           public void actionPerformed(ActionEvent e) {
             // disposeAll();
 
-            intfzMiBiblioteca.iniciar(intfzPrincipal);
+            intfzBiblioteca.iniciar(intfzPrincipal);
           }
         });
 
@@ -424,7 +431,7 @@ public class MenuUsuario extends JFrame {
     lblPortada.setBounds(
         scrollPaneResultados.getX() + scrollPaneResultados.getWidth() + 50,
         scrollPaneResultados.getY(),
-        scrollPaneResultados.getWidth() - 50, // 25
+        scrollPaneResultados.getWidth() - 50,
         scrollPaneResultados.getHeight());
     panelBusqueda.add(lblPortada);
     String enlace = lstCoincidencias.getSelectedValue().toString();
@@ -451,7 +458,8 @@ public class MenuUsuario extends JFrame {
   }
 
   public void mostrarLibro() {
-    // TODO Funciona pero debe seleccionarse con el raton, usar las fleachas no cambia la portad
+    // TODO Funciona pero debe seleccionarse con el raton, usar las fleachas no cambia la portad.
+    // Añadir un KEYListener
     lstCoincidencias.addMouseListener(
         new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
@@ -494,16 +502,16 @@ public class MenuUsuario extends JFrame {
       intfzPrincipal.dispose();
     }
 
-    if (intfzMiBiblioteca.isShowing()) intfzMiBiblioteca.dispose();
+    if (intfzBiblioteca.isShowing()) intfzBiblioteca.dispose();
 
-    if (intfzMiCuenta.isShowing()) intfzMiCuenta.dispose();
+    if (intfzCuenta.isShowing()) intfzCuenta.dispose();
 
     if (intfzRegistro.isShowing()) intfzRegistro.dispose();
 
     if (intfzRegLibro.isShowing()) intfzRegLibro.dispose();
   }
 
-  public void crearComponentes(JPanel jpanel) {
+  /*public void crearComponentes(JPanel jpanel) {
     for (JPanel jPanelE : jPanelA) {
       jpanel.add(jPanelE);
       jPanelE.setVisible(false);
@@ -514,7 +522,7 @@ public class MenuUsuario extends JFrame {
     for (JButton jButton : jButtonA) {
       panelMenuUsuario.add(jButton);
     }
-  } // No Funciona
+  } */
 
   public void cambioTema(String color) {
     Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null);

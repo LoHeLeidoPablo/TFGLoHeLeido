@@ -10,9 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.*;
@@ -31,6 +29,8 @@ public class IntfzLogin extends JFrame {
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
+
+  // MenuUsuario menuUsuario = new MenuUsuario(); // TODO Esto hace petar la aplicación entera
 
   JPanel panel = new JPanel();
 
@@ -164,7 +164,9 @@ public class IntfzLogin extends JFrame {
               }
               id_Usuario = UsuCuenta.getString("Nombre");
               dispose();
+              // menuUsuario.setLblUsuario(id_Usuario);
               intfzPrincipal.iniciar();
+
             } else {
               JOptionPane.showMessageDialog(
                   null,
@@ -174,14 +176,6 @@ public class IntfzLogin extends JFrame {
             }
           }
         });
-    // TODO Relanzar Principal para que aparezca el usuario que acaba de iniciar sesion
-
-    /*    menuUsuario = new Libreria.MenuUsuario(intfzPrincipal.panel,intfzPrincipal.jFramePrincipal,null);
-       menuUsuario.repaint();
-       intfzPrincipal.panel.repaint();
-       intfzPrincipal.cerrarVentana();
-       intfzPrincipal.jFramePrincipal.setVisible(false);
-    intfzPrincipal.jFramePrincipal.disable();*/
   }
 
   public void crearComponentes() {

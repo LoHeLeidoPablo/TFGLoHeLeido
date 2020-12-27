@@ -23,7 +23,7 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
 
-public class IntfzMiCuenta extends JFrame implements Interfaz {
+public class IntfzCuenta extends JFrame implements Interfaz {
 
   MongoClientURI uri =
       new MongoClientURI(
@@ -163,7 +163,7 @@ public class IntfzMiCuenta extends JFrame implements Interfaz {
 
   JComponent[] jComponentA = {panelPrestamo, panelEstadisticas};
 
-  public IntfzMiCuenta() {
+  public IntfzCuenta() {
   }
 
   public void iniciar(JFrame intfzPrincipal) {
@@ -276,7 +276,7 @@ public class IntfzMiCuenta extends JFrame implements Interfaz {
     panelPrestamo.add(panelPrestamo5);
   }
 
-  private void mostrarPrestamo() {
+  public void mostrarPrestamo() {
     MongoCursor<Document> prestamosUsuario =
         collecDetPrestamo
             .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Prestado", true)))
