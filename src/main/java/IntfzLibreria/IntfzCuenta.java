@@ -161,7 +161,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   JComponent[] jComponentA = {panelPrestamo, panelEstadisticas};
 
   public IntfzCuenta() {
-   // recargar();
+   //recargar();
   }
 
   public void iniciar( ) {
