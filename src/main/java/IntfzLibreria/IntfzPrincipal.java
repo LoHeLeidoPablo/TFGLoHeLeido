@@ -16,7 +16,7 @@ import java.net.URL;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Sorts.*;
 
 public class IntfzPrincipal extends JFrame implements Interfaz {
 
@@ -60,7 +60,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   public void iniciar() {
     setTitle("¿Lo he leído?");
     getContentPane().setLayout(new GridLayout(1, 10));
-    menuUsuario = new MenuUsuario(panel, this,true);
+    menuUsuario = new MenuUsuario(panel, this, true);
     crearComponentes();
     panel.setLayout(null);
     int poslbl = -1;
@@ -156,7 +156,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            if (menuUsuario.panelBusqueda.isVisible() == false) {
+            if (menuUsuario.panelBusqueda.isVisible() == false && menuUsuario.panelMenuUsuario.isVisible() == false) {
               libro = collecLibro.find(eq("Titulo", ultimosTitulos[posicion].toString())).first();
               intfzInfoLibro.dispose();
               intfzInfoLibro.iniciar(libro);

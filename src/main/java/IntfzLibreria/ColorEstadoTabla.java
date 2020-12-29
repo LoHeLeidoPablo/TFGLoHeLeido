@@ -14,20 +14,20 @@ public class ColorEstadoTabla extends JTable {
 
     Component tablaColor = super.prepareRenderer(tableCellRenderer, rowIndex, columIndex);
 
-    if (getValueAt(rowIndex, columIndex).getClass().equals(String.class) && columIndex == 0) {
+    if (columIndex == 0) {
 
       String estado = this.getValueAt(rowIndex, columIndex).toString();
 
       if (estado.equals("Leyendo")) {
         tablaColor.setBackground(Color.GREEN);
         tablaColor.setForeground(Color.GREEN);
-      } else if (estado.equals("Leído")) {
+      } else if (estado.equals("Terminado")) {
         tablaColor.setBackground(Color.BLUE);
         tablaColor.setForeground(Color.BLUE);
-      } else if (estado.equals("Abandonado")) {
+      } else if (estado.equals("XinTerminar")) {
         tablaColor.setBackground(Color.RED);
         tablaColor.setForeground(Color.RED);
-      } else if (estado.equals("Quiero Leer")) {
+      } else if (estado.equals("Pendiente")) {
         tablaColor.setBackground(Color.GRAY);
         tablaColor.setForeground(Color.GRAY);
       }

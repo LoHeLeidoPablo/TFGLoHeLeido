@@ -82,6 +82,8 @@ public class IntfzActLibro extends JFrame {
   // Font fuente = new Font(lblGeneros.getFont().getFamily(), Font.BOLD, 12);
   JCheckBox[] jCheckBoxA = {ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11, ch12};
   String isbn = new String();
+  Date fecha_reg = new Date();
+  String usuario_reg = "Admin";
 
   JComponent[] jComponentA = {
     panelGenero,
@@ -193,11 +195,10 @@ public class IntfzActLibro extends JFrame {
     txtISBN.setText(libro.getString("ISBN"));
     isbn = libro.getString("ISBN");
     txtTitulo.setText(libro.getString("Titulo"));
-    if (txtTitulo.getText().isEmpty()) {
-      setTitle("Interfaz de Actualización");
-    } else {
-      setTitle("Actualizar: " + txtTitulo.getText());
-    }
+
+    setTitle(
+        txtTitulo == null ? "Interfaz de Actualización" : "Actualizar: " + txtTitulo.getText());
+
     txtAutor.setText(libro.getString("Autor"));
     txtColeccion.setText(libro.getString("Saga"));
     spNColeccion.setValue(libro.getInteger("Tomo"));
@@ -214,6 +215,9 @@ public class IntfzActLibro extends JFrame {
     }
     txtASinopsis.setText(libro.getString("Sinopsis"));
     txtURL.setText(libro.getString("PortadaURL"));
+    fecha_reg = libro.getDate("f_registro");
+    usuario_reg = libro.getString("creadorDelRegistro");
+
     añadirPortada();
   }
 
@@ -228,22 +232,12 @@ public class IntfzActLibro extends JFrame {
               Integer Capitulo;
               Integer Pagina;
 
-              if (spCapitulos.getValue().equals(0)) {
-                Capitulo = null;
-              } else {
-                Capitulo = (Integer) spCapitulos.getValue();
-              }
-              if (spPaginas.getValue().equals(0)) {
-                Pagina = null;
-              } else {
-                Pagina = (Integer) spPaginas.getValue();
-              }
+              Capitulo = spCapitulos.getValue().equals(0) ? null : (Integer) spCapitulos.getValue();
+              Pagina = spPaginas.getValue().equals(0) ? null : (Integer) spPaginas.getValue();
 
               ArrayList<String> valoresCB = new ArrayList<String>();
               for (JCheckBox jCheckBox : jCheckBoxA) {
-                if (jCheckBox.isSelected()) {
-                  valoresCB.add(jCheckBox.getText());
-                }
+                if (jCheckBox.isSelected()) valoresCB.add(jCheckBox.getText());
               }
               try {
                 DeleteResult del = collecLibros.deleteOne(eq("ISBN", isbn));
@@ -258,9 +252,9 @@ public class IntfzActLibro extends JFrame {
                 libro.put("f_publicacion", datePublicacion.getDate());
                 libro.put("Generos", valoresCB);
                 libro.put("Sinopsis", txtASinopsis.getText());
-                libro.put("f_registro", new Date());
+                libro.put("f_registro", fecha_reg);
                 libro.put("PortadaURL", txtURL.getText());
-                libro.put("creadorDelRegistro", IntfzLogin.id_Usuario);
+                libro.put("creadorDelRegistro", usuario_reg);
                 collecLibros.insertOne(libro);
                 intfzInfoLibro.iniciar(libro);
                 mensajeEmergente(1);

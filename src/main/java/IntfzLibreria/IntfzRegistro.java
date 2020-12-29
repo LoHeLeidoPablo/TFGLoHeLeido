@@ -77,7 +77,7 @@ public class IntfzRegistro extends JFrame {
     this.setResizable(false);
     this.setLocation(100, 100);
   }
-  // TODO Implementar correo Email
+  // TODO Eliminar correo Email
   public void iniciar() {
     setTitle("Registrar - ¿Lo he leído?");
     getContentPane().setLayout(new GridLayout(1, 10));
@@ -186,7 +186,6 @@ public class IntfzRegistro extends JFrame {
       i++;
     }
     if (txtPassword.getText().length() >= 2) {
-
     } else {
       lblObPassword.setVisible(true);
       i++;
@@ -198,11 +197,8 @@ public class IntfzRegistro extends JFrame {
       i++;
     }
 
-    if (i == 0) {
-      obligatorios = true;
-    } else {
-      obligatorios = false;
-    }
+    obligatorios = i == 0 ? true : false;
+
     return obligatorios;
   }
 
@@ -212,9 +208,8 @@ public class IntfzRegistro extends JFrame {
         collecAuth
             .find(or(eq("Nombre", txtUsuario.getText()), eq("Email", txtEmail.getText())))
             .first();
-    if (existeReg != null) {
-      existe = true;
-    }
+    if (existeReg != null) existe = true;
+
     return existe;
   }
 

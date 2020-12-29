@@ -208,22 +208,12 @@ public class IntfzRegLibro extends JFrame {
     Integer Capitulo;
     Integer Pagina;
 
-    if (spCapitulos.getValue().equals(0)) {
-      Capitulo = null;
-    } else {
-      Capitulo = (Integer) spCapitulos.getValue();
-    }
-    if (spPaginas.getValue().equals(0)) {
-      Pagina = null;
-    } else {
-      Pagina = (Integer) spPaginas.getValue();
-    }
+    Capitulo = spCapitulos.getValue().equals(0) ? null : (Integer) spCapitulos.getValue();
+    Pagina = spPaginas.getValue().equals(0) ? null : (Integer) spPaginas.getValue();
 
     ArrayList<String> valoresCB = new ArrayList<String>();
     for (JCheckBox jCheckBox : jCheckBoxA) {
-      if (jCheckBox.isSelected()) {
-        valoresCB.add(jCheckBox.getText());
-      }
+      if (jCheckBox.isSelected()) valoresCB.add(jCheckBox.getText());
     }
     try {
       Document libro = new Document();

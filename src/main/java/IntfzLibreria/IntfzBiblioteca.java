@@ -8,10 +8,13 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Sorts.*;
 
 public class IntfzBiblioteca extends JFrame implements Interfaz {
 
@@ -34,39 +37,88 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
   public IntfzBiblioteca() {}
 
-  public void iniciar(JFrame intfzPrincipal) {
+  public void iniciar() {
     setTitle("¿Lo he leído? - Mi IntfzLibreria");
     getContentPane().setLayout(new GridLayout(1, 10));
     MenuUsuario menuUsuario = new MenuUsuario(panel, this, false);
 
     panel.setLayout(null);
 
-    // JTable MyBibilio
-    String[] cabecera = {"Estado", "Conteo", "Titulo", "Paginas", "Capitulos"};
-    modelT = new DefaultTableModel(cabecera, 0);
-    myBiblioTable = new ColorEstadoTabla();
-    // myBiblioTable.setBounds(200, 100, 1200, 825);
-    myBiblioTable.setBounds(0, 0, 1200, 825);
+    String[] cabecera = {
+      " ",
+      "Titulo",
+      "Autor",
+      "Saga",
+      "Paginas",
+      "PaginasT",
+      "Capitulos",
+      "CapitulosT",
+      "Nota",
+      "Releido"
+    };
+    modelT =
+        new DefaultTableModel(cabecera, 0) {
+          @Override
+          public Class getColumnClass(int columna) {
+            if (columna > 3)
+              return Integer.class; // Le dice al modelo que columnas son de tipo integer
+            return String.class; // Si no, es String
+          }
 
-    for (int i = 0; i >= cabecera.length; i++) {
-      myBiblioTable
-          .getColumnModel()
-          .getColumn(i)
-          .setMaxWidth(myBiblioTable.getWidth() / cabecera.length);
-    }
+          @Override
+          public boolean isCellEditable(int row, int column) {
+            // Aquí devolvemos true o false según queramos que una celda
+            // identificada por fila,columna (row,column), sea o no editable
+            if (column == 4 || column == 6 || column == 8) return true;
+            return false;
+          }
+        };
+    myBiblioTable = new ColorEstadoTabla();
+    myBiblioTable.setBounds(0, 0, 1200, 825);
 
     rellenarTabla();
 
     myBiblioTable.setModel(modelT);
     myBiblioTable.getColumnModel().getColumn(0).setMaxWidth(10);
-    myBiblioTable.getColumnModel().getColumn(1).setMaxWidth(12);
+    myBiblioTable.getColumnModel().getColumn(4).setMaxWidth(65);
+    myBiblioTable.getColumnModel().getColumn(5).setMaxWidth(65);
+    myBiblioTable.getColumnModel().getColumn(6).setMaxWidth(65);
+    myBiblioTable.getColumnModel().getColumn(7).setMaxWidth(65);
+    myBiblioTable.getColumnModel().getColumn(8).setMaxWidth(65);
     myBiblioTable.setRowHeight(35);
+    // myBiblioTable.setRowSelectionAllowed(false);
+    //  myBiblioTable.setColumnSelectionAllowed(false);
+    myBiblioTable.getTableHeader().setReorderingAllowed(false);
+
+    TableRowSorter<TableModel> modelOrdenado = new TableRowSorter<TableModel>(modelT);
+    // modelOrdenado.getComparator(0);
+    myBiblioTable.setRowSorter(modelOrdenado);
+    // myBiblioTable.setCellSelectionEnabled(false);
+    myBiblioTable.setBorder(null);
+
+    DefaultTableCellRenderer Alinear = new DefaultTableCellRenderer();
+    Alinear.setHorizontalAlignment(SwingConstants.CENTER);
+    for (int i = 0; i < myBiblioTable.getColumnCount(); i++) {
+      myBiblioTable.getColumnModel().getColumn(i).setCellRenderer(Alinear);
+    }
 
     scrollPane = new JScrollPane(myBiblioTable);
     scrollPane.setBounds(200, 100, 1200, 825);
+    scrollPane.setBorder(null);
     panel.add(scrollPane);
 
-    intfzPrincipal.setState(JFrame.ICONIFIED);
+    JButton btnRecargar = new JButton("Recargar");
+    btnRecargar.setBounds(1300, 925, 100, 20);
+    panel.add(btnRecargar);
+    btnRecargar.addActionListener(
+        new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+
+            rellenarTabla();
+          }
+        });
+
     // Empaquetado, tamaño y visualizazion
     getContentPane().add(panel);
     setResizable(false);
@@ -76,20 +128,43 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
   }
 
   public void rellenarTabla() {
-
-    MongoCursor<Document> biblioteca = collecDetBiblio.find(eq("Usuario", "Pablo")).iterator();
+    modelT.setRowCount(0);
+    MongoCursor<Document> biblioteca =
+        collecDetBiblio
+            .find(eq("Usuario", "Pablo"))
+            .sort(and(ascending("Estado"), ascending("titloOrden")))
+            .iterator();
     int i = 0;
     while (biblioteca.hasNext()) {
       Document regBiblio = biblioteca.next();
       i++;
+      String releido = "No";
+
+      if (regBiblio.getBoolean("Releido"))
+        releido = "Si -- Leído " + regBiblio.getInteger("VecesReleido") + " veces";
+
+      String nota = null;
+      if (regBiblio.getInteger("Nota") != null) {
+        int valorNota = regBiblio.getInteger("Nota");
+        Float notaFloat = (float) valorNota / 10;
+        nota = notaFloat.toString();
+
+        nota = (nota.contains(".0") ? nota.substring(0, nota.indexOf(".")) : nota);
+      }
+
       Document libro = (Document) regBiblio.get("Libro");
       libro.getString("Titulo");
       Object[] aux = {
         regBiblio.getString("Estado"),
-        i,
         libro.getString("Titulo"),
+        libro.getString("Autor"),
+        libro.getString("Saga"),
         regBiblio.getInteger("Paginas"),
-        regBiblio.getInteger("Capitulos")
+        libro.getInteger("Paginas"),
+        regBiblio.getInteger("Capitulos"),
+        libro.getInteger("Capitulos"),
+        nota,
+        releido
       };
       modelT.addRow(aux);
     }
