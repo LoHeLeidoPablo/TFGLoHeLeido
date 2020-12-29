@@ -44,7 +44,18 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
     panel.setLayout(null);
 
-    String[] cabecera = {" ", "Titulo", "Autor", "Saga", "Paginas", "Capitulos", "Nota", "Releido"};
+    String[] cabecera = {
+      " ",
+      "Titulo",
+      "Autor",
+      "Saga",
+      "Paginas",
+      "PaginasT",
+      "Capitulos",
+      "CapitulosT",
+      "Nota",
+      "Releido"
+    };
     modelT =
         new DefaultTableModel(cabecera, 0) {
           @Override
@@ -58,7 +69,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
           public boolean isCellEditable(int row, int column) {
             // Aquí devolvemos true o false según queramos que una celda
             // identificada por fila,columna (row,column), sea o no editable
-            //  if (column == 3) return true;
+            if (column == 4 || column == 6 || column == 8) return true;
             return false;
           }
         };
@@ -72,6 +83,8 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     myBiblioTable.getColumnModel().getColumn(4).setMaxWidth(65);
     myBiblioTable.getColumnModel().getColumn(5).setMaxWidth(65);
     myBiblioTable.getColumnModel().getColumn(6).setMaxWidth(65);
+    myBiblioTable.getColumnModel().getColumn(7).setMaxWidth(65);
+    myBiblioTable.getColumnModel().getColumn(8).setMaxWidth(65);
     myBiblioTable.setRowHeight(35);
     // myBiblioTable.setRowSelectionAllowed(false);
     //  myBiblioTable.setColumnSelectionAllowed(false);
@@ -84,34 +97,20 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     myBiblioTable.setBorder(null);
 
     DefaultTableCellRenderer Alinear = new DefaultTableCellRenderer();
-    Alinear.setHorizontalAlignment(SwingConstants.CENTER); // .LEFT .RIGHT .CENTER
+    Alinear.setHorizontalAlignment(SwingConstants.CENTER);
     for (int i = 0; i < myBiblioTable.getColumnCount(); i++) {
       myBiblioTable.getColumnModel().getColumn(i).setCellRenderer(Alinear);
     }
-
-    /*
-
-
-
-
-
-
-
-
-
-
-
-    */
 
     scrollPane = new JScrollPane(myBiblioTable);
     scrollPane.setBounds(200, 100, 1200, 825);
     scrollPane.setBorder(null);
     panel.add(scrollPane);
 
-    JButton recargar = new JButton("Actualizar");
-    recargar.setBounds(500, 75, 100, 20);
-    panel.add(recargar);
-    recargar.addActionListener(
+    JButton btnRecargar = new JButton("Recargar");
+    btnRecargar.setBounds(1300, 925, 100, 20);
+    panel.add(btnRecargar);
+    btnRecargar.addActionListener(
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -144,6 +143,15 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
       if (regBiblio.getBoolean("Releido"))
         releido = "Si -- Leído " + regBiblio.getInteger("VecesReleido") + " veces";
 
+      String nota = null;
+      if (regBiblio.getInteger("Nota") != null) {
+        int valorNota = regBiblio.getInteger("Nota");
+        Float notaFloat = (float) valorNota / 10;
+        nota = notaFloat.toString();
+
+        nota = (nota.contains(".0") ? nota.substring(0, nota.indexOf(".")) : nota);
+      }
+
       Document libro = (Document) regBiblio.get("Libro");
       libro.getString("Titulo");
       Object[] aux = {
@@ -152,8 +160,10 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
         libro.getString("Autor"),
         libro.getString("Saga"),
         regBiblio.getInteger("Paginas"),
+        libro.getInteger("Paginas"),
         regBiblio.getInteger("Capitulos"),
-        regBiblio.getDouble("Nota"),
+        libro.getInteger("Capitulos"),
+        nota,
         releido
       };
       modelT.addRow(aux);

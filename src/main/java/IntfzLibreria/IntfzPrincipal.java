@@ -156,7 +156,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            if (menuUsuario.panelBusqueda.isVisible() == false) {
+            if (menuUsuario.panelBusqueda.isVisible() == false && menuUsuario.panelMenuUsuario.isVisible() == false) {
               libro = collecLibro.find(eq("Titulo", ultimosTitulos[posicion].toString())).first();
               intfzInfoLibro.dispose();
               intfzInfoLibro.iniciar(libro);

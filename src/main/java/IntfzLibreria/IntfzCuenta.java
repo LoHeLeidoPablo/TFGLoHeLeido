@@ -164,7 +164,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     recargar();
   }
 
-  public void iniciar( ) {
+  public void iniciar() {
     setTitle("¿Lo he leído? - Mi Cuenta");
     getContentPane().setLayout(new GridLayout(1, 10));
 
@@ -305,8 +305,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     prueba();
   }
 
-  public void prueba(){
-    for(JLabel jLabel: lblPortada){
+  public void prueba() {
+    for (JLabel jLabel : lblPortada) {
       jLabel.repaint();
       System.out.println(jLabel.getText());
     }
@@ -425,9 +425,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
     // Determinar si es necesario incluir el dia de devolución o no
     Boolean incluirFin = false;
-    if (incluirFin) {
-      dias++;
-    }
+    if (incluirFin) dias++;
 
     return dias;
   }
@@ -524,14 +522,16 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     lblQuieroLeer.setForeground(lblGris.getBackground());
     panelEstadisticas.add(lblQuieroLeer);
   }
-  private void recargar(){
-    panelEstadisticas.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        iniciar();
-        dispose();
-      }
-    });
+
+  private void recargar() {
+    panelEstadisticas.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            iniciar();
+            dispose();
+          }
+        });
   }
 
   public void cambioTema(String color) {

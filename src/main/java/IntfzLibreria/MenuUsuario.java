@@ -177,7 +177,7 @@ public class MenuUsuario extends JFrame {
     if (panelUsuarioEsDesplegable) {
 
       panelMenuUsuario = new JPanel();
-      panelMenuUsuario.setBounds(1350, 35, 200, 155);
+      panelMenuUsuario.setBounds(1350, 50, 200, 155);
       panelMenuUsuario.setLayout(null);
       panelMenuUsuario.setOpaque(false);
       panelMenuUsuario.hide();
@@ -222,13 +222,19 @@ public class MenuUsuario extends JFrame {
   public void btnLog() {
     if (lblUsuario == null) {
     } else {
-      if ("Invitado".equals(lblUsuario.getText()) || "Admin".equals(lblUsuario.getText())) {
+      if ("Invitado".equals(lblUsuario.getText())) {
         btnLogOut.setVisible(false);
         btnCuenta.setVisible(false);
         btnBiblioteca.setVisible(false);
         btnClose.setBounds(10, 40, 180, 20);
         jcbTemas.setBounds(10, 70, 180, 20);
-
+      } else if ("Admin".equals(lblUsuario.getText())) {
+        btnLogIn.setVisible(false);
+        btnCuenta.setVisible(false);
+        btnBiblioteca.setVisible(false);
+        btnLogOut.setBounds(10, 10, 180, 20);
+        btnClose.setBounds(10, 40, 180, 20);
+        jcbTemas.setBounds(10, 70, 180, 20);
       } else {
         btnLogIn.setVisible(false);
         btnCuenta.setBounds(10, 10, 180, 20);
