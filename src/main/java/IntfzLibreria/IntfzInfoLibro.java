@@ -111,6 +111,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
   String colecc = new String();
   String isbn = new String();
+  String estado = new String();
   String urlPortada = new String();
 
   JPanel[] jPanelA = {panel, panelGenero, panelTecnico, panelEstado, panelEntregas};
@@ -363,7 +364,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
     // Pestaña Estado
     if (estado != null) {
-      jcbEstados.setSelectedItem(estado.getString("Estado"));
+      jcbEstados.setSelectedItem(nombrJcbEstado(estado.getString("Estado")));
       spCapL.setValue(estado.get("Capitulos"));
       spPagL.setValue(estado.get("Paginas"));
       if (estado.getDouble("Nota") != null) {
@@ -453,7 +454,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                                 eq("Usuario", prestamo.get("Usuario")),
                                 eq("Libro", prestamo.get("Libro")),
                                 eq("Prestado", true)))
-                        /*.sort(descending("f_prestamo"))*/
                         .first();
                 if (comproPrestamo == null) {
                   collecDetPrestamo.insertOne(prestamo);
@@ -556,7 +556,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                   Document estadoActualizado = new Document();
                   estadoActualizado.put("Usuario", IntfzLogin.id_Usuario);
                   estadoActualizado.put("Libro", libro);
-                  estadoActualizado.put("Estado", jcbEstados.getSelectedItem().toString());
+                  estadoActualizado.put(
+                      "Estado", nombrEstado(jcbEstados.getSelectedItem().toString()));
                   estadoActualizado.put("Paginas", Pags);
                   estadoActualizado.put("Capitulos", Caps);
                   if (jchReleido.isSelected()) {
@@ -567,6 +568,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                     estadoActualizado.put("VecesReleido", null);
                   }
                   if (Nota > 0) estadoActualizado.put("Nota", Nota);
+                  estadoActualizado.put("titloOrden", lblTitlo.getText());
                   collecDetBiblio.insertOne(estadoActualizado);
 
                   JOptionPane.showMessageDialog(
@@ -591,7 +593,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                   Document estado = new Document();
                   estado.put("Usuario", IntfzLogin.id_Usuario);
                   estado.put("Libro", libro);
-                  estado.put("Estado", jcbEstados.getSelectedItem().toString());
+                  estado.put("Estado", nombrEstado(jcbEstados.getSelectedItem().toString()));
                   estado.put("Paginas", Pags);
                   estado.put("Capitulos", Caps);
                   if (jchReleido.isSelected()) {
@@ -602,7 +604,10 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                     estado.put("VecesReleido", null);
                   }
                   if (Nota > 0) estado.put("Nota", Nota);
+                  estado.put("titloOrden", lblTitlo.getText());
+
                   collecDetBiblio.insertOne(estado);
+
                   mensajeEmergente(5);
                 } catch (Exception ex) {
                   mensajeEmergente(6);
@@ -611,6 +616,36 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             }
           }
         });
+  }
+
+  public String nombrEstado(String estado) {
+
+    if (estado.equals("Leído")) {
+      estado = "Terminado";
+    }
+    if (estado.equals("Abandonado")) {
+      estado = "XinTerminar";
+    }
+    if (estado.equals("Quiero Leer")) {
+      estado = "Pendiente";
+    }
+
+    return estado;
+  }
+
+  public String nombrJcbEstado(String estado) {
+
+    if (estado.equals("Terminado")) {
+      estado = "Leído";
+    }
+    if (estado.equals("XinTerminar")) {
+      estado = "Abandonado";
+    }
+    if (estado.equals("Pendiente")) {
+      estado = "Quiero Leer";
+    }
+
+    return estado;
   }
 
   public void cancelarEstado() {
@@ -625,7 +660,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                     .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro)))
                     .first();
             if (estado != null) {
-              jcbEstados.setSelectedItem(estado.getString("Estado"));
+              jcbEstados.setSelectedItem(nombrJcbEstado(estado.getString("Estado")));
               spCapL.setValue(estado.get("Capitulos"));
               spPagL.setValue(estado.get("Paginas"));
               if (estado.getDouble("Nota") != null) {

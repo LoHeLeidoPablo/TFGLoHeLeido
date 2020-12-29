@@ -297,7 +297,7 @@ public class MenuUsuario extends JFrame {
           public void actionPerformed(ActionEvent e) {
             disposeAll();
 
-            intfzBiblioteca.iniciar(intfzPrincipal);
+            intfzBiblioteca.iniciar();
           }
         });
 
