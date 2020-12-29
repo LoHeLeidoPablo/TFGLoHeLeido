@@ -256,6 +256,7 @@ public class MenuUsuario extends JFrame {
             panelBusqueda.setVisible(true);
             txtBuscador.setVisible(false);
             jcbElementos.setSelectedIndex(1);
+            txtBuscadorP.requestFocus();
           }
         });
   }
