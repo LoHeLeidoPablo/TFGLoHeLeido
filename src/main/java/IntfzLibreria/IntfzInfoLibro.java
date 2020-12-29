@@ -43,7 +43,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   JPanel panelGenero = new JPanel();
   JPanel panelTecnico = new JPanel();
   JPanel panelEstado = new JPanel();
-  JPanel panelEntregas = new JPanel();
+  JPanel panelSaga = new JPanel();
+  JPanel panelAutor = new JPanel();
   JTabbedPane tabbed = new JTabbedPane();
 
   JLabel lblPortada = new JLabel("Portada");
@@ -105,16 +106,21 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   JButton btnPrestamo = new JButton("Prestar");
   JButton btnUpdateLibro = new JButton("Actualizar Libro");
 
-  JList<String> listasecuelas = new JList<String>();
-  DefaultListModel dlm = new DefaultListModel();
-  JScrollPane scrollPaneSecuelas = new JScrollPane(listasecuelas);
+  JList<String> lstSecuelas = new JList<String>();
+  DefaultListModel listModelSaga = new DefaultListModel();
+  JScrollPane scrollPaneSaga = new JScrollPane(lstSecuelas);
+
+  JList<String> lstObras = new JList<String>();
+  DefaultListModel listModelObras = new DefaultListModel();
+  JScrollPane scrollPaneObras = new JScrollPane(lstObras);
 
   String colecc = new String();
+  String autor = new String();
   String isbn = new String();
   String estado = new String();
   String urlPortada = new String();
 
-  JPanel[] jPanelA = {panel, panelGenero, panelTecnico, panelEstado, panelEntregas};
+  JPanel[] jPanelA = {panel, panelGenero, panelTecnico, panelEstado, panelSaga, panelAutor};
   JLabel[] jLabelA = {
     lblPortada,
     lblTitlo,
@@ -169,7 +175,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     panelGenero.setLayout(null);
     panelTecnico.setLayout(null);
     panelEstado.setLayout(null);
-    panelEntregas.setLayout(null);
+    panelSaga.setLayout(null);
+    panelAutor.setLayout(null);
 
     lblPortada.setBounds(10, 30, 329, 512);
     lblTitlo.setBounds(lblPortada.getX() + lblPortada.getWidth() + 11, 55, 950, 45);
@@ -220,12 +227,13 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
     tabbed.setBounds(950, 100, 350, 150);
     tabbed.addTab("Ficha Tecnica", panelTecnico);
-    if (IntfzLogin.id_Usuario.equals("Invitado")) {
+    if (IntfzLogin.id_Usuario.equals("Invitado") || IntfzLogin.id_Usuario.equals("Admin") ) {
     } else {
       tabbed.addTab("Estado", panelEstado);
       panel.add(btnPrestamo);
     }
-    tabbed.addTab("Misma Coleccion", panelEntregas);
+    tabbed.addTab("Coleccion", panelSaga);
+    tabbed.addTab("Autor", panelAutor);
 
     panelTecnico.setBounds(0, 0, tabbed.getWidth(), tabbed.getHeight());
     lblISBN.setBounds(10, 10, 420, 15);
@@ -263,17 +271,24 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
     spVecesRele.setEnabled(false);
 
-    panelEntregas.setBounds(panelTecnico.getBounds());
-    scrollPaneSecuelas.setBounds(0, 0, panelEntregas.getWidth(), panelEntregas.getHeight() - 25);
-    listasecuelas.setBounds(0, 0, scrollPaneSecuelas.getWidth(), scrollPaneSecuelas.getHeight());
+    panelSaga.setBounds(panelTecnico.getBounds());
+    scrollPaneSaga.setBounds(0, 0, panelSaga.getWidth(), panelSaga.getHeight() - 25);
+    lstSecuelas.setBounds(0, 0, scrollPaneSaga.getWidth(), scrollPaneSaga.getHeight());
 
-    scrollPaneSecuelas.setBackground(panel.getBackground());
-    listasecuelas.setBackground(panel.getBackground());
+    panelAutor.setBounds(panelTecnico.getBounds());
+    scrollPaneObras.setBounds(0, 0, panelAutor.getWidth(), panelAutor.getHeight() - 25);
+    lstSecuelas.setBounds(0, 0, scrollPaneObras.getWidth(), scrollPaneObras.getHeight());
+
+    scrollPaneSaga.setBackground(panel.getBackground());
+    lstSecuelas.setBackground(panel.getBackground());
+    scrollPaneObras.setBackground(panel.getBackground());
+    lstObras.setBackground(panel.getBackground());
 
     getContentPane().add(panel);
 
     if (libro != null) {
       colecc = libro.getString("Saga");
+      autor = libro.getString("Autor");
       isbn = libro.getString("ISBN");
       urlPortada = libro.getString("PortadaURL");
       mostrarInfoLibro(libro);
@@ -316,11 +331,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     lblISBN.setText("ISBN: " + libro.getString("ISBN"));
     lblTitlo.setText(libro.getString("Titulo"));
 
-    if (lblTitlo == null) {
-      setTitle("Info Libro");
-    } else {
-      setTitle(lblTitlo.getText());
-    }
+    setTitle(lblTitlo == null ? "Info Libro" : lblTitlo.getText());
 
     lblAutor.setText(libro.getString("Autor"));
     lstGeneros = (List<Document>) libro.get("Generos");
@@ -355,7 +366,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     if (libro.getInteger("Paginas") != null) {
       valMaximoPags = libro.getInteger("Paginas");
       spPagL.setModel(new SpinnerNumberModel(0, 0, valMaximoPags, 1));
-
       lblPagTotales.setText("/" + valMaximoPags);
     } else {
       spPagL.setModel(new SpinnerNumberModel(0, 0, 999, 1));
@@ -367,18 +377,19 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       jcbEstados.setSelectedItem(nombrJcbEstado(estado.getString("Estado")));
       spCapL.setValue(estado.get("Capitulos"));
       spPagL.setValue(estado.get("Paginas"));
-      if (estado.getDouble("Nota") != null) {
-        spNota.setValue(estado.getDouble("Nota"));
+
+      if (estado.getInteger("Nota") != null) {
+        int valorNota = estado.getInteger("Nota");
+        Float nota = (float) valorNota / 10;
+        spNota.setValue(nota);
       } else {
         spNota.setValue(0);
       }
+
       jchReleido.setSelected(estado.getBoolean("Releido"));
       if (jchReleido.isSelected() == true) spVecesRele.setEnabled(true);
-      if (estado.get("VecesReleido") != null) {
-        spVecesRele.setValue(estado.get("VecesReleido"));
-      } else {
-        spVecesRele.setValue(0);
-      }
+      spVecesRele.setValue(estado.get("VecesReleido") != null ? estado.get("VecesReleido") : 0);
+
     } else {
       jcbEstados.setSelectedIndex(0);
       spCapL.setValue(0);
@@ -389,7 +400,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     }
 
     // Panel Colleccion
-    dlm.clear();
+    listModelSaga.clear();
     MongoCursor<Document> coleccion =
         collecLibro
             .find(eq("Saga", libro.getString("Saga")))
@@ -400,9 +411,25 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       Document libroColec = coleccion.next();
       String collecNume =
           "Libro " + libroColec.getInteger("Tomo") + ":  " + libroColec.getString("Titulo");
-      dlm.addElement(collecNume);
+      listModelSaga.addElement(collecNume);
     }
-    listasecuelas.setModel(dlm);
+    lstSecuelas.setModel(listModelSaga);
+
+// Panel Autor
+    listModelObras.clear();
+    MongoCursor<Document> autor =
+        collecLibro
+            .find(eq("Autor", libro.getString("Autor")))
+            .sort(ascending("Titulo"))
+            .projection(include("Titulo"))
+            .iterator();
+    while (autor.hasNext()) {
+      Document libroAutor = autor.next();
+      String libroAutorString = libroAutor.getString("Titulo");
+      listModelObras.addElement(libroAutorString);
+    }
+    lstObras.setModel(listModelObras);
+
     isbn = libro.getString("ISBN");
     leido();
   }
@@ -509,17 +536,12 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            if (jchReleido.isSelected() == true) {
-              spVecesRele.setEnabled(true);
-            } else {
-              spVecesRele.setEnabled(false);
-            }
+            spVecesRele.setEnabled(jchReleido.isSelected() ? true : false);
           }
         });
   }
 
   public void actualizarEstado(Document libro) {
-    // TODO RELANZAR o REPINTAR BIBLIOTECA
     btnUpdate.addActionListener(
         new ActionListener() {
           @Override
@@ -529,8 +551,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             Integer Pags = Integer.parseInt(spPagL.getValue().toString());
             Integer Caps = Integer.parseInt(spCapL.getValue().toString());
             Integer Releido = Integer.parseInt(spVecesRele.getValue().toString());
-            Float Nota = Float.parseFloat(spNota.getValue().toString());
-
+            Float valorNota = Float.parseFloat(spNota.getValue().toString());
+            int Nota = (valorNota == 10 ? 10 : (int) (valorNota * 10));
             Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
             Document estadoLibro =
                 collecDetBiblio
@@ -551,6 +573,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
               } else {
 
                 try {
+                  // Actualizar Registro
                   DeleteResult delRegistro = collecDetBiblio.deleteOne(estadoLibro);
 
                   Document estadoActualizado = new Document();
@@ -569,6 +592,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                   }
                   if (Nota > 0) estadoActualizado.put("Nota", Nota);
                   estadoActualizado.put("titloOrden", lblTitlo.getText());
+
                   collecDetBiblio.insertOne(estadoActualizado);
 
                   JOptionPane.showMessageDialog(
@@ -586,10 +610,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
               }
             } else {
               if (jcbEstados.getSelectedItem().toString().equals("Sin Añadir")) {
-
               } else {
+                // Crear Registro
                 try {
-
                   Document estado = new Document();
                   estado.put("Usuario", IntfzLogin.id_Usuario);
                   estado.put("Libro", libro);
@@ -603,6 +626,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                     estado.put("Releido", false);
                     estado.put("VecesReleido", null);
                   }
+
                   if (Nota > 0) estado.put("Nota", Nota);
                   estado.put("titloOrden", lblTitlo.getText());
 
@@ -620,30 +644,22 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
   public String nombrEstado(String estado) {
 
-    if (estado.equals("Leído")) {
-      estado = "Terminado";
-    }
-    if (estado.equals("Abandonado")) {
-      estado = "XinTerminar";
-    }
-    if (estado.equals("Quiero Leer")) {
-      estado = "Pendiente";
-    }
+    if (estado.equals("Leído")) estado = "Terminado";
+
+    if (estado.equals("Abandonado")) estado = "XinTerminar";
+
+    if (estado.equals("Quiero Leer")) estado = "Pendiente";
 
     return estado;
   }
 
   public String nombrJcbEstado(String estado) {
 
-    if (estado.equals("Terminado")) {
-      estado = "Leído";
-    }
-    if (estado.equals("XinTerminar")) {
-      estado = "Abandonado";
-    }
-    if (estado.equals("Pendiente")) {
-      estado = "Quiero Leer";
-    }
+    if (estado.equals("Terminado")) estado = "Leído";
+
+    if (estado.equals("XinTerminar")) estado = "Abandonado";
+
+    if (estado.equals("Pendiente")) estado = "Quiero Leer";
 
     return estado;
   }
@@ -663,17 +679,18 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
               jcbEstados.setSelectedItem(nombrJcbEstado(estado.getString("Estado")));
               spCapL.setValue(estado.get("Capitulos"));
               spPagL.setValue(estado.get("Paginas"));
-              if (estado.getDouble("Nota") != null) {
-                spNota.setValue(estado.getDouble("Nota"));
+
+              if (estado.getInteger("Nota") != null) {
+                int valorNota = estado.getInteger("Nota");
+                Float nota = (float) valorNota / 10;
+                spNota.setValue(nota);
               } else {
                 spNota.setValue(0);
               }
+
               jchReleido.setSelected(estado.getBoolean("Releido"));
-              if (jchReleido.isSelected() == true) {
-                spVecesRele.setValue(estado.get("VecesReleido"));
-              } else {
-                spVecesRele.setValue(0);
-              }
+              spVecesRele.setValue(jchReleido.isSelected() ? estado.get("VecesReleido") : 0);
+
             } else {
               jcbEstados.setSelectedIndex(0);
               spCapL.setValue(0);
@@ -687,12 +704,12 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   }
 
   public void cambiarTomo() {
-    listasecuelas.addMouseListener(
+    lstSecuelas.addMouseListener(
         new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
-            listasecuelas = (JList) evt.getSource();
+            lstSecuelas = (JList) evt.getSource();
             if (evt.getClickCount() == 2) {
-              int index = listasecuelas.locationToIndex(evt.getPoint());
+              int index = lstSecuelas.locationToIndex(evt.getPoint());
               int i = 0;
               MongoCursor<Document> otroLibro =
                   collecLibro.find(eq("Saga", colecc)).sort(ascending("Tomo")).iterator();
@@ -700,6 +717,27 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                 Document libroColec = otroLibro.next();
                 if (i == index) {
                   mostrarInfoLibro(libroColec);
+                  break;
+                }
+                i++;
+              }
+            }
+            return;
+          }
+        });
+    lstObras.addMouseListener(
+        new MouseAdapter() {
+          public void mouseClicked(MouseEvent evt) {
+            lstObras = (JList) evt.getSource();
+            if (evt.getClickCount() == 2) {
+              int index = lstObras.locationToIndex(evt.getPoint());
+              int i = 0;
+              MongoCursor<Document> otroLibro =
+                  collecLibro.find(eq("Autor", autor)).sort(ascending("Titulo")).iterator();
+              while (otroLibro.hasNext()) {
+                Document libroAutor = otroLibro.next();
+                if (i == index) {
+                  mostrarInfoLibro(libroAutor);
                   break;
                 }
                 i++;
@@ -764,6 +802,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     for (JComponent jComponent : jCompPestadoA) {
       panelEstado.add(jComponent);
     }
-    panelEntregas.add(scrollPaneSecuelas);
+    panelSaga.add(scrollPaneSaga);
+    panelAutor.add(scrollPaneObras);
   }
 }

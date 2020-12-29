@@ -2,20 +2,18 @@ package IntfzLibreria;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+
 import org.bson.Document;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.net.URL;
-import java.util.Map;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
@@ -73,6 +71,7 @@ public class MenuUsuario extends JFrame {
   Font font = lblRegLibro.getFont();
 
   String elemento = "Titulo";
+  String urlPortada = "";
 
   MongoCursor<Document> coleccion;
 
@@ -82,7 +81,6 @@ public class MenuUsuario extends JFrame {
   JButton[] jButtonA = {btnLogIn, btnCuenta, btnBiblioteca, btnLogOut, btnClose};
 
   public MenuUsuario() {}
-  ;
 
   public MenuUsuario(JPanel jpanel, Interfaz interfazActiva, Boolean panelUsuarioEsDesplegable) {
     this.interfazActiva = interfazActiva;
@@ -151,7 +149,7 @@ public class MenuUsuario extends JFrame {
     btnEscape.setIcon(icono);
 
     scrollPaneResultados.setBounds(
-        50, 75, (panelBusqueda.getWidth() - 100) / 2, panelBusqueda.getHeight() - 100);
+        50, 58, (panelBusqueda.getWidth() - 100) / 2, panelBusqueda.getHeight() - 98);
     lstCoincidencias.setBounds(
         0, 0, scrollPaneResultados.getWidth(), scrollPaneResultados.getHeight());
     scrollPaneResultados.setBackground(panelBusqueda.getBackground());
@@ -224,7 +222,7 @@ public class MenuUsuario extends JFrame {
   public void btnLog() {
     if (lblUsuario == null) {
     } else {
-      if ("Invitado".equals(lblUsuario.getText())) {
+      if ("Invitado".equals(lblUsuario.getText()) || "Admin".equals(lblUsuario.getText())) {
         btnLogOut.setVisible(false);
         btnCuenta.setVisible(false);
         btnBiblioteca.setVisible(false);
@@ -240,11 +238,6 @@ public class MenuUsuario extends JFrame {
         jcbTemas.setBounds(10, 130, 180, 20);
       }
     }
-  }
-
-  public void setLblUsuario(String newUsuario) {
-    lblUsuario.setText(newUsuario);
-    btnLog();
   }
 
   public void despliegePaneles() {
@@ -297,7 +290,6 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             disposeAll();
-
             intfzBiblioteca.iniciar();
           }
         });
@@ -308,7 +300,6 @@ public class MenuUsuario extends JFrame {
           public void actionPerformed(ActionEvent e) {
             disposeAll();
             lblUsuario.setText("Invitado");
-            intfzPrincipal.iniciar();
             btnLogIn.setVisible(true);
             btnLog();
           }
@@ -428,7 +419,6 @@ public class MenuUsuario extends JFrame {
   }
 
   public void añadirPortada() {
-    String elemento = jcbElementos.getSelectedItem().toString();
     lblPortada.setText("Portada no encontrada");
     lblPortada.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
     lblPortada.setBounds(
@@ -437,9 +427,22 @@ public class MenuUsuario extends JFrame {
         scrollPaneResultados.getWidth() - 50,
         scrollPaneResultados.getHeight());
     panelBusqueda.add(lblPortada);
+
+    String elemento = jcbElementos.getSelectedItem().toString();
     String enlace = lstCoincidencias.getSelectedValue().toString();
     Document portadaLibro = collecLibro.find(eq(elemento, enlace)).first();
-    String urlPortada = portadaLibro.getString("PortadaURL");
+    urlPortada = portadaLibro.getString("PortadaURL");
+
+    if (elemento.equals("Autor")) {
+      MongoCursor<Document> librosAutor = collecLibro.find(eq(elemento, enlace)).iterator();
+      ArrayList<String> obras = new ArrayList<String>();
+      while (librosAutor.hasNext()) {
+        Document ejemplar = librosAutor.next();
+        obras.add(ejemplar.getString("PortadaURL"));
+        urlPortada = obras.get(new Random().nextInt(obras.size()));
+      }
+    }
+
     try {
       URL url = new URL(urlPortada);
       Image portada = ImageIO.read(url);
@@ -456,7 +459,7 @@ public class MenuUsuario extends JFrame {
 
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(
-          null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar" + urlPortada);
+          null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar " + urlPortada);
     }
   }
 
@@ -467,14 +470,9 @@ public class MenuUsuario extends JFrame {
         new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
             lstCoincidencias = (JList) evt.getSource();
-            if (!jcbElementos.getSelectedItem().equals("Autor")) {
-              lblPortada.setVisible(true);
-              añadirPortada();
-            } else {
-              lblPortada.setIcon(null);
-              lblPortada.setText("Este elemento no tiene Portada");
-              lblPortada.setHorizontalAlignment(SwingConstants.CENTER);
-            }
+            lblPortada.setVisible(true);
+            añadirPortada();
+
             if (evt.getClickCount() == 2) {
               String enlace = lstCoincidencias.getSelectedValue().toString();
               Document libro = collecLibro.find(eq(elemento, enlace)).first();
@@ -488,15 +486,23 @@ public class MenuUsuario extends JFrame {
                 infoLibro.iniciar(libro);
               }
               if (elemento.equals("Autor")) {
-                Document libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+                Document libroAutor = null;
+                try {
+                  libroAutor = collecLibro.find(eq("PortadaURL", urlPortada)).first();
+                } catch (Exception exception) {
+                  libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+                }
+                infoLibro.iniciar(libroAutor);
+                infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
               }
               if (elemento.equals("Saga")) {
                 infoLibro.iniciar(libro);
-                infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
+                infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 2);
               }
             }
           }
         });
+
     lblPortada.addMouseListener(
         new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
@@ -512,11 +518,18 @@ public class MenuUsuario extends JFrame {
               infoLibro.iniciar(libro);
             }
             if (elemento.equals("Autor")) {
-              Document libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+              Document libroAutor = null;
+              try {
+                libroAutor = collecLibro.find(eq("PortadaURL", urlPortada)).first();
+              } catch (Exception exception) {
+                libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+              }
+              infoLibro.iniciar(libroAutor);
+              infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
             }
             if (elemento.equals("Saga")) {
               infoLibro.iniciar(libro);
-              infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
+              infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 2);
             }
           }
         });
@@ -532,19 +545,6 @@ public class MenuUsuario extends JFrame {
 
     if (intfzRegLibro.isShowing()) intfzRegLibro.dispose();
   }
-
-  /*public void crearComponentes(JPanel jpanel) {
-    for (JPanel jPanelE : jPanelA) {
-      jpanel.add(jPanelE);
-      jPanelE.setVisible(false);
-    }
-    for (JLabel jLabel : jLabelA) {
-      jpanel.add(jLabel);
-    }
-    for (JButton jButton : jButtonA) {
-      panelMenuUsuario.add(jButton);
-    }
-  } */
 
   public void cambioTema(String color) {
     Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null);
