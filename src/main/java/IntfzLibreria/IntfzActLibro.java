@@ -259,7 +259,6 @@ public class IntfzActLibro extends JFrame {
                 intfzInfoLibro.iniciar(libro);
                 mensajeEmergente(1);
                 dispose();
-                // TODO REPINTAR - CUENTA/BIBLIOTECA/PRINCIPAL - LA QUE ESTA ABIIERTA
               } catch (Exception ex) {
                 mensajeEmergente(2);
               }

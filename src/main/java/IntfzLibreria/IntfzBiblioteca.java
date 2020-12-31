@@ -39,8 +39,6 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
   DefaultTableModel modelT;
   JScrollPane scrollPane;
 
-  String urlPortada = "";
-
   public IntfzBiblioteca() {}
 
   public void iniciar() {
@@ -53,6 +51,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
     String[] cabecera = {
       " ",
+      "Portada",
       "Titulo",
       "Autor",
       "Saga",
@@ -83,19 +82,17 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     myBiblioTable = new ColorEstadoTabla();
     myBiblioTable.setBounds(0, 0, 1200, 825);
 
-    rellenarTabla();
-
     myBiblioTable.setModel(modelT);
     myBiblioTable.getColumnModel().getColumn(0).setMaxWidth(10);
-    myBiblioTable.getColumnModel().getColumn(4).setMaxWidth(70);
+    myBiblioTable.getColumnModel().getColumn(1).setMaxWidth(50);
     myBiblioTable.getColumnModel().getColumn(5).setMaxWidth(70);
     myBiblioTable.getColumnModel().getColumn(6).setMaxWidth(70);
     myBiblioTable.getColumnModel().getColumn(7).setMaxWidth(70);
     myBiblioTable.getColumnModel().getColumn(8).setMaxWidth(70);
-    myBiblioTable.getColumnModel().getColumn(9).setWidth(10);
+    myBiblioTable.getColumnModel().getColumn(9).setMaxWidth(70);
     myBiblioTable.setRowHeight(35);
     myBiblioTable.getTableHeader().setReorderingAllowed(false);
-    // myBiblioTable.setShowVerticalLines(false);
+    myBiblioTable.setShowVerticalLines(false);
 
     TableRowSorter<TableModel> modelOrdenado = new TableRowSorter<TableModel>(modelT);
     myBiblioTable.setRowSorter(modelOrdenado);
@@ -106,6 +103,9 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     for (int i = 0; i < myBiblioTable.getColumnCount(); i++) {
       myBiblioTable.getColumnModel().getColumn(i).setCellRenderer(Alinear);
     }
+
+    rellenarTabla();
+
     lblPortada = new JLabel();
     lblPortada.setBounds(800 - 164, 500 - 256, 329, 512);
     lblPortada.setVisible(false);
@@ -113,6 +113,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
     scrollPane = new JScrollPane(myBiblioTable);
     scrollPane.setBounds(200, 100, 1200, 825);
+    scrollPane.setBackground(panel.getBackground());
     scrollPane.setBorder(null);
     panel.add(scrollPane);
 
@@ -173,6 +174,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
           libro.getInteger("Capitulos") == null ? "???" : libro.getInteger("Capitulos").toString();
       Object[] aux = {
         regBiblio.getString("Estado"),
+        libro.getString("PortadaURL"),
         libro.getString("Titulo"),
         libro.getString("Autor"),
         libro.getString("Saga"),
@@ -187,7 +189,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     }
   }
 
-  public void añadirPortada() {
+  public void añadirPortada(String urlPortada) {
     try {
       URL url = new URL(urlPortada);
       Image portada = ImageIO.read(url);
@@ -219,7 +221,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
             fila = myBiblioTable.rowAtPoint(evt.getPoint());
             columna = myBiblioTable.columnAtPoint(evt.getPoint());
             if (evt.getClickCount() == 2) {
-              if ((fila > -1) && (columna == 1)) {
+              if ((fila > -1) && (columna == 2)) {
                 String titulo = modelT.getValueAt(fila, columna).toString();
                 Document libro = collecLibro.find(eq("Titulo", titulo)).first();
                 infoLibro.iniciar(libro);
@@ -240,20 +242,9 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
             columna = myBiblioTable.columnAtPoint(e.getPoint());
 
             if ((fila > -1) && (columna == 1)) {
-              String titulo = modelT.getValueAt(fila, columna).toString();
-              Document portadaLibro = collecLibro.find(eq("Titulo", titulo)).first();
-              urlPortada = portadaLibro.getString("PortadaURL");
-              añadirPortada();
+              añadirPortada(modelT.getValueAt(fila, columna).toString());
               lblPortada.setVisible(true);
-            } else {
-              JOptionPane.showMessageDialog(
-                  myBiblioTable,
-                  "Por favor, mantel pulsado el titulo del libro para visualizar su portada",
-                  "Presione en Celda Titulo",
-                  JOptionPane.INFORMATION_MESSAGE);
             }
-
-            añadirPortada();
           }
 
           @Override
@@ -263,12 +254,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
           }
 
           @Override
-          public void mouseEntered(MouseEvent e) {
-            /*final JDialog frame = new JDialog(parentFrame, frameTitle, true);
-            frame.getContentPane().add(panel);
-            frame.pack();
-            frame.setVisible(true);*/
-          }
+          public void mouseEntered(MouseEvent e) {}
 
           @Override
           public void mouseExited(MouseEvent e) {}
