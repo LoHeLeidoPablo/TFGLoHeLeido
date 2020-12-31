@@ -46,6 +46,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     this.setResizable(false);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     inicializarLabels();
+    cambioTema("Claro");
   }
 
   private void inicializarLabels() {
@@ -156,7 +157,8 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            if (menuUsuario.panelBusqueda.isVisible() == false && menuUsuario.panelMenuUsuario.isVisible() == false) {
+            if (menuUsuario.panelBusqueda.isVisible() == false
+                && menuUsuario.panelMenuUsuario.isVisible() == false) {
               libro = collecLibro.find(eq("Titulo", ultimosTitulos[posicion].toString())).first();
               intfzInfoLibro.dispose();
               intfzInfoLibro.iniciar(libro);
