@@ -1,12 +1,12 @@
 package mains;
 
 import IntfzLibreria.IntfzCuenta;
-import IntfzLibreria.IntfzPrincipal;
+import IntfzLibreria.IntfzLogin;
 
 public class Cuenta {
   public static void main(String[] args) {
-    IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
     IntfzCuenta ventana = new IntfzCuenta();
+    IntfzLogin.id_Usuario = "Pablo";
     ventana.iniciar();
   }
 }

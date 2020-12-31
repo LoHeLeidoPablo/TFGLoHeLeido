@@ -22,10 +22,13 @@ public class Temas extends JFrame {
     Color colorFondoBoton = botoncolor.getBackground();
     Color colorFondoPanel = panelcolor.getBackground();
     Color colorHeaderTable = tablacolores.getTableHeader().getBackground();
+
+    Color papiro = new Color(232, 218, 189);
+
     Color[] arrayColores = new Color[5];
     switch (color) {
       case "Claro":
-        arrayColores[0] = colorFondoPanel;
+        arrayColores[0] = papiro;
         arrayColores[1] = Color.black;
         arrayColores[2] = Color.white;
         arrayColores[3] = colorFondoBoton;
@@ -79,7 +82,7 @@ public class Temas extends JFrame {
             jPanelA, jlabelA, jTextFieldA, jButtonA, jTable, jList, jTextArea, arrayColores);
         break;
       case "Naranja Claro":
-        arrayColores[0] = colorFondoPanel;
+        arrayColores[0] = papiro;
         arrayColores[1] = Color.orange;
         arrayColores[2] = Color.white;
         arrayColores[3] = colorFondoBoton;
@@ -88,7 +91,7 @@ public class Temas extends JFrame {
             jPanelA, jlabelA, jTextFieldA, jButtonA, jTable, jList, jTextArea, arrayColores);
         break;
       case "Rojo Claro":
-        arrayColores[0] = colorFondoPanel;
+        arrayColores[0] = papiro;
         arrayColores[1] = Color.RED;
         arrayColores[2] = Color.white;
         arrayColores[3] = colorFondoBoton;
@@ -97,7 +100,7 @@ public class Temas extends JFrame {
             jPanelA, jlabelA, jTextFieldA, jButtonA, jTable, jList, jTextArea, arrayColores);
         break;
       case "Verde Claro":
-        arrayColores[0] = colorFondoPanel;
+        arrayColores[0] = papiro;
         arrayColores[1] = Color.GREEN;
         arrayColores[2] = Color.white;
         arrayColores[3] = colorFondoBoton;
@@ -106,7 +109,7 @@ public class Temas extends JFrame {
             jPanelA, jlabelA, jTextFieldA, jButtonA, jTable, jList, jTextArea, arrayColores);
         break;
       case "Azul Claro":
-        arrayColores[0] = colorFondoPanel;
+        arrayColores[0] = papiro;
         arrayColores[1] = Color.blue;
         arrayColores[2] = Color.white;
         arrayColores[3] = colorFondoBoton;

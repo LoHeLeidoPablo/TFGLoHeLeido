@@ -488,10 +488,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                       eq("Email", usuario.getString("Email")),
                       set("NPrestados", usuario.getInteger("NPrestados") + 1));
                   mensajeEmergente(1);
-                  IntfzCuenta intfzCuenta = new IntfzCuenta();
-                  // TODO RELANZAR o REPINTAR CUENTA Terminado
-                  intfzCuenta.mostrarPrestamo();
-
                 } else {
                   mensajeEmergente(4);
                 }
