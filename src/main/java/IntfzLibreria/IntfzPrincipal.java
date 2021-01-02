@@ -45,7 +45,9 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   public IntfzPrincipal() {
     this.setResizable(false);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setSize(1600, 1000);
     inicializarLabels();
+    cambioTema("Claro");
   }
 
   private void inicializarLabels() {
@@ -59,10 +61,12 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
 
   public void iniciar() {
     setTitle("¿Lo he leído?");
+    setSize(1600, 1000);
     getContentPane().setLayout(new GridLayout(1, 10));
     menuUsuario = new MenuUsuario(panel, this, true);
     crearComponentes();
     panel.setLayout(null);
+
     int poslbl = -1;
     for (JLabel jLabel : lblsPortadas) {
       poslbl++;
@@ -78,6 +82,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         lblsPortadas[0].getY() + lblsPortadas[0].getHeight() + 15,
         lblsPortadas[0].getWidth(),
         25);
+
     int portadasPorFila = 6;
     for (int i = 1; i < NUMERO_LABELS; i++) {
       if (i % portadasPorFila == 0) {
@@ -156,7 +161,8 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            if (menuUsuario.panelBusqueda.isVisible() == false && menuUsuario.panelMenuUsuario.isVisible() == false) {
+            if (menuUsuario.panelBusqueda.isVisible() == false
+                && menuUsuario.panelMenuUsuario.isVisible() == false) {
               libro = collecLibro.find(eq("Titulo", ultimosTitulos[posicion].toString())).first();
               intfzInfoLibro.dispose();
               intfzInfoLibro.iniciar(libro);

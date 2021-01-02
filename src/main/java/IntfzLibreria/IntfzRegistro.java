@@ -32,15 +32,12 @@ public class IntfzRegistro extends JFrame {
   JLabel lblTituloProyecto = new JLabel("Unete a Nosotros");
   JLabel lblUsuario = new JLabel("Usuario:");
   JLabel lblObUsuario = new JLabel("Obligatorio");
-  JLabel lblEmail = new JLabel("Email:");
-  JLabel lblObEmail = new JLabel("Obligatorio");
   JLabel lblPassword = new JLabel("Contraseña:");
   JLabel lblObPassword = new JLabel("La contraseña debe contener al menos 8 caracteres");
   JLabel lblPassword2 = new JLabel("Contraseña:");
   JLabel lblObPassword2 = new JLabel("La contraseña debe coincidir con la otra contraseña");
 
   JTextField txtUsuario = new JTextField("");
-  JTextField txtEmail = new JTextField("");
   JPasswordField txtPassword = new JPasswordField("");
   JPasswordField txtRepPassword = new JPasswordField("");
   JButton btnRegistro = new JButton("Registrar");
@@ -51,21 +48,18 @@ public class IntfzRegistro extends JFrame {
   Boolean obligatorios;
 
   JCheckBox cbVerPasswd = new JCheckBox("Mostrar Contraseñas");
-  JLabel[] jLabelObli = {lblObUsuario, lblObEmail, lblObPassword, lblObPassword2};
+  JLabel[] jLabelObli = {lblObUsuario, lblObPassword, lblObPassword2};
   JComponent[] jComponentA = {
     lblTituloProyecto,
     lblUsuario,
-    lblEmail,
     lblPassword,
     lblPassword,
     lblPassword2,
     lblObUsuario,
-    lblObEmail,
     lblObPassword,
     lblObPassword2,
     btnRegistro,
     txtUsuario,
-    txtEmail,
     txtPassword,
     txtRepPassword,
     cbVerPasswd
@@ -77,7 +71,7 @@ public class IntfzRegistro extends JFrame {
     this.setResizable(false);
     this.setLocation(100, 100);
   }
-  // TODO Eliminar correo Email
+
   public void iniciar() {
     setTitle("Registrar - ¿Lo he leído?");
     getContentPane().setLayout(new GridLayout(1, 10));
@@ -85,13 +79,12 @@ public class IntfzRegistro extends JFrame {
     mostrarContraseña(txtPassword);
     mostrarContraseña(txtRepPassword);
     rescribirCampo(txtUsuario, lblObUsuario);
-    rescribirCampo(txtEmail, lblObEmail);
     rescribirCampo(txtPassword, lblObPassword);
     rescribirCampo(txtRepPassword, lblObPassword2);
 
     panel.setLayout(null);
 
-    lblTituloProyecto.setBounds(15, 10, 250, 25);
+    lblTituloProyecto.setBounds(50, 10, 185, 25);
     Font fuenteis = new Font("Consola", 3, 22);
     lblTituloProyecto.setFont(fuenteis);
 
@@ -99,17 +92,13 @@ public class IntfzRegistro extends JFrame {
     txtUsuario.setBounds(20, 65, 235, 20);
     lblObUsuario.setBounds(20, 85, 160, 15);
 
-    lblEmail.setBounds(20, 110, 100, 15);
-    txtEmail.setBounds(20, 125, 235, 20);
-    lblObEmail.setBounds(20, 145, 160, 15);
+    lblPassword.setBounds(20, 110, 100, 15);
+    txtPassword.setBounds(20, 125, 235, 20);
+    lblObPassword.setBounds(20, 145, 235, 15);
 
-    lblPassword.setBounds(20, 170, 100, 15);
-    txtPassword.setBounds(20, 185, 235, 20);
-    lblObPassword.setBounds(10, 205, 255, 15);
-
-    lblPassword2.setBounds(20, 230, 100, 15);
-    txtRepPassword.setBounds(20, 245, 235, 20);
-    lblObPassword2.setBounds(10, 265, 255, 15);
+    lblPassword2.setBounds(20, 170, 100, 15);
+    txtRepPassword.setBounds(20, 185, 235, 20);
+    lblObPassword2.setBounds(20, 205, 235, 15);
 
     for (JLabel jLabel : jLabelObli) {
       jLabel.setVisible(false);
@@ -117,12 +106,13 @@ public class IntfzRegistro extends JFrame {
       jLabel.setFont(fuenteObligatoria);
     }
 
-    cbVerPasswd.setBounds(20, 285, 230, 20);
+    cbVerPasswd.setBounds(20, 235, 230, 20);
     cbVerPasswd.setBackground(panel.getBackground());
     mostrarContraseña(txtPassword);
     mostrarContraseña(txtRepPassword);
 
-    btnRegistro.setBounds(10, 315, 255, 25);
+    btnRegistro.setBounds(7, 260, 255, 25);
+
     btnRegistro.addActionListener(
         new ActionListener() {
           @Override
@@ -135,11 +125,10 @@ public class IntfzRegistro extends JFrame {
           }
         });
 
-    getContentPane().add(panel);
-
     // Empaquetado, tamaño y visualizazion
+    getContentPane().add(panel);
     pack();
-    setSize(285, 385);
+    setSize(285, 335);
     setVisible(true);
   }
 
@@ -148,13 +137,11 @@ public class IntfzRegistro extends JFrame {
       if (existeUsuario() == false) {
         Document auth = new Document();
         auth.put("Nombre", txtUsuario.getText());
-        auth.put("Email", txtEmail.getText());
         auth.put("Contraseña", txtPassword.getText());
         collecAuth.insertOne(auth);
 
         Document usuario = new Document();
         usuario.put("Nombre", txtUsuario.getText());
-        usuario.put("Email", txtEmail.getText());
         usuario.put("fCreacionCuenta", new Date());
         usuario.put("NPrestados", 0);
         // usuario.put("Tema", "Claro");
@@ -180,11 +167,6 @@ public class IntfzRegistro extends JFrame {
       i++;
     }
 
-    if (!txtEmail.getText().isEmpty()) {
-    } else {
-      lblObEmail.setVisible(true);
-      i++;
-    }
     if (txtPassword.getText().length() >= 2) {
     } else {
       lblObPassword.setVisible(true);
@@ -204,10 +186,7 @@ public class IntfzRegistro extends JFrame {
 
   public boolean existeUsuario() {
     existe = false;
-    Document existeReg =
-        collecAuth
-            .find(or(eq("Nombre", txtUsuario.getText()), eq("Email", txtEmail.getText())))
-            .first();
+    Document existeReg = collecAuth.find(eq("Nombre", txtUsuario.getText())).first();
     if (existeReg != null) existe = true;
 
     return existe;
