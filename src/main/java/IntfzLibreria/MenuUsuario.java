@@ -15,6 +15,7 @@ import java.awt.font.TextAttribute;
 import java.net.URL;
 import java.util.*;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
 
@@ -160,7 +161,7 @@ public class MenuUsuario extends JFrame {
     lblRegLibro.setBounds(200, 475, 600, 20);
     lblRegLibro.setForeground(Color.blue);
     panelBusqueda.add(lblRegLibro);
-    if (IntfzLogin.id_Usuario.equals("Invitado")) {
+    if (id_Usuario.equals("Invitado")) {
       lblRegLibro.setText(
           "Si no encuentras el libro que buscas, unete a 'Lo He Leído', para registrarlo");
       abrirRegUsuario();
@@ -168,7 +169,8 @@ public class MenuUsuario extends JFrame {
       abrirRegLibro();
     }
 
-    lblUsuario.setText(IntfzLogin.UsuCuenta.getString("Nombre"));
+   // lblUsuario.setText(IntfzLogin.UsuCuenta.getString("Nombre"));
+    lblUsuario.setText(id_Usuario);
     lblUsuario.setText(lblUsuario.getText() == null ? "Invitado" : lblUsuario.getText());
     lblUsuario.setFont(fuenteUsu);
     lblUsuario.setBounds(1400, 23, 100, 27);
@@ -212,7 +214,6 @@ public class MenuUsuario extends JFrame {
       btnLog();
     }
 
-    // crearComponentes(jpanel);
     despliegePaneles();
     botonesUsuario();
     busqueda();

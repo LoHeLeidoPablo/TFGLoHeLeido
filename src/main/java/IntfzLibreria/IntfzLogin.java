@@ -17,7 +17,6 @@ import static com.mongodb.client.model.Filters.*;
 
 public class IntfzLogin extends JFrame {
   public static String id_Usuario = "Invitado";
-  public static Document UsuCuenta = new Document();
 
   IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
 
@@ -139,38 +138,32 @@ public class IntfzLogin extends JFrame {
                 collecAuth
                     .find(
                         and(
-                            or(
-                                eq("Nombre", txtUsuario.getText()),
-                                eq("Email", txtUsuario.getText())),
+                            eq("Nombre", txtUsuario.getText()),
                             eq("Contraseña", txtPassword.getText())))
                     .first();
             if (usuAuth != null) {
-              UsuCuenta =
-                  collecUsuario
-                      .find(
-                          and(
-                              eq("Nombre", usuAuth.getString("Nombre")),
-                              eq("Email", usuAuth.getString("Email"))))
-                      .first();
-              if (UsuCuenta == null) {
-                UsuCuenta.put("Nombre", usuAuth.getString("Nombre"));
-                UsuCuenta.put("Email", usuAuth.getString("Email"));
-                UsuCuenta.put("fCreacionCuenta", new Date());
-                UsuCuenta.put("NPrestados", 0);
-                // UsuCuenta.put("Tema", "Claro");
-                collecUsuario.insertOne(UsuCuenta);
-              }
+              try{
+              Document UsuCuenta =
+                  collecUsuario.find(eq("Nombre", usuAuth.getString("Nombre"))).first();
               id_Usuario = UsuCuenta.getString("Nombre");
               dispose();
+
               /* MenuUsuario menuUsuario = new MenuUsuario(); // TODO Esto hace petar la aplicación entera
               menuUsuario.setLblUsuario(id_Usuario);*/
               intfzPrincipal.iniciar();
+              }catch (Exception ex){
+                JOptionPane.showMessageDialog(
+                    null,
+                    "Ha avido un problema con tu Usuario, por favor vuelve a intentarlo o contacte con 'superuloheleido@hotmail.com'",
+                    "Houston, tenemos un problema",
+                    JOptionPane.ERROR_MESSAGE);
+              }
 
             } else {
               JOptionPane.showMessageDialog(
                   null,
-                  "Credenciales Incorrectas, por favor vuelve a intentarlo",
-                  "Advertencia",
+                  "Credenciales Incorrectas,  por favor vuelve a intentarlo",
+                  "Advertencia -> Inicio de Sesión Rechazado",
                   JOptionPane.ERROR_MESSAGE);
             }
           }

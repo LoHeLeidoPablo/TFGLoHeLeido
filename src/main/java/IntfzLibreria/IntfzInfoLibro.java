@@ -227,7 +227,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
     tabbed.setBounds(950, 100, 350, 150);
     tabbed.addTab("Ficha Tecnica", panelTecnico);
-    if (IntfzLogin.id_Usuario.equals("Invitado") || IntfzLogin.id_Usuario.equals("Admin") ) {
+    if (IntfzLogin.id_Usuario.equals("Invitado") || IntfzLogin.id_Usuario.equals("Admin")) {
     } else {
       tabbed.addTab("Estado", panelEstado);
       panel.add(btnPrestamo);
@@ -415,7 +415,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     }
     lstSecuelas.setModel(listModelSaga);
 
-// Panel Autor
+    // Panel Autor
     listModelObras.clear();
     MongoCursor<Document> autor =
         collecLibro
@@ -456,7 +456,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   }
 
   public void prestarLibro(Document libro) {
-
     btnPrestamo.addActionListener(
         new ActionListener() {
           @Override
@@ -474,6 +473,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                 prestamo.put("f_prestamo", new Date());
                 prestamo.put("f_devolucion", f_devolucion);
                 prestamo.put("Prestado", true);
+
                 Document comproPrestamo = // ComprobarPrestamo
                     collecDetPrestamo
                         .find(
@@ -485,7 +485,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                 if (comproPrestamo == null) {
                   collecDetPrestamo.insertOne(prestamo);
                   collecUsuario.updateOne(
-                      eq("Email", usuario.getString("Email")),
+                      eq("Usuario", usuario.getString("Nombre")),
                       set("NPrestados", usuario.getInteger("NPrestados") + 1));
                   mensajeEmergente(1);
                 } else {
