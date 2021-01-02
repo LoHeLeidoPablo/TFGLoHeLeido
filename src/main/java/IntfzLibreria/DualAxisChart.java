@@ -45,13 +45,13 @@ public class DualAxisChart extends ApplicationFrame {
   final String gCaps = "Grafica Capitulos";
   final String gPags = "Grafica Paginas";
 
-  int rangoCaps1 = 0;
+  /*  int rangoCaps1 = 0;
   int rangoCaps2 = 0;
   int rangoCaps3 = 0;
   int rangoCaps4 = 0;
   int rangoCaps5 = 0;
   int rangoCaps6 = 0;
-  String[] capsRang = {"1 - 25", "26 - 50", "51 - 75", "76 - 100", "101 +", "???"};
+  String[] capsRang = {"1 - 25", "26 - 50", "51 - 75", "76 - 100", "101 +", "???"};*/
 
   int rangoPags1 = 0;
   int rangoPags2 = 0;
@@ -59,7 +59,16 @@ public class DualAxisChart extends ApplicationFrame {
   int rangoPags4 = 0;
   int rangoPags5 = 0;
   int rangoPags6 = 0;
-  String[] pagsRang = {"1 - 250", "26 - 50", "51 - 75", "76 - 100", "101 +", "???"};
+  String[] pagsRang = {"1 - 250", "251 - 500", "501 - 750", "751 - 1000", "1001 +", "???"};
+
+  float rangoNotaPags1 = 0;
+  float rangoNotaPags2 = 0;
+  float rangoNotaPags3 = 0;
+  float rangoNotaPags4 = 0;
+  float rangoNotaPags5 = 0;
+  float rangoNotaPags6 = 0;
+
+  // float[] notaPags = new float[6];
 
   public DualAxisChart(String titel) {
     super(titel);
@@ -70,9 +79,9 @@ public class DualAxisChart extends ApplicationFrame {
     setContentPane(chartPanel);
   }
 
-  public void cuentaCapitulos() {
+  /*  public void cuentaCapitulos() { // Arreglar orden bucle
 
-    MongoCursor<Document> biblioteca = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
+    MongoCursor<Document> biblioteca = collecDetBiblio.find(eq("Usuario", "Pablo")).iterator();
 
     while (biblioteca.hasNext()) {
       Document detLibro = biblioteca.next();
@@ -80,27 +89,25 @@ public class DualAxisChart extends ApplicationFrame {
 
       Integer capitulos = libroDetLibro.getInteger("Capitulos");
 
-      if (capitulos > 0 && capitulos < 26) {
-        rangoCaps1++;
-      } else if (capitulos > 25 && capitulos < 51) {
-        rangoCaps2++;
-      } else if (capitulos > 50 && capitulos < 76) {
-        rangoCaps3++;
-      } else if (capitulos > 75 && capitulos < 101) {
-        rangoCaps4++;
-      } else if (capitulos > 100) {
-        rangoCaps5++;
-      } else if (capitulos == null) {
+      if (capitulos == null) {
         rangoCaps6++;
+      } else if (capitulos < 26) {
+        rangoCaps1++;
+      } else if (capitulos < 51) {
+        rangoCaps2++;
+      } else if (capitulos < 76) {
+        rangoCaps3++;
+      } else if (capitulos < 101) {
+        rangoCaps4++;
+      } else {
+        rangoCaps5++;
       }
-
-      System.out.println(detLibro.toJson());
     }
-  }
+  }*/
 
-  public void cuentaPaginas() {
+  public int[] cuentaPaginas() {
 
-    MongoCursor<Document> biblioteca = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
+    MongoCursor<Document> biblioteca = collecDetBiblio.find(eq("Usuario", "Pablo")).iterator();
 
     while (biblioteca.hasNext()) {
       Document detLibro = biblioteca.next();
@@ -108,54 +115,126 @@ public class DualAxisChart extends ApplicationFrame {
 
       Integer paginas = libroDetLibro.getInteger("Paginas");
 
-      if (paginas > 0 && paginas < 251) {
-        rangoPags1++;
-      } else if (paginas > 250 && paginas < 501) {
-        rangoPags2++;
-      } else if (paginas > 500 && paginas < 751) {
-        rangoPags3++;
-      } else if (paginas > 750 && paginas < 1001) {
-        rangoPags4++;
-      } else if (paginas > 1000) {
-        rangoPags5++;
-      } else if (paginas == null) {
+      if (paginas == null) {
         rangoPags6++;
+      } else if (paginas < 251) {
+        rangoPags1++;
+      } else if (paginas < 501) {
+        rangoPags2++;
+      } else if (paginas < 751) {
+        rangoPags3++;
+      } else if (paginas < 1001) {
+        rangoPags4++;
+      } else {
+        rangoPags5++;
       }
-
-      System.out.println(detLibro.toJson());
     }
+    // mediaNotasPaginas();
+    int[] totalTitulos =
+        new int[] {rangoPags1, rangoPags2, rangoPags3, rangoPags4, rangoPags5, rangoPags6};
+    return totalTitulos;
   }
 
-  public int[][] run() { // Datos corrsepondientes a las barras
+  public float[] mediaNotasPaginas() {
 
-    cuentaPaginas();
+    MongoCursor<Document> biblioteca = collecDetBiblio.find(eq("Usuario", "Pablo")).iterator();
+    int i1 = 0;
+    int i2 = 0;
+    int i3 = 0;
+    int i4 = 0;
+    int i5 = 0;
+    int i6 = 0;
+    while (biblioteca.hasNext()) {
+      Document detLibro = biblioteca.next();
+      Document libroDetLibro = (Document) detLibro.get("Libro");
 
-    int[][] run =
-        new int[][] {
-          {10, 6, 2, 4, 7, 2},
-          {rangoPags1, rangoPags2,rangoPags3,rangoPags4, rangoPags5, rangoPags6}
+      Integer paginas = libroDetLibro.getInteger("Paginas");
+
+      if (paginas == null) {
+        rangoNotaPags6 += (float) detLibro.getInteger("Nota") / 10;
+        i6++;
+      } else if (paginas < 251) {
+        rangoNotaPags1 += (float) detLibro.getInteger("Nota") / 10;
+        i1++;
+      } else if (paginas < 501) {
+        rangoNotaPags2 += (float) detLibro.getInteger("Nota") / 10;
+        i2++;
+      } else if (paginas < 751) {
+        rangoNotaPags3 += (float) detLibro.getInteger("Nota") / 10;
+        i3++;
+      } else if (paginas < 1001) {
+        rangoNotaPags4 += (float) detLibro.getInteger("Nota") / 10;
+        i4++;
+      } else {
+        rangoNotaPags5 += (float) detLibro.getInteger("Nota") / 10;
+        i5++;
+      }
+    }
+
+    rangoNotaPags1 /= i1;
+    rangoNotaPags2 /= i2;
+    rangoNotaPags3 /= i3;
+    rangoNotaPags4 /= i4;
+    rangoNotaPags5 /= i5;
+    rangoNotaPags6 /= i6;
+
+    float[] notaPags =
+        new float[] {
+          rangoNotaPags1,
+          rangoNotaPags2,
+          rangoNotaPags3,
+          rangoNotaPags4,
+          rangoNotaPags5,
+          rangoNotaPags6
         };
-    return run;
+    return notaPags;
   }
 
-  private CategoryDataset createRunDataset1() {
-    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+  /*public int[] run() { // Datos corrsepondientes a las barras
 
-    int[] run = run()[0];
+  cuentaPaginas();
+  //  cuentaCapitulos();
 
-    for (int i = 0; i < capsRang.length; i++) {
-      dataset.addValue(run[i], gCaps + " Caps", capsRang[i]);
+  int[] run =
+      new int[] {
+         {rangoCaps1, rangoCaps2, rangoCaps3, rangoCaps4, rangoCaps5, rangoCaps6},
+
+            rangoPags1, rangoPags2, rangoPags3, rangoPags4, rangoPags5, rangoPags6
+          };
+      return run;
     }
-    return dataset;
-  }
+  */
+
+  final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
   private CategoryDataset createRunDataset2() {
     final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-    int[] run = run()[1];
+    int[] totalTitulos = cuentaPaginas();
+
+    for (int i = 0; i < pagsRang.length; i++) {
+      dataset.addValue(totalTitulos[i], gPags + " Pags", pagsRang[i]);
+    }
+    return dataset;
+  }
+
+  private CategoryDataset createRunRateDataset2() {
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+    // int[] run = run() [1];
+    float[] notaPags = mediaNotasPaginas();
+
+    for (int i = 0; i < pagsRang.length; i++) {
+      dataset.addValue(notaPags[i], gPags + " Nota", pagsRang[i]);
+    }
+    return dataset;
+  }
+
+  /*private CategoryDataset createRunDataset1() {
+    int[] run = run()[0];
 
     for (int i = 0; i < capsRang.length; i++) {
-      dataset.addValue(run[i], gPags + " Pags", capsRang[i]);
+      dataset.addValue(run[i], gCaps + " Caps", capsRang[i]);
     }
     return dataset;
   }
@@ -169,25 +248,14 @@ public class DualAxisChart extends ApplicationFrame {
     for (int i = 0; i < capsRang.length; i++) {
       num += run[i];
       dataset.addValue(num / (i + 1), gCaps + " Nota", capsRang[i]);
+
     }
     return dataset;
-  }
-
-  private CategoryDataset createRunRateDataset2() {
-    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-    int[] run = run()[1];
-    float num = 0;
-
-    for (int i = 0; i < capsRang.length; i++) {
-      num += run[i];
-      dataset.addValue(num / (i + 1), gPags + " Nota", capsRang[i]);
-    }
-    return dataset;
-  }
+  }*/
 
   private JFreeChart createChart() {
 
+    /*
     // PrimerGrafico
     final CategoryDataset dataset1 = createRunDataset1();
     final NumberAxis rangeAxis1 = new NumberAxis("Nº Total de Titulos");
@@ -208,13 +276,13 @@ public class DualAxisChart extends ApplicationFrame {
 
     subplot1.setForegroundAlpha(0.7f);
     subplot1.setRenderer(0, renderer1);
-    subplot1.setRenderer(1, runrateRenderer1);
+    subplot1.setRenderer(1, runrateRenderer1);*/
 
     final CategoryDataset dataset2 = createRunDataset2();
     final NumberAxis rangeAxis2 = new NumberAxis("Nº Total de Titulos");
     rangeAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
     final BarRenderer renderer2 = new BarRenderer();
-    renderer2.setSeriesPaint(0, Color.blue);
+    renderer2.setSeriesPaint(0, new Color(10,200,255));
     renderer2.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
     final CategoryPlot subplot2 = new CategoryPlot(dataset2, null, rangeAxis2, renderer2);
     subplot2.setDomainGridlinesVisible(true);
@@ -225,16 +293,16 @@ public class DualAxisChart extends ApplicationFrame {
     subplot2.setDataset(1, runrateDataset2);
     subplot2.mapDatasetToRangeAxis(1, 1);
     final CategoryItemRenderer runrateRenderer2 = new LineAndShapeRenderer();
-    runrateRenderer2.setSeriesPaint(0, Color.yellow);
+    runrateRenderer2.setSeriesPaint(0, Color.RED);
 
     subplot2.setForegroundAlpha(0.7f);
     subplot2.setRenderer(0, renderer2);
     subplot2.setRenderer(1, runrateRenderer2);
 
-    final CategoryAxis domainAxis = new CategoryAxis("Nº Paginas / Nº Capitulos");
+    final CategoryAxis domainAxis = new CategoryAxis("Nº Paginas" /* / Nº Capitulos*/);
     final CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot(domainAxis);
 
-    plot.add(subplot1, 1);
+    //  plot.add(subplot1, 1);
     plot.add(subplot2, 1);
 
     final JFreeChart chart =
