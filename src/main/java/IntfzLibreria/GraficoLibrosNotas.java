@@ -27,7 +27,7 @@ import java.awt.*;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class DualAxisChart extends ApplicationFrame {
+public class GraficoLibrosNotas extends ApplicationFrame {
 
   MongoClientURI uri =
       new MongoClientURI(
@@ -38,7 +38,6 @@ public class DualAxisChart extends ApplicationFrame {
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
   MongoCollection<Document> collecDetBiblio = DDBB.getCollection("DetallesBiblioteca");
 
-  final String gCaps = "Grafica Capitulos";
   final String gPags = "Grafica Paginas";
 
   int rangoPags1 = 0;
@@ -56,13 +55,16 @@ public class DualAxisChart extends ApplicationFrame {
   float rangoNotaPags5 = 0;
   float rangoNotaPags6 = 0;
 
-  public DualAxisChart(String titulo) {
+  public GraficoLibrosNotas(String titulo) {
     super(titulo);
 
     final JFreeChart chart = crearChart();
     final ChartPanel chartPanel = new ChartPanel(chart);
     chartPanel.setPreferredSize(new java.awt.Dimension(600, 450));
     setContentPane(chartPanel);
+/*    IntfzCuenta intfzCuenta = new IntfzCuenta();
+    chartPanel.setBounds(0,500,600,450);
+    intfzCuenta.panelEstadisticas.add(chartPanel);*/
   }
 
   public int[] cuentaPaginas() {
@@ -197,7 +199,7 @@ public class DualAxisChart extends ApplicationFrame {
     subplot.setRenderer(0, renderer);
     subplot.setRenderer(1, notaRender);
 
-    final CategoryAxis ejePrinipal = new CategoryAxis("Nº Paginas" /* / Nº Capitulos*/);
+    final CategoryAxis ejePrinipal = new CategoryAxis("Nº Paginas");
     final CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot(ejePrinipal);
 
     plot.add(subplot, 1);
