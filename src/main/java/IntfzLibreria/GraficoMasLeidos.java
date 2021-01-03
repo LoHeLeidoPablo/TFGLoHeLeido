@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -22,7 +23,7 @@ import org.jfree.ui.RefineryUtilities;
 import java.awt.*;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Sorts.descending;
 
 public class GraficoMasLeidos extends ApplicationFrame {
 
@@ -34,16 +35,6 @@ public class GraficoMasLeidos extends ApplicationFrame {
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
   MongoCollection<Document> collecDetBiblio = DDBB.getCollection("DetallesBiblioteca");
-
-  final String gPags = "Grafica Paginas";
-
-  int rangoPags1 = 0;
-  int rangoPags2 = 0;
-  int rangoPags3 = 0;
-  int rangoPags4 = 0;
-  int rangoPags5 = 0;
-  int rangoPags6 = 0;
-  String[] pagsRang = {"1 - 250", "251 - 500", "501 - 750", "751 - 1000", "1001 +", "???"};
 
   String[] titulos = new String[10];
   int[] repeticiones = new int[10];
@@ -105,8 +96,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
     String[] titulos = losMasLeidos();
     int[] repeticiones = losMasLeidosNumeric();
     for (int i = 0; i < titulos.length; i++) {
-      System.out.println(repeticiones[i] + " " + gPags + " " + titulos[i]);
-      dataset.addValue(repeticiones[i], gPags + " Pags", titulos[i]);
+      dataset.addValue(repeticiones[i], "Libro", titulos[i]);
     }
     return dataset;
   }
@@ -119,20 +109,21 @@ public class GraficoMasLeidos extends ApplicationFrame {
     BarRenderer renderer = new BarRenderer();
     renderer.setSeriesPaint(0, new Color(255, 0, 0));
     renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
+    CategoryAxis ejePrinipal = new CategoryAxis("Los Más Leidos");
     CategoryPlot subplot = new CategoryPlot(titulosDataset, null, ejeTitulo, renderer);
     subplot.setDomainGridlinesVisible(true);
 
     subplot.setForegroundAlpha(0.7f);
     subplot.setRenderer(0, renderer);
-
-    CategoryAxis ejePrinipal = new CategoryAxis("Nº Paginas");
-    //ejePrinipal.setVerticalTickLabels(true); // Linea para escribir verticalmente las etiquetas
+    // ejePrinipal.setVerticalTickLabels(true); // Linea para escribir verticalmente las etiquetas
     CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot(ejePrinipal);
 
     plot.add(subplot, 1);
 
     final JFreeChart chart =
-        new JFreeChart("Biblioteca", new Font("SansSerif", Font.BOLD, 18), plot, false);
+        new JFreeChart("Los Más Leidos", new Font("SansSerif", Font.BOLD, 18), plot, false);
+    CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
+    axis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
     return chart;
   }
 

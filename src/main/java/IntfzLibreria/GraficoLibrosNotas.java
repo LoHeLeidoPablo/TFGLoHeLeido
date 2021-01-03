@@ -20,11 +20,10 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
-import static IntfzLibreria.IntfzLogin.id_Usuario;
-import javax.swing.*;
+
 import java.awt.*;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 
 public class GraficoLibrosNotas extends ApplicationFrame {
@@ -62,7 +61,7 @@ public class GraficoLibrosNotas extends ApplicationFrame {
     final ChartPanel chartPanel = new ChartPanel(chart);
     chartPanel.setPreferredSize(new java.awt.Dimension(600, 450));
     setContentPane(chartPanel);
-/*    IntfzCuenta intfzCuenta = new IntfzCuenta();
+    /*    IntfzCuenta intfzCuenta = new IntfzCuenta();
     chartPanel.setBounds(0,500,600,450);
     intfzCuenta.panelEstadisticas.add(chartPanel);*/
   }
