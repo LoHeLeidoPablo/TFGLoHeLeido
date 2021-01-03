@@ -260,7 +260,7 @@ public class IntfzRegLibro extends JFrame {
       if (spNColeccion.getValue().equals(0)) spNColeccion.setValue(spNColeccion.getNextValue());
     }
     if (spPaginas.getValue().equals(0) & spCapitulos.getValue().equals(0)) i++;
-    if (lblPortada.getIcon() == null) i++;
+    if (lblPortada.getIcon() == null) {txtURL.setText("https://edit.org/images/cat/portadas-libros-big-2019101610.jpg");}
     if (i > 0) {
       mensajeEmergente(10);
       return false;

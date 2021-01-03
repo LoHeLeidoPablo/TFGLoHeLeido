@@ -22,6 +22,7 @@ import org.jfree.ui.RefineryUtilities;
 
 import java.awt.*;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Sorts.descending;
 
@@ -75,7 +76,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
   public int[] losMasLeidosNumeric() {
     MongoCursor<Document> biblioteca =
         collecDetBiblio
-            .find(eq("Usuario", "Pablo"))
+            .find(eq("Usuario", id_Usuario))
             .sort(descending("VecesReleido"))
             .limit(10)
             .iterator();

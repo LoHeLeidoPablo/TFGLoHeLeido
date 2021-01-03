@@ -6,10 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RefineryUtilities;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,7 +24,6 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Sorts.descending;
-import static com.mongodb.client.model.Updates.set;
 
 public class IntfzCuenta extends JFrame implements Interfaz {
 
@@ -333,8 +329,9 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
     MongoCursor<Document> prestamosUsuario =
         collecDetPrestamo
-            .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Prestado", true)))
+            .find(eq("Usuario", IntfzLogin.id_Usuario))
             .sort(descending("f_devolucion"))
+            .limit(5)
             .iterator();
     int pos = 0;
     int dias = 0;
@@ -356,7 +353,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       }
       pos++;
     }
-    if (pos < 4) {
+    if (pos < 5) {
       lblPortada[pos].setText("Portada");
       lblPortada[pos].setIcon(null);
       lblTitulo[pos].setText("Titulo Prestamo" + (pos + 1));
@@ -373,9 +370,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
           @Override
           public void actionPerformed(ActionEvent e) {
             MongoCursor<Document> prestamos =
-                collecDetPrestamo
-                    .find(and(eq("Prestado", true), eq("Usuario", id_Usuario)))
-                    .iterator();
+                collecDetPrestamo.find(eq("Usuario", id_Usuario)).iterator();
 
             while (prestamos.hasNext()) {
               Document libroPrestado = prestamos.next();
@@ -384,17 +379,6 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
               if (titulo.equals(lblTitulo[posicion].getText())) {
                 collecDetPrestamo.findOneAndDelete(libroPrestado);
-                lblPortada[posicion].setIcon(null);
-                lblPortada[posicion].setText("Portada");
-                lblPortada[posicion].setBorder(BorderFactory.createLineBorder(Color.black, 1));
-                lblTitulo[posicion].setText("Titulo Prestamo " + (posicion + 1));
-                lblAutor[posicion].setText("Autor Prestamo " + (posicion + 1));
-                lblSaga[posicion].setText("Saga Prestamo " + (posicion + 1));
-                lblDiasRestantes[posicion].setText("Te Quedan X dias");
-                Document usuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
-                collecUsuario.updateOne(
-                    eq("Nombre", id_Usuario),
-                    set("NPrestados", usuario.getInteger("NPrestados") - 1));
                 break;
               }
             }
@@ -586,7 +570,15 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
   public void grafico() {
     try {
-      /* DefaultXYDataset dataset = new DefaultXYDataset();
+
+      String title = "Valoración por Numero de Capitulos";
+      GraficoLibrosNotas chart = new GraficoLibrosNotas(title);
+
+      chart.pack();
+      RefineryUtilities.centerFrameOnScreen(chart);
+      chart.setVisible(true);
+
+      /*       DefaultXYDataset dataset = new DefaultXYDataset();
       dataset.addSeries(
           "firefox",
           new double[][] {
@@ -636,7 +628,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
       panelEstadisticas.add(imagen);*/
 
-      conteoLeyendo =
+      /*  conteoLeyendo =
           (int)
               collecDetBiblio.countDocuments(
                   and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
@@ -664,7 +656,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       chart.setBackgroundPaint(panel.getBackground());
       ChartPanel panelGrafico = new ChartPanel(chart);
       panelGrafico.setBounds(100, 350, 700, 400);
-      panelEstadisticas.add(panelGrafico);
+      panelEstadisticas.add(panelGrafico);*/
 
     } catch (Exception e) {
     }

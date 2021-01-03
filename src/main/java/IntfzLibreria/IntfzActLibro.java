@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -202,9 +203,10 @@ public class IntfzActLibro extends JFrame {
     txtAutor.setText(libro.getString("Autor"));
     txtColeccion.setText(libro.getString("Saga"));
     spNColeccion.setValue(libro.getInteger("Tomo"));
-    spPaginas.setValue(libro.getInteger("Paginas"));
-    spCapitulos.setValue(libro.getInteger("Capitulos"));
+    if (libro.getInteger("Paginas") != null) spPaginas.setValue(libro.getInteger("Paginas"));
+    if (libro.getInteger("Capitulos") != null) spCapitulos.setValue(libro.getInteger("Capitulos"));
     datePublicacion.setDate(libro.getDate("f_publicacion"));
+
     List<Document> lstGeneros = (List<Document>) libro.get("Generos");
     for (int k = 0, i = 0; k < jCheckBoxA.length; k++) {
       if (lstGeneros.contains(jCheckBoxA[k].getText())) {

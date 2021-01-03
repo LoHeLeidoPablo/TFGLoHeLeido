@@ -6,13 +6,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-import static com.mongodb.client.model.Filters.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.ParseException;
 import java.util.Date;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzRegistro extends JFrame {
 
@@ -24,8 +24,6 @@ public class IntfzRegistro extends JFrame {
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
-
-  IntfzLogin intfzLogin = new IntfzLogin();
 
   JPanel panel = new JPanel();
 
@@ -143,13 +141,11 @@ public class IntfzRegistro extends JFrame {
         Document usuario = new Document();
         usuario.put("Nombre", txtUsuario.getText());
         usuario.put("fCreacionCuenta", new Date());
-        usuario.put("NPrestados", 0);
         // usuario.put("Tema", "Claro");
         collecUsuario.insertOne(usuario);
         mensajeEmergente(1);
         panel.setVisible(false);
         dispose();
-        intfzLogin.iniciar();
       } else {
         mensajeEmergente(2);
       }
@@ -167,7 +163,7 @@ public class IntfzRegistro extends JFrame {
       i++;
     }
 
-    if (txtPassword.getText().length() >= 2) {
+    if (txtPassword.getText().length() >= 8) {
     } else {
       lblObPassword.setVisible(true);
       i++;

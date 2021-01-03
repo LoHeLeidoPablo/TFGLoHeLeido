@@ -12,13 +12,14 @@ import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.mongodb.client.model.Filters.*;
 
 public class IntfzLogin extends JFrame {
   public static String id_Usuario = "Invitado";
 
-  IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
+  MenuUsuario menuUsuario;
 
   MongoClientURI uri =
       new MongoClientURI(
@@ -54,9 +55,10 @@ public class IntfzLogin extends JFrame {
 
   Font font = lblRegistro.getFont();
 
-  public IntfzLogin() {
+  public IntfzLogin(MenuUsuario menuUsuario) {
     this.setResizable(false);
     this.setLocation(100, 100);
+    this.menuUsuario = menuUsuario;
   }
 
   public void iniciar() {
@@ -142,23 +144,15 @@ public class IntfzLogin extends JFrame {
                             eq("Contraseña", txtPassword.getText())))
                     .first();
             if (usuAuth != null) {
-              try{
               Document UsuCuenta =
                   collecUsuario.find(eq("Nombre", usuAuth.getString("Nombre"))).first();
               id_Usuario = UsuCuenta.getString("Nombre");
+              txtPassword.setText("");
               dispose();
 
-              /* MenuUsuario menuUsuario = new MenuUsuario(); // TODO Esto hace petar la aplicación entera
-              menuUsuario.setLblUsuario(id_Usuario);*/
-              intfzPrincipal.iniciar();
-              }catch (Exception ex){
-                JOptionPane.showMessageDialog(
-                    null,
-                    "Ha avido un problema con tu Usuario, por favor vuelve a intentarlo o contacte con 'superuloheleido@hotmail.com'",
-                    "Houston, tenemos un problema",
-                    JOptionPane.ERROR_MESSAGE);
-              }
-
+              MenuUsuario menuUsuarioPrincipal = getMenuUsuario();
+              menuUsuarioPrincipal.lblUsuario.setText(id_Usuario);
+              menuUsuarioPrincipal.btnLog();
             } else {
               JOptionPane.showMessageDialog(
                   null,
@@ -174,5 +168,9 @@ public class IntfzLogin extends JFrame {
     for (JComponent jComponent : jComponentA) {
       panel.add(jComponent);
     }
+  }
+
+  public MenuUsuario getMenuUsuario() {
+    return this.menuUsuario;
   }
 }

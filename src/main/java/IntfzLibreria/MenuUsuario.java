@@ -32,7 +32,7 @@ public class MenuUsuario extends JFrame {
 
   IntfzInfoLibro infoLibro = new IntfzInfoLibro();
   IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
-  IntfzLogin intfzLogin = new IntfzLogin();
+  IntfzLogin intfzLogin;
   IntfzBiblioteca intfzBiblioteca = new IntfzBiblioteca();
   IntfzCuenta intfzCuenta = new IntfzCuenta();
   IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
@@ -43,7 +43,7 @@ public class MenuUsuario extends JFrame {
   JPanel panelBusqueda;
 
   JLabel lblTituloProyecto;
-  JLabel lblUsuario = new JLabel();
+  JLabel lblUsuario = new JLabel("", SwingConstants.CENTER);
   JLabel lblPortada = new JLabel();
   JLabel lblRegLibro =
       new JLabel("No encunetra el libro que busca en nuestra Libreria, pulse aqui para añadirlo.");
@@ -81,9 +81,8 @@ public class MenuUsuario extends JFrame {
   JLabel[] jLabelA = {lblTituloProyecto, lblUsuario};
   JButton[] jButtonA = {btnLogIn, btnCuenta, btnBiblioteca, btnLogOut, btnClose};
 
-  public MenuUsuario() {}
-
   public MenuUsuario(JPanel jpanel, Interfaz interfazActiva, Boolean panelUsuarioEsDesplegable) {
+    this.intfzLogin = new IntfzLogin(this);
     this.interfazActiva = interfazActiva;
 
     String[] colores = {
@@ -109,6 +108,13 @@ public class MenuUsuario extends JFrame {
     txtBuscador.setFocusable(false);
     jpanel.add(txtBuscador);
 
+    /*JDialog frame = new JDialog(jpanel);
+    frame.getContentPane().add(panel);
+    frame.pack();
+    frame.setVisible(true);*/
+
+    //TODO Pasar BUSQUEDA a una VENTANA NUEVA
+
     panelBusqueda = new JPanel();
     panelBusqueda.setBounds(txtBuscador.getX(), 15, txtBuscador.getWidth(), 500);
     panelBusqueda.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
@@ -117,7 +123,7 @@ public class MenuUsuario extends JFrame {
     jpanel.add(panelBusqueda);
 
     txtBuscadorP = new JTextField();
-    txtBuscadorP.setBounds(100, 15, 500, 25);
+    txtBuscadorP.setBounds(100, 23, 500, 30);
     panelBusqueda.add(txtBuscadorP);
     String[] elementos = {"ISBN", "Titulo", "Autor", "Saga"};
     jcbElementos = new JComboBox<>(elementos);
@@ -169,11 +175,10 @@ public class MenuUsuario extends JFrame {
       abrirRegLibro();
     }
 
-   // lblUsuario.setText(IntfzLogin.UsuCuenta.getString("Nombre"));
     lblUsuario.setText(id_Usuario);
     lblUsuario.setText(lblUsuario.getText() == null ? "Invitado" : lblUsuario.getText());
     lblUsuario.setFont(fuenteUsu);
-    lblUsuario.setBounds(1400, 23, 100, 27);
+    lblUsuario.setBounds(1300, 23, 250, 40);
     jpanel.add(lblUsuario);
 
     if (panelUsuarioEsDesplegable) {
@@ -234,13 +239,17 @@ public class MenuUsuario extends JFrame {
         btnCuenta.setVisible(false);
         btnBiblioteca.setVisible(false);
         btnLogOut.setBounds(10, 10, 180, 20);
+        btnLogOut.setVisible(true);
         btnClose.setBounds(10, 40, 180, 20);
         jcbTemas.setBounds(10, 70, 180, 20);
       } else {
         btnLogIn.setVisible(false);
         btnCuenta.setBounds(10, 10, 180, 20);
+        btnCuenta.setVisible(true);
         btnBiblioteca.setBounds(10, 40, 180, 20);
+        btnBiblioteca.setVisible(true);
         btnLogOut.setBounds(10, 70, 180, 20);
+        btnLogOut.setVisible(true);
         btnClose.setBounds(10, 100, 180, 20);
         jcbTemas.setBounds(10, 130, 180, 20);
       }
@@ -278,8 +287,7 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            IntfzLogin ventana = new IntfzLogin();
-            ventana.iniciar();
+            intfzLogin.iniciar();
           }
         });
 
@@ -306,6 +314,7 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             disposeAll();
+            id_Usuario = "Invitado";
             lblUsuario.setText("Invitado");
             btnLogIn.setVisible(true);
             btnLog();
