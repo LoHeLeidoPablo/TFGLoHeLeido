@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
 
@@ -146,7 +147,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     modelT.setRowCount(0);
     MongoCursor<Document> biblioteca =
         collecDetBiblio
-            .find(eq("Usuario", "Pablo"))
+            .find(eq("Usuario", id_Usuario))
             .sort(and(ascending("Estado"), ascending("titloOrden")))
             .iterator();
     int i = 0;
