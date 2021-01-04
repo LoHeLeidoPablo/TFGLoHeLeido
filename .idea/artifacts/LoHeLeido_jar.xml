@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="LoHeLeido:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LoHeLeido_jar</output-path>
+    <root id="archive" name="LoHeLeido.jar">
+      <element id="module-output" name="LoHeLeido" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/jfree/jcommon/1.0.16/jcommon-1.0.16.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/toedter/jcalendar/1.4/jcalendar-1.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.12.7/mongo-java-driver-3.12.7.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/jfree/jfreechart/1.0.13/jfreechart-1.0.13.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
