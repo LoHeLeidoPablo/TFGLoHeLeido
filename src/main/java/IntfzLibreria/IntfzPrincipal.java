@@ -12,8 +12,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Sorts.*;
@@ -30,6 +32,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   MongoClient mongoClient = new MongoClient(uri);
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
+  MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
   static final int NUMERO_LABELS = 12;
 
@@ -40,6 +43,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   Document libro;
 
   JPanel panel = new JPanel();
+
   JPanel[] jPanelA = {panel};
 
   public IntfzPrincipal() {
@@ -47,7 +51,8 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(1600, 1000);
     inicializarLabels();
-    cambioTema("Claro");
+    cambioTema("Papiro");
+    recarga();
   }
 
   private void inicializarLabels() {
@@ -156,6 +161,16 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     }
   }
 
+  public void recarga() {
+    panel.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            ultimosAgregados();
+          }
+        });
+  }
+
   private void irLibro(JLabel jLabel, int posicion) {
     jLabel.addMouseListener(
         new MouseAdapter() {
@@ -199,6 +214,16 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, lblsTitulos, null, null, null, null, null);
+    Temas.cambioTema(color, jPanelA, lblsTitulos, null, null, null, null, null, null, null);
   }
+
+  /*private void temaUsuarioDefault() {
+    Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
+    if (temaUsuario == null) {
+      cambioTema("Papiro");
+    } else {
+      cambioTema(temaUsuario.getString("Tema"));
+    }
+  }*/
+
 }

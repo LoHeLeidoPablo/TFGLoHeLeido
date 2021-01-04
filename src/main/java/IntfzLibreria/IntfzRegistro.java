@@ -233,5 +233,6 @@ public class IntfzRegistro extends JFrame {
     for (JComponent jComponent : jComponentA) {
       panel.add(jComponent);
     }
+    panel.setBackground(new Color(232, 218, 189));
   }
 }

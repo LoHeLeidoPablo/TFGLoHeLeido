@@ -8,6 +8,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.*;
@@ -166,6 +167,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     this.setResizable(false);
     repeticion();
     cambiarTomo();
+    cambioTema("Papiro");
   }
 
   public void iniciar(Document libro) {
@@ -187,7 +189,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         lblPortada.getY() + lblPortada.getHeight() + 8,
         lblPortada.getWidth(),
         30);
-    if (IntfzLogin.id_Usuario.equals("Admin")) {
+    if (id_Usuario.equals("Admin")) {
       btnUpdateLibro.setBounds(btnPrestamo.getBounds());
       panel.add(btnUpdateLibro);
     }
@@ -227,7 +229,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
     tabbed.setBounds(950, 100, 350, 150);
     tabbed.addTab("Ficha Tecnica", panelTecnico);
-    if (IntfzLogin.id_Usuario.equals("Invitado") || IntfzLogin.id_Usuario.equals("Admin")) {
+    if (id_Usuario.equals("Invitado") || id_Usuario.equals("Admin")) {
     } else {
       tabbed.addTab("Estado", panelEstado);
       panel.add(btnPrestamo);
@@ -296,6 +298,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       actualizarEstado(libro);
       actualizar(libro);
       cancelarEstado();
+     // temaUsuarioDefault();
     }
 
     // Empaquetado, tamaño y visualizazion
@@ -322,7 +325,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   public void mostrarInfoLibro(Document libro) {
     Document estado =
         collecDetBiblio
-            .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro)))
+            .find(and(eq("Usuario", id_Usuario), eq("Libro", libro)))
             .projection(
                 include("Estado", "Paginas", "Capitulos", "Nota", "Releido", "VecesReleido"))
             .first();
@@ -454,39 +457,31 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
           null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar" + urlPortada);
     }
   }
-
+//TODO REVISAR POR COMPLETO
   public void prestarLibro(Document libro) {
     btnPrestamo.addActionListener(
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            Document usuario = collecUsuario.find(eq("Nombre", IntfzLogin.id_Usuario)).first();
-            if (usuario.getInteger("NPrestados") < 5) {
+            Document usuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
+            String persona = usuario.getString("Nombre");
+            int nPrestado = (int) collecDetPrestamo.countDocuments(eq(persona));
+            if (nPrestado < 5) {
               Calendar calc_fecha = Calendar.getInstance();
               calc_fecha.setTime(new Date());
               calc_fecha.set(Calendar.DAY_OF_YEAR, calc_fecha.get(Calendar.DAY_OF_YEAR) + 30);
               Date f_devolucion = calc_fecha.getTime();
               try {
                 Document prestamo = new Document();
-                prestamo.put("Usuario", usuario.getString("Nombre"));
+                prestamo.put("Usuario", persona);
                 prestamo.put("Libro", libro);
                 prestamo.put("f_prestamo", new Date());
                 prestamo.put("f_devolucion", f_devolucion);
-                prestamo.put("Prestado", true);
 
                 Document comproPrestamo = // ComprobarPrestamo
-                    collecDetPrestamo
-                        .find(
-                            and(
-                                eq("Usuario", prestamo.get("Usuario")),
-                                eq("Libro", prestamo.get("Libro")),
-                                eq("Prestado", true)))
-                        .first();
+                    collecDetPrestamo.find(and(eq("Usuario", persona), eq("Libro", libro))).first();
                 if (comproPrestamo == null) {
                   collecDetPrestamo.insertOne(prestamo);
-                  collecUsuario.updateOne(
-                      eq("Usuario", usuario.getString("Nombre")),
-                      set("NPrestados", usuario.getInteger("NPrestados") + 1));
                   mensajeEmergente(1);
                 } else {
                   mensajeEmergente(4);
@@ -494,7 +489,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
               } catch (Exception exception) {
                 mensajeEmergente(3);
               }
-
             } else {
               mensajeEmergente(2);
             }
@@ -507,9 +501,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            dispose(); // Cerrar la ventana y reabrirla con los datos cambiados o repintar
             IntfzActLibro intfzActLibro = new IntfzActLibro();
             intfzActLibro.iniciar(libro);
+            dispose();
           }
         });
   }
@@ -548,12 +542,11 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             Integer Caps = Integer.parseInt(spCapL.getValue().toString());
             Integer Releido = Integer.parseInt(spVecesRele.getValue().toString());
             Float valorNota = Float.parseFloat(spNota.getValue().toString());
-            int Nota = (valorNota == 10 ? 10 : (int) (valorNota * 10));
+            int Nota =  (int) (valorNota * 10);
+
             Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
             Document estadoLibro =
-                collecDetBiblio
-                    .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro)))
-                    .first();
+                collecDetBiblio.find(and(eq("Usuario", id_Usuario), eq("Libro", libro))).first();
             if (estadoLibro != null) {
               if (jcbEstados.getSelectedItem().toString().equals("Sin Añadir")) {
                 int confirmado =
@@ -573,7 +566,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                   DeleteResult delRegistro = collecDetBiblio.deleteOne(estadoLibro);
 
                   Document estadoActualizado = new Document();
-                  estadoActualizado.put("Usuario", IntfzLogin.id_Usuario);
+                  estadoActualizado.put("Usuario", id_Usuario);
                   estadoActualizado.put("Libro", libro);
                   estadoActualizado.put(
                       "Estado", nombrEstado(jcbEstados.getSelectedItem().toString()));
@@ -584,7 +577,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                     estadoActualizado.put("VecesReleido", Releido);
                   } else {
                     estadoActualizado.put("Releido", false);
-                    estadoActualizado.put("VecesReleido", null);
+                    estadoActualizado.put("VecesReleido", 0);
                   }
                   if (Nota > 0) estadoActualizado.put("Nota", Nota);
                   estadoActualizado.put("titloOrden", lblTitlo.getText());
@@ -610,7 +603,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                 // Crear Registro
                 try {
                   Document estado = new Document();
-                  estado.put("Usuario", IntfzLogin.id_Usuario);
+                  estado.put("Usuario", id_Usuario);
                   estado.put("Libro", libro);
                   estado.put("Estado", nombrEstado(jcbEstados.getSelectedItem().toString()));
                   estado.put("Paginas", Pags);
@@ -620,7 +613,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                     estado.put("VecesReleido", Releido);
                   } else {
                     estado.put("Releido", false);
-                    estado.put("VecesReleido", null);
+                    estado.put("VecesReleido", 0);
                   }
 
                   if (Nota > 0) estado.put("Nota", Nota);
@@ -668,9 +661,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             String isbnLibro = lblISBN.getText().substring(lblISBN.getText().indexOf(" ") + 1);
             Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
             Document estado =
-                collecDetBiblio
-                    .find(and(eq("Usuario", IntfzLogin.id_Usuario), eq("Libro", libro)))
-                    .first();
+                collecDetBiblio.find(and(eq("Usuario", id_Usuario), eq("Libro", libro))).first();
             if (estado != null) {
               jcbEstados.setSelectedItem(nombrJcbEstado(estado.getString("Estado")));
               spCapL.setValue(estado.get("Capitulos"));
@@ -780,8 +771,20 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelA, null, jButtonA, null, null, txtASinopsis);
+    Temas.cambioTema(color, jPanelA, jLabelA, null, jButtonA,jCheckBoxA, null, null, txtASinopsis,null);
+    jchReleido.setBackground(panelEstado.getBackground());
   }
+
+  /*  private void temaUsuarioDefault() {
+    Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
+    if (temaUsuario == null) {
+      System.out.println("Null");
+      cambioTema("Papiro");
+    } else {
+      System.out.println("Oscuro");
+      cambioTema(temaUsuario.getString("Tema"));
+    }
+  }*/
 
   public void crearComponentes() {
     for (JComponent jComponent : jCompPprincipalA) {

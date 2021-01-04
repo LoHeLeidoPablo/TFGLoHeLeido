@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzActLibro extends JFrame {
@@ -34,6 +35,7 @@ public class IntfzActLibro extends JFrame {
   MongoClient mongoClient = new MongoClient(uri);
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
   MongoCollection<Document> collecLibros = DDBB.getCollection("Libro");
+  MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
   IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
 
@@ -80,7 +82,6 @@ public class IntfzActLibro extends JFrame {
   private JDateChooser datePublicacion = new JDateChooser();
   private JScrollPane scrollPane = new JScrollPane(txtASinopsis);
 
-  // Font fuente = new Font(lblGeneros.getFont().getFamily(), Font.BOLD, 12);
   JCheckBox[] jCheckBoxA = {ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11, ch12};
   String isbn = new String();
   Date fecha_reg = new Date();
@@ -113,8 +114,17 @@ public class IntfzActLibro extends JFrame {
     datePublicacion
   };
 
+  JLabel[] jLabelA = {lblPortada,lblTitulo,lblAutor,lblColeccion,lblNColeccion,lblPaginas,lblCapitulos,lblPublicacion,lblGeneros,lblResumen,lblPortadaURL};
+  JPanel[] jPanelA = {panel,panelGenero};
+  JTextField[] jTextFieldA = {txtISBN,txtTitulo,txtAutor,txtColeccion,txtURL};
+  JButton[] jButtonA = {btnUpdateLibro};
+  JSpinner[] jSpinnerA = {spNColeccion,spCapitulos,spPaginas};
+
+
+
   public IntfzActLibro() {
     this.setResizable(false);
+    cambioTema("Papiro");
   }
 
   public void iniciar(Document actualizarLibro) {
@@ -185,6 +195,7 @@ public class IntfzActLibro extends JFrame {
     insertarP();
     vaciarURL();
     actualizacion();
+    //temaUsuarioDefault();
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -379,4 +390,17 @@ public class IntfzActLibro extends JFrame {
           JOptionPane.ERROR_MESSAGE);
     }
   }
+
+  public void cambioTema(String color) {
+    Temas.cambioTema(color, jPanelA, jLabelA, jTextFieldA, jButtonA, jCheckBoxA, null,null, null,jSpinnerA);
+  }
+
+/*  private void temaUsuarioDefault() {
+    Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
+    if (temaUsuario == null) {
+      cambioTema("Papiro");
+    } else {
+      cambioTema(temaUsuario.getString("Tema"));
+    }
+  }*/
 }

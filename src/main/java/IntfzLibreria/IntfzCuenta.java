@@ -171,9 +171,10 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   JComponent[] jComponentA = {panelPrestamo, panelEstadisticas};
 
   Color verde = new Color(64, 161, 67);
-  //  Color papiro = new Color(232, 218, 189);
 
-  public IntfzCuenta() {}
+  public IntfzCuenta() {
+    cambioTema("Papiro");
+  }
 
   public void iniciar() {
     setTitle("¿Lo he leído? - Mi Cuenta");
@@ -578,6 +579,13 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       RefineryUtilities.centerFrameOnScreen(chart);
       chart.setVisible(true);
 
+      String titulo = "Valoración por Numero de Capitulos";
+      GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos(title);
+
+      chartMasLeidos.pack();
+      RefineryUtilities.centerFrameOnScreen(chartMasLeidos);
+      chartMasLeidos.setVisible(true);
+
       /*       DefaultXYDataset dataset = new DefaultXYDataset();
       dataset.addSeries(
           "firefox",
@@ -663,6 +671,6 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelsA, null, btnDevolver, null, null, null);
+    Temas.cambioTema(color, jPanelA, jLabelsA, null, btnDevolver,null, null, null, null,null);
   }
 }

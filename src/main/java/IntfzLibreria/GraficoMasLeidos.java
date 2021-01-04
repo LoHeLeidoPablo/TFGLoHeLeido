@@ -55,7 +55,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
   public String[] losMasLeidos() {
     MongoCursor<Document> biblioteca =
         collecDetBiblio
-            .find(eq("Usuario", "Pablo"))
+            .find(eq("Usuario", id_Usuario))
             .sort(descending("VecesReleido"))
             .limit(10)
             .iterator();
@@ -64,7 +64,6 @@ public class GraficoMasLeidos extends ApplicationFrame {
       Document detLibro = biblioteca.next();
       Document libroDetLibro = (Document) detLibro.get("Libro");
       if (libroDetLibro.getString("Titulo") == null) {
-        System.out.println("Nulo");
       } else {
         titulos[i] = libroDetLibro.getString("Titulo");
       }
@@ -116,7 +115,6 @@ public class GraficoMasLeidos extends ApplicationFrame {
 
     subplot.setForegroundAlpha(0.7f);
     subplot.setRenderer(0, renderer);
-    // ejePrinipal.setVerticalTickLabels(true); // Linea para escribir verticalmente las etiquetas
     CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot(ejePrinipal);
 
     plot.add(subplot, 1);

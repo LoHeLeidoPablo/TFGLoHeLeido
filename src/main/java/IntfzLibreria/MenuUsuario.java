@@ -84,19 +84,18 @@ public class MenuUsuario extends JFrame {
   public MenuUsuario(JPanel jpanel, Interfaz interfazActiva, Boolean panelUsuarioEsDesplegable) {
     this.intfzLogin = new IntfzLogin(this);
     this.interfazActiva = interfazActiva;
+   // cambioTema("Papiro");
 
-    String[] colores = {
-      "Claro",
-      "Oscuro",
-      "Amarillo Oscuro",
+    String[] colores = {"Claro", "Oscuro", "Papiro"};
+
+     /*"Amarillo Oscuro",
       "Rojo Oscuro",
       "Verde Oscuro",
       "Azul Oscuro",
       "Naranja Claro",
       "Rojo Claro",
       "Verde Claro",
-      "Azul Claro",
-    };
+      "Azul Claro"};*/
 
     lblTituloProyecto = new JLabel("¿Lo he leído?");
     lblTituloProyecto.setBounds(20, 18, 310, 54);
@@ -113,7 +112,7 @@ public class MenuUsuario extends JFrame {
     frame.pack();
     frame.setVisible(true);*/
 
-    //TODO Pasar BUSQUEDA a una VENTANA NUEVA
+    // TODO Pasar BUSQUEDA a una VENTANA NUEVA
 
     panelBusqueda = new JPanel();
     panelBusqueda.setBounds(txtBuscador.getX(), 15, txtBuscador.getWidth(), 500);
@@ -223,6 +222,7 @@ public class MenuUsuario extends JFrame {
     botonesUsuario();
     busqueda();
     mostrarLibro();
+    //cambioTema("Papiro");
   }
 
   public void btnLog() {
@@ -288,6 +288,7 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             intfzLogin.iniciar();
+            panelMenuUsuario.setVisible(false);
           }
         });
 
@@ -563,6 +564,6 @@ public class MenuUsuario extends JFrame {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null);
+    Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null,null,null);
   } // Esto no funciona
 }

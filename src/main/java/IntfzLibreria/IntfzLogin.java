@@ -148,11 +148,13 @@ public class IntfzLogin extends JFrame {
                   collecUsuario.find(eq("Nombre", usuAuth.getString("Nombre"))).first();
               id_Usuario = UsuCuenta.getString("Nombre");
               txtPassword.setText("");
+              cbVerPasswd.setSelected(false);
               dispose();
 
               MenuUsuario menuUsuarioPrincipal = getMenuUsuario();
               menuUsuarioPrincipal.lblUsuario.setText(id_Usuario);
               menuUsuarioPrincipal.btnLog();
+
             } else {
               JOptionPane.showMessageDialog(
                   null,
@@ -160,6 +162,8 @@ public class IntfzLogin extends JFrame {
                   "Advertencia -> Inicio de Sesión Rechazado",
                   JOptionPane.ERROR_MESSAGE);
             }
+            // TODO Al volver a logearte por segunda vez se forma un bucle misterioso
+            return;
           }
         });
   }
@@ -168,6 +172,7 @@ public class IntfzLogin extends JFrame {
     for (JComponent jComponent : jComponentA) {
       panel.add(jComponent);
     }
+    panel.setBackground(new Color(232, 218, 189));
   }
 
   public MenuUsuario getMenuUsuario() {

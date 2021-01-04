@@ -40,7 +40,9 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
   DefaultTableModel modelT;
   JScrollPane scrollPane;
 
-  public IntfzBiblioteca() {}
+  public IntfzBiblioteca() {
+    cambioTema("Papiro");
+  }
 
   public void iniciar() {
     setTitle("¿Lo he leído? - Mi IntfzLibreria");
@@ -263,7 +265,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, null, null, null, myBiblioTable, null, null);
+    Temas.cambioTema(color, jPanelA, null, null, null, null, myBiblioTable, null, null, null);
   }
 
   public void crearComponentes() {}

@@ -79,7 +79,23 @@ public class IntfzRegLibro extends JFrame {
   private JScrollPane scrollPane = new JScrollPane(txtASinopsis);
 
   Font fuente = new Font(lblGeneros.getFont().getFamily(), Font.BOLD, 12);
+
+  JPanel[] jPanelA = {panel, panelGenero};
+  JLabel[] jLabelA = {
+    lblPortada,
+    lblTitulo,
+    lblAutor,
+    lblResumen,
+    lblGeneros,
+    lblPublicacion,
+    lblISBN,
+    lblCapitulos,
+    lblPaginas,
+    lblColeccion,
+    lblPublicacion
+  };
   JCheckBox[] jCheckBoxA = {ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11, ch12};
+  JButton[] jButtonA = {btnAddLibro};
 
   JComponent[] jComponentA = {
     panelGenero,
@@ -110,6 +126,7 @@ public class IntfzRegLibro extends JFrame {
 
   public IntfzRegLibro() {
     this.setResizable(false);
+    cambioTema("Papiro");
   }
 
   public void iniciar() {
@@ -260,7 +277,9 @@ public class IntfzRegLibro extends JFrame {
       if (spNColeccion.getValue().equals(0)) spNColeccion.setValue(spNColeccion.getNextValue());
     }
     if (spPaginas.getValue().equals(0) & spCapitulos.getValue().equals(0)) i++;
-    if (lblPortada.getIcon() == null) {txtURL.setText("https://edit.org/images/cat/portadas-libros-big-2019101610.jpg");}
+    if (lblPortada.getIcon() == null) {
+      txtURL.setText("https://edit.org/images/cat/portadas-libros-big-2019101610.jpg");
+    }
     if (i > 0) {
       mensajeEmergente(10);
       return false;
@@ -358,5 +377,10 @@ public class IntfzRegLibro extends JFrame {
           "Ya existe un libro con este ISBN, esta es la informacion del libro relacionado a este ISBN ",
           "Registro Fallido",
           JOptionPane.ERROR_MESSAGE);
+  }
+
+  public void cambioTema(String color) {
+    Temas.cambioTema(
+        color, jPanelA, jLabelA, null, jButtonA, jCheckBoxA, null, null, txtASinopsis, null);
   }
 }
