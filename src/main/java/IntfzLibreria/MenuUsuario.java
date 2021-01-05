@@ -166,13 +166,8 @@ public class MenuUsuario extends JFrame {
     lblRegLibro.setBounds(200, 475, 600, 20);
     lblRegLibro.setForeground(Color.blue);
     panelBusqueda.add(lblRegLibro);
-    if (id_Usuario.equals("Invitado")) {
-      lblRegLibro.setText(
-          "Si no encuentras el libro que buscas, unete a 'Lo He Leído', para registrarlo");
-      abrirRegUsuario();
-    } else {
-      abrirRegLibro();
-    }
+    regUsuLibro();
+
 
     lblUsuario.setText(id_Usuario);
     lblUsuario.setText(lblUsuario.getText() == null ? "Invitado" : lblUsuario.getText());
@@ -205,7 +200,7 @@ public class MenuUsuario extends JFrame {
             }
           });
 
-      jcbTemas = new JComboBox<String>(colores);
+      /*jcbTemas = new JComboBox<String>(colores);
       panelMenuUsuario.add(jcbTemas);
       jcbTemas.addActionListener(
           new ActionListener() {
@@ -214,7 +209,7 @@ public class MenuUsuario extends JFrame {
               colorTema = jcbTemas.getSelectedItem().toString();
               interfazActiva.cambioTema(colorTema);
             }
-          });
+          });*/
       btnLog();
     }
 
@@ -223,6 +218,17 @@ public class MenuUsuario extends JFrame {
     busqueda();
     mostrarLibro();
     //cambioTema("Papiro");
+  }
+
+  public void regUsuLibro(){
+    if (id_Usuario.equals("Invitado")) {
+      lblRegLibro.setText(
+          "Si no encuentras el libro que buscas, unete a 'Lo He Leído', para registrarlo");
+      abrirRegUsuario();
+    } else {
+      lblRegLibro.setText("No encunetra el libro que busca en nuestra Libreria, pulse aqui para añadirlo.");
+      abrirRegLibro();
+    }
   }
 
   public void btnLog() {

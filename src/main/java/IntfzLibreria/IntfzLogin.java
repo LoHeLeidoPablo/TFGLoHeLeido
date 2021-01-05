@@ -56,6 +56,7 @@ public class IntfzLogin extends JFrame {
   Font font = lblRegistro.getFont();
 
   public IntfzLogin(MenuUsuario menuUsuario) {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     this.setLocation(100, 100);
     this.menuUsuario = menuUsuario;
@@ -154,6 +155,7 @@ public class IntfzLogin extends JFrame {
               MenuUsuario menuUsuarioPrincipal = getMenuUsuario();
               menuUsuarioPrincipal.lblUsuario.setText(id_Usuario);
               menuUsuarioPrincipal.btnLog();
+              menuUsuarioPrincipal.regUsuLibro();
 
             } else {
               JOptionPane.showMessageDialog(

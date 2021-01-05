@@ -19,8 +19,8 @@ public class ColorEstadoTabla extends JTable {
       String estado = this.getValueAt(rowIndex, columIndex).toString();
 
       if (estado.equals("Leyendo")) {
-        tablaColor.setBackground(Color.GREEN);
-        tablaColor.setForeground(Color.GREEN);
+        tablaColor.setBackground(new Color(64, 161, 67));
+        tablaColor.setForeground(new Color(64, 161, 67));
       } else if (estado.equals("Terminado")) {
         tablaColor.setBackground(Color.BLUE);
         tablaColor.setForeground(Color.BLUE);

@@ -9,14 +9,22 @@ import org.bson.Document;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 
 import static IntfzLibreria.IntfzLogin.id_Usuario;
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.ascending;
+// import static java.awt.event.KeyEvent.VK_F5;
 
 public class IntfzBiblioteca extends JFrame implements Interfaz {
 
@@ -36,12 +44,14 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
   JPanel[] jPanelA = {panel};
 
   JTable myBiblioTable;
-  JLabel lblPortada;
   DefaultTableModel modelT;
   JScrollPane scrollPane;
+  JLabel lblPortada;
 
   public IntfzBiblioteca() {
     cambioTema("Papiro");
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
+    // recargar();
   }
 
   public void iniciar() {
@@ -51,6 +61,11 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     MenuUsuario menuUsuario = new MenuUsuario(panel, this, false);
 
     panel.setLayout(null);
+
+    lblPortada = new JLabel();
+    lblPortada.setBounds(636, 244, 329, 512);
+    lblPortada.setVisible(false);
+    panel.add(lblPortada);
 
     String[] cabecera = {
       " ",
@@ -82,9 +97,8 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
             return false;
           }
         };
-    myBiblioTable = new ColorEstadoTabla();
-    myBiblioTable.setBounds(0, 0, 1200, 825);
 
+    myBiblioTable = new ColorEstadoTabla();
     myBiblioTable.setModel(modelT);
     myBiblioTable.getColumnModel().getColumn(0).setMaxWidth(10);
     myBiblioTable.getColumnModel().getColumn(1).setMaxWidth(50);
@@ -95,6 +109,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     myBiblioTable.getColumnModel().getColumn(9).setMaxWidth(70);
     myBiblioTable.setRowHeight(35);
     myBiblioTable.getTableHeader().setReorderingAllowed(false);
+    myBiblioTable.setBackground(new Color(232, 218, 189));
     myBiblioTable.setShowVerticalLines(false);
 
     TableRowSorter<TableModel> modelOrdenado = new TableRowSorter<TableModel>(modelT);
@@ -106,19 +121,20 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     for (int i = 0; i < myBiblioTable.getColumnCount(); i++) {
       myBiblioTable.getColumnModel().getColumn(i).setCellRenderer(Alinear);
     }
-
     rellenarTabla();
 
-    lblPortada = new JLabel();
-    lblPortada.setBounds(800 - 164, 500 - 256, 329, 512);
-    lblPortada.setVisible(false);
-    panel.add(lblPortada);
-
     scrollPane = new JScrollPane(myBiblioTable);
-    scrollPane.setBounds(200, 100, 1200, 825);
-    scrollPane.setBackground(panel.getBackground());
+    scrollPane.setBounds(50, 100, 1500, 825);
+    myBiblioTable.setBounds(0, 0, scrollPane.getWidth(), scrollPane.getWidth());
+    scrollPane.setBackground(new Color(232, 218, 189));
     scrollPane.setBorder(null);
     panel.add(scrollPane);
+
+    /*lblPortada = new JLabel();
+    lblPortada.setBounds(636 , 244, 329, 512);
+    lblPortada.setBorder(BorderFactory.createLineBorder(Color.black,5,true));
+    lblPortada.setVisible(true);
+    panel.add(lblPortada);*/
 
     irLibro();
 
@@ -133,6 +149,8 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
           }
         });
 
+    // recargar();
+
     // Empaquetado, tamaño y visualizazion
     getContentPane().add(panel);
     setResizable(false);
@@ -145,6 +163,33 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     setVisible(true);
   }
 
+  /* private void recargar() {
+    EventoRecargaF5 evtReF5 = new EventoRecargaF5();
+    addKeyListener(evtReF5);
+  }
+
+  class EventoRecargaF5 implements KeyListener {
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+      System.out.println("Prueba de funcionamiento T");
+      // rellenarTabla();
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+      System.out.println("Prueba de funcionamiento P");
+      // rellenarTabla();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+      System.out.println("Prueba de funcionamiento R");
+      // rellenarTabla();
+    }
+  }*/
+
   public void rellenarTabla() {
     modelT.setRowCount(0);
     MongoCursor<Document> biblioteca =
@@ -156,7 +201,6 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     while (biblioteca.hasNext()) {
       Document regBiblio = biblioteca.next();
       i++;
-
       String releido =
           regBiblio.getBoolean("Releido")
               ? "Leído " + regBiblio.getInteger("VecesReleido") + " veces"

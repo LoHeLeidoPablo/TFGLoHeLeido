@@ -49,7 +49,7 @@ public class IntfzRegLibro extends JFrame {
   private JLabel lblPublicacion = new JLabel("F. Publicación");
   private JLabel lblGeneros = new JLabel("Genero");
   private JLabel lblResumen = new JLabel("Resumen");
-  private JLabel lblPortadaURL = new JLabel("URL de la Portada*");
+  private JLabel lblPortadaURL = new JLabel("URL de la Portada");
 
   private JTextField txtISBN = new JTextField();
   private JTextField txtTitulo = new JTextField();
@@ -127,6 +127,7 @@ public class IntfzRegLibro extends JFrame {
   public IntfzRegLibro() {
     this.setResizable(false);
     cambioTema("Papiro");
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
   }
 
   public void iniciar() {
@@ -368,7 +369,7 @@ public class IntfzRegLibro extends JFrame {
     } else if (mensaje == 10) {
       JOptionPane.showMessageDialog(
           null,
-          "El ISBN, el Titulo, el Autor, la Portada y las Paginas o los Capitulos son campos obligatorios",
+          "El ISBN, el Titulo, el Autor y las Paginas o los Capitulos son campos obligatorios",
           "Registro Fallido",
           JOptionPane.ERROR_MESSAGE);
     } else
@@ -381,6 +382,6 @@ public class IntfzRegLibro extends JFrame {
 
   public void cambioTema(String color) {
     Temas.cambioTema(
-        color, jPanelA, jLabelA, null, jButtonA, jCheckBoxA, null, null, txtASinopsis, null);
+        color, jPanelA, jLabelA, null, jButtonA, jCheckBoxA, null, null, null, null);
   }
 }

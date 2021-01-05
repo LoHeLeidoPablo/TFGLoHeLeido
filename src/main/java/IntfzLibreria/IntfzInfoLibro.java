@@ -168,6 +168,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     repeticion();
     cambiarTomo();
     cambioTema("Papiro");
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
   }
 
   public void iniciar(Document libro) {
@@ -457,7 +458,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
           null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar" + urlPortada);
     }
   }
-//TODO REVISAR POR COMPLETO
+
   public void prestarLibro(Document libro) {
     btnPrestamo.addActionListener(
         new ActionListener() {
@@ -465,7 +466,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
           public void actionPerformed(ActionEvent e) {
             Document usuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
             String persona = usuario.getString("Nombre");
-            int nPrestado = (int) collecDetPrestamo.countDocuments(eq(persona));
+            int nPrestado = (int) collecDetPrestamo.countDocuments(eq("Usuario",persona));
             if (nPrestado < 5) {
               Calendar calc_fecha = Calendar.getInstance();
               calc_fecha.setTime(new Date());
@@ -516,6 +517,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             if (jcbEstados.getSelectedItem().equals("Leído")) {
               spCapL.setValue(valMaximoCaps);
               spPagL.setValue(valMaximoPags);
+              jchReleido.setSelected(true);
+              spVecesRele.setEnabled(true);
+              spVecesRele.setValue(1);
             }
           }
         });
@@ -526,7 +530,12 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            spVecesRele.setEnabled(jchReleido.isSelected() ? true : false);
+            if(jchReleido.isSelected()){
+              spVecesRele.setEnabled(true);
+              if(spVecesRele.getValue().equals(0)){spVecesRele.setValue(1);}
+            }else{
+              spVecesRele.setEnabled(false); spVecesRele.setValue(0);
+            }
           }
         });
   }
@@ -558,6 +567,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
                 if (JOptionPane.OK_OPTION == confirmado) {
                   DeleteResult delRegistro = collecDetBiblio.deleteOne(estadoLibro);
+                  cancelarEstado();
                 }
               } else {
 
@@ -674,7 +684,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
               } else {
                 spNota.setValue(0);
               }
-
               jchReleido.setSelected(estado.getBoolean("Releido"));
               spVecesRele.setValue(jchReleido.isSelected() ? estado.get("VecesReleido") : 0);
 
@@ -684,6 +693,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
               spPagL.setValue(0);
               spNota.setValue(0);
               jchReleido.setSelected(false);
+              spVecesRele.setEnabled(false);
               spVecesRele.setValue(0);
             }
           }

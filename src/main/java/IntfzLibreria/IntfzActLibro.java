@@ -125,6 +125,7 @@ public class IntfzActLibro extends JFrame {
   public IntfzActLibro() {
     this.setResizable(false);
     cambioTema("Papiro");
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
   }
 
   public void iniciar(Document actualizarLibro) {

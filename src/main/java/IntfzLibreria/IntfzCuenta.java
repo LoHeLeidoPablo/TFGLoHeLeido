@@ -174,6 +174,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
   public IntfzCuenta() {
     cambioTema("Papiro");
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
   }
 
   public void iniciar() {
@@ -218,7 +219,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   public void crearComponentes() {
     crearComponentesPrestamo();
     crearComponentesEstadistica();
-    btnRecargar.setBounds(750, 75, 150, 20);
+    btnRecargar.setBounds(1400, 75, 150, 20);
     panel.add(btnRecargar);
   }
 
@@ -571,15 +572,14 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
   public void grafico() {
     try {
-
-      String title = "Valoración por Numero de Capitulos";
+      String title = "Valoración por Numero de Paginas";
       GraficoLibrosNotas chart = new GraficoLibrosNotas(title);
 
       chart.pack();
       RefineryUtilities.centerFrameOnScreen(chart);
       chart.setVisible(true);
 
-      String titulo = "Valoración por Numero de Capitulos";
+      String titulo = "Libros Más Leidos";
       GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos(title);
 
       chartMasLeidos.pack();

@@ -47,6 +47,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   JPanel[] jPanelA = {panel};
 
   public IntfzPrincipal() {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(1600, 1000);

@@ -104,7 +104,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
   private JFreeChart crearChart() {
 
     CategoryDataset titulosDataset = crearTitulosDataset();
-    NumberAxis ejeTitulo = new NumberAxis("Nº Total de Titulos");
+    NumberAxis ejeTitulo = new NumberAxis("Veces Releido");
     ejeTitulo.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
     BarRenderer renderer = new BarRenderer();
     renderer.setSeriesPaint(0, new Color(255, 0, 0));
@@ -127,7 +127,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
   }
 
   public static void main(String[] args) {
-    String title = "Valoración por Numero de Capitulos";
+    String title = "Los Más Leidos";
     GraficoMasLeidos chart = new GraficoMasLeidos(title);
 
     chart.pack();

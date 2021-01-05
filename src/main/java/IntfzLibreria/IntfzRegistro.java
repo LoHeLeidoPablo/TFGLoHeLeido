@@ -32,7 +32,7 @@ public class IntfzRegistro extends JFrame {
   JLabel lblObUsuario = new JLabel("Obligatorio");
   JLabel lblPassword = new JLabel("Contraseña:");
   JLabel lblObPassword = new JLabel("La contraseña debe contener al menos 8 caracteres");
-  JLabel lblPassword2 = new JLabel("Contraseña:");
+  JLabel lblPassword2 = new JLabel("Repertir Contraseña:");
   JLabel lblObPassword2 = new JLabel("La contraseña debe coincidir con la otra contraseña");
 
   JTextField txtUsuario = new JTextField("");
@@ -66,6 +66,7 @@ public class IntfzRegistro extends JFrame {
   Font fuenteObligatoria = new Font(lblUsuario.getFont().getFamily(), Font.ITALIC, 9);
 
   public IntfzRegistro() {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     this.setLocation(100, 100);
   }
