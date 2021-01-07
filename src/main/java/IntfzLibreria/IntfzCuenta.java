@@ -6,7 +6,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.jfree.ui.RefineryUtilities;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -41,7 +40,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   MenuUsuario menuUsuario;
   IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
 
-  JPanel panel = new JPanel();
+  JPanel panelCuenta = new JPanel();
   JPanel panelPrestamo = new JPanel();
   JPanel panelPrestamo1 = new JPanel();
   JPanel panelPrestamo2 = new JPanel();
@@ -158,7 +157,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   int valorQuieroGris = 0;
 
   JPanel[] jPanelA = {
-    panel,
+    panelCuenta,
     panelPrestamo,
     panelPrestamo1,
     panelPrestamo2,
@@ -181,9 +180,9 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     setTitle("¿Lo he leído? - Mi Cuenta");
     getContentPane().setLayout(new GridLayout(1, 10));
 
-    menuUsuario = new MenuUsuario(panel, this, false);
+    menuUsuario = new MenuUsuario(panelCuenta, this, false);
 
-    panel.setLayout(null);
+    panelCuenta.setLayout(null);
     panelPrestamo.setLayout(new GridLayout(5, 1));
     panelEstadisticas.setLayout(null);
     panelPrestamo1.setLayout(null);
@@ -198,6 +197,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
           @Override
           public void actionPerformed(ActionEvent e) {
             crearComponentes();
+            menuUsuario.cerrarBusqueda();
           }
         });
 
@@ -206,10 +206,10 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     irLibroPrestado(panelPrestamo3, 2);
     irLibroPrestado(panelPrestamo4, 3);
     irLibroPrestado(panelPrestamo5, 4);
-    getContentPane().add(panel);
+    getContentPane().add(panelCuenta);
 
     // Empaquetado, tamaño y visualizazion
-    getContentPane().add(panel);
+    getContentPane().add(panelCuenta);
     setResizable(false);
     pack();
     setSize(1600, 1000);
@@ -220,15 +220,15 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     crearComponentesPrestamo();
     crearComponentesEstadistica();
     btnRecargar.setBounds(1400, 75, 150, 20);
-    panel.add(btnRecargar);
+    panelCuenta.add(btnRecargar);
   }
 
   public void crearComponentesPrestamo() {
     panelPrestamo.setBounds(10, 100, 430, 850);
-    panel.add(panelPrestamo);
+    panelCuenta.add(panelPrestamo);
 
     lblPrestamo.setBounds(375, 80, 100, 20);
-    panel.add(lblPrestamo);
+    panelCuenta.add(lblPrestamo);
 
     for (JLabel jLabel : lblTitulo) {
       jLabel.setBounds(125, 10, 285, 20);
@@ -413,10 +413,10 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   private void crearComponentesEstadistica() {
     panelEstadisticas.setBounds(550, 100, 1000, 850);
     panelEstadisticas.setBorder(BorderFactory.createLineBorder(Color.black));
-    panel.add(panelEstadisticas);
+    panelCuenta.add(panelEstadisticas);
 
     lblEstadisticas.setBounds(550, 80, 100, 20);
-    panel.add(lblEstadisticas);
+    panelCuenta.add(lblEstadisticas);
 
     coloresEstadistica();
     tiempoRegistrado();
@@ -571,21 +571,23 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   }
 
   public void grafico() {
+
     try {
-      String title = "Valoración por Numero de Paginas";
-      GraficoLibrosNotas chart = new GraficoLibrosNotas(title);
 
-      chart.pack();
-      RefineryUtilities.centerFrameOnScreen(chart);
-      chart.setVisible(true);
+      /*    String title = "Valoración por Numero de Paginas";
+            GraficoLibrosNotas chart = new GraficoLibrosNotas(title);
 
-      String titulo = "Libros Más Leidos";
-      GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos(title);
+            chart.pack();
+            RefineryUtilities.centerFrameOnScreen(chart);
+            chart.setVisible(true);
 
-      chartMasLeidos.pack();
-      RefineryUtilities.centerFrameOnScreen(chartMasLeidos);
-      chartMasLeidos.setVisible(true);
+            String titulo = "Libros Más Leidos";
+            GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos(title);
 
+            chartMasLeidos.pack();
+            RefineryUtilities.centerFrameOnScreen(chartMasLeidos);
+            chartMasLeidos.setVisible(true);
+      */
       /*       DefaultXYDataset dataset = new DefaultXYDataset();
       dataset.addSeries(
           "firefox",
@@ -635,8 +637,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       imagen.setBounds(100, 300, 600, 300);
 
       panelEstadisticas.add(imagen);*/
-
-      /*  conteoLeyendo =
+      /*       conteoLeyendo =
           (int)
               collecDetBiblio.countDocuments(
                   and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
@@ -660,8 +661,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       pieDataset.setValue("Abandonado " + conteoAbandonado, conteoAbandonado);
       pieDataset.setValue("Quiero Leer " + conteoQuieroLeer, conteoQuieroLeer);
 
-      JFreeChart chart = ChartFactory.createPieChart("Biblioteca", pieDataset, false, true, false);
-      chart.setBackgroundPaint(panel.getBackground());
+      JFreeChart chart = ChartFactory.createPieChart("Biblioteca", pieDataset, true, true, false);
+      chart.setBackgroundPaint(panelCuenta.getBackground());
       ChartPanel panelGrafico = new ChartPanel(chart);
       panelGrafico.setBounds(100, 350, 700, 400);
       panelEstadisticas.add(panelGrafico);*/
@@ -671,6 +672,6 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelsA, null, btnDevolver,null, null, null, null,null);
+    Temas.cambioTema(color, jPanelA, jLabelsA, null, btnDevolver, null, null, null, null, null);
   }
 }

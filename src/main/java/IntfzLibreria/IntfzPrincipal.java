@@ -12,13 +12,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.net.URL;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Sorts.descending;
 
 public class IntfzPrincipal extends JFrame implements Interfaz {
 
@@ -42,9 +40,9 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
 
   Document libro;
 
-  JPanel panel = new JPanel();
+  JPanel panelPrincipal = new JPanel();
 
-  JPanel[] jPanelA = {panel};
+  JPanel[] jPanelA = {panelPrincipal};
 
   public IntfzPrincipal() {
     setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
@@ -69,9 +67,9 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     setTitle("¿Lo he leído?");
     setSize(1600, 1000);
     getContentPane().setLayout(new GridLayout(1, 10));
-    menuUsuario = new MenuUsuario(panel, this, true);
+    menuUsuario = new MenuUsuario(panelPrincipal, this, true);
     crearComponentes();
-    panel.setLayout(null);
+    panelPrincipal.setLayout(null);
 
     int poslbl = -1;
     for (JLabel jLabel : lblsPortadas) {
@@ -113,7 +111,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     }
 
     ultimosAgregados();
-    getContentPane().add(panel);
+    getContentPane().add(panelPrincipal);
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -163,7 +161,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   }
 
   public void recarga() {
-    panel.addMouseListener(
+    panelPrincipal.addMouseListener(
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
@@ -203,12 +201,12 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
 
   public void crearComponentes() {
     for (JLabel jLabel : lblsPortadas) {
-      panel.add(jLabel);
+      panelPrincipal.add(jLabel);
       jLabel.setBorder(BorderFactory.createLineBorder(Color.black));
       jLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
     for (JLabel jLabel : lblsTitulos) {
-      panel.add(jLabel);
+      panelPrincipal.add(jLabel);
       jLabel.setBorder(BorderFactory.createLineBorder(Color.black));
       jLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }

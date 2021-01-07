@@ -40,13 +40,25 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
   IntfzInfoLibro infoLibro = new IntfzInfoLibro();
 
-  JPanel panel = new JPanel();
-  JPanel[] jPanelA = {panel};
+  JPanel panelBiblioteca = new JPanel();
+  JPanel[] jPanelA = {panelBiblioteca};
 
   JTable myBiblioTable;
   DefaultTableModel modelT;
   JScrollPane scrollPane;
   JLabel lblPortada;
+
+  JLabel lblLeyendo = new JLabel();
+  JLabel lblLeidos = new JLabel();
+  JLabel lblAbandonados = new JLabel();
+  JLabel lblQuieroLeer = new JLabel();
+  JLabel lblTotal = new JLabel();
+
+  int conteoLeyendo = 0;
+  int conteoLeido = 0;
+  int conteoAbandonado = 0;
+  int conteoQuieroLeer = 0;
+  int conteoTotal = 0;
 
   public IntfzBiblioteca() {
     cambioTema("Papiro");
@@ -58,14 +70,14 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     setTitle("¿Lo he leído? - Mi IntfzLibreria");
     getContentPane().setLayout(new GridLayout(1, 10));
 
-    MenuUsuario menuUsuario = new MenuUsuario(panel, this, false);
+    MenuUsuario menuUsuario = new MenuUsuario(panelBiblioteca, this, false);
 
-    panel.setLayout(null);
+    panelBiblioteca.setLayout(null);
 
     lblPortada = new JLabel();
     lblPortada.setBounds(636, 244, 329, 512);
     lblPortada.setVisible(false);
-    panel.add(lblPortada);
+    panelBiblioteca.add(lblPortada);
 
     String[] cabecera = {
       " ",
@@ -122,37 +134,33 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
       myBiblioTable.getColumnModel().getColumn(i).setCellRenderer(Alinear);
     }
     rellenarTabla();
-
+    leyendaTabla();
     scrollPane = new JScrollPane(myBiblioTable);
     scrollPane.setBounds(50, 100, 1500, 825);
     myBiblioTable.setBounds(0, 0, scrollPane.getWidth(), scrollPane.getWidth());
     scrollPane.setBackground(new Color(232, 218, 189));
     scrollPane.setBorder(null);
-    panel.add(scrollPane);
-
-    /*lblPortada = new JLabel();
-    lblPortada.setBounds(636 , 244, 329, 512);
-    lblPortada.setBorder(BorderFactory.createLineBorder(Color.black,5,true));
-    lblPortada.setVisible(true);
-    panel.add(lblPortada);*/
+    panelBiblioteca.add(scrollPane);
 
     irLibro();
 
     JButton btnRecargar = new JButton("Recargar");
-    btnRecargar.setBounds(1300, 925, 100, 20);
-    panel.add(btnRecargar);
+    btnRecargar.setBounds(1450, 925, 100, 20);
+    panelBiblioteca.add(btnRecargar);
     btnRecargar.addActionListener(
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
             rellenarTabla();
+            leyendaTabla();
+            menuUsuario.cerrarBusqueda();
           }
         });
 
     // recargar();
 
     // Empaquetado, tamaño y visualizazion
-    getContentPane().add(panel);
+    getContentPane().add(panelBiblioteca);
     setResizable(false);
     pack();
     Dimension minimo = new Dimension();
@@ -174,6 +182,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
 
       System.out.println("Prueba de funcionamiento T");
       // rellenarTabla();
+      leyendaTabla();
 
     }
 
@@ -181,12 +190,14 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     public void keyPressed(KeyEvent e) {
       System.out.println("Prueba de funcionamiento P");
       // rellenarTabla();
+      leyendaTabla();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
       System.out.println("Prueba de funcionamiento R");
       // rellenarTabla();
+      leyendaTabla();
     }
   }*/
 
@@ -234,6 +245,70 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
       };
       modelT.addRow(aux);
     }
+  }
+
+  public void leyendaTabla() {
+
+    conteoLeyendo =
+        (int)
+            collecDetBiblio.countDocuments(and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
+    conteoLeido =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "Terminado"), eq("Usuario", id_Usuario)));
+    conteoAbandonado =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "XinTerminar"), eq("Usuario", id_Usuario)));
+    conteoQuieroLeer =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "Pendiente"), eq("Usuario", id_Usuario)));
+
+    conteoTotal = conteoLeyendo + conteoLeido + conteoAbandonado + conteoQuieroLeer;
+
+    lblLeyendo.setText("Leyendo: " + conteoLeyendo);
+    lblLeidos.setText("Leidos: " + conteoLeido);
+    lblAbandonados.setText("Abandonados: " + conteoAbandonado);
+    lblQuieroLeer.setText("Quiero Leer: " + conteoQuieroLeer);
+    lblTotal.setText("Total de Libros en la biblioteca: " + conteoTotal);
+
+    lblLeyendo.setBounds(125, 925, 100, 20);
+
+    lblQuieroLeer.setBounds(
+        lblLeyendo.getX() + lblLeyendo.getWidth() + 25,
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+
+    lblLeidos.setBounds(
+        lblQuieroLeer.getX() + lblLeyendo.getWidth() + 50,
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+
+    lblAbandonados.setBounds(
+        lblLeidos.getX() + lblQuieroLeer.getWidth() + 25,
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+
+    lblTotal.setBounds(
+        lblAbandonados.getX() + lblLeyendo.getWidth() + 50,
+        lblLeyendo.getY(),
+        200,
+        lblLeyendo.getHeight());
+
+    lblLeyendo.setForeground(new Color(64, 161, 67));
+    lblLeidos.setForeground(Color.BLUE);
+    lblAbandonados.setForeground(Color.RED);
+    lblQuieroLeer.setForeground(Color.GRAY);
+
+    panelBiblioteca.add(lblLeyendo);
+    panelBiblioteca.add(lblLeidos);
+    panelBiblioteca.add(lblAbandonados);
+    panelBiblioteca.add(lblQuieroLeer);
+    panelBiblioteca.add(lblTotal);
   }
 
   public void añadirPortada(String urlPortada) {

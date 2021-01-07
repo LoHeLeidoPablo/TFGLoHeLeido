@@ -25,7 +25,7 @@ public class IntfzRegistro extends JFrame {
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
-  JPanel panel = new JPanel();
+  JPanel panelRegistro = new JPanel();
 
   JLabel lblTituloProyecto = new JLabel("Unete a Nosotros");
   JLabel lblUsuario = new JLabel("Usuario:");
@@ -81,7 +81,7 @@ public class IntfzRegistro extends JFrame {
     rescribirCampo(txtPassword, lblObPassword);
     rescribirCampo(txtRepPassword, lblObPassword2);
 
-    panel.setLayout(null);
+    panelRegistro.setLayout(null);
 
     lblTituloProyecto.setBounds(50, 10, 185, 25);
     Font fuenteis = new Font("Consola", 3, 22);
@@ -95,7 +95,7 @@ public class IntfzRegistro extends JFrame {
     txtPassword.setBounds(20, 125, 235, 20);
     lblObPassword.setBounds(20, 145, 235, 15);
 
-    lblPassword2.setBounds(20, 170, 100, 15);
+    lblPassword2.setBounds(20, 170, 200, 15);
     txtRepPassword.setBounds(20, 185, 235, 20);
     lblObPassword2.setBounds(20, 205, 235, 15);
 
@@ -106,7 +106,7 @@ public class IntfzRegistro extends JFrame {
     }
 
     cbVerPasswd.setBounds(20, 235, 230, 20);
-    cbVerPasswd.setBackground(panel.getBackground());
+    cbVerPasswd.setBackground(panelRegistro.getBackground());
     mostrarContraseña(txtPassword);
     mostrarContraseña(txtRepPassword);
 
@@ -125,7 +125,7 @@ public class IntfzRegistro extends JFrame {
         });
 
     // Empaquetado, tamaño y visualizazion
-    getContentPane().add(panel);
+    getContentPane().add(panelRegistro);
     pack();
     setSize(285, 335);
     setVisible(true);
@@ -145,7 +145,7 @@ public class IntfzRegistro extends JFrame {
         // usuario.put("Tema", "Claro");
         collecUsuario.insertOne(usuario);
         mensajeEmergente(1);
-        panel.setVisible(false);
+        panelRegistro.setVisible(false);
         dispose();
       } else {
         mensajeEmergente(2);
@@ -224,16 +224,16 @@ public class IntfzRegistro extends JFrame {
     } else if (mensaje == 2) {
       JOptionPane.showMessageDialog(
           null,
-          "Ya existe un usuario con este Nombre o correo electronico",
-          "Registro Fallido",
+          "Ya existe un usuario con este Nombre",
+          "Usuario ya existente",
           JOptionPane.ERROR_MESSAGE);
     }
   }
 
   public void crearComponentes() {
     for (JComponent jComponent : jComponentA) {
-      panel.add(jComponent);
+      panelRegistro.add(jComponent);
     }
-    panel.setBackground(new Color(232, 218, 189));
+    panelRegistro.setBackground(new Color(232, 218, 189));
   }
 }

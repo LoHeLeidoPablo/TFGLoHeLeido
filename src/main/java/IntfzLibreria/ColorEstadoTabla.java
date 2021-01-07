@@ -32,10 +32,9 @@ public class ColorEstadoTabla extends JTable {
         tablaColor.setForeground(Color.GRAY);
       }
     } else {
-      tablaColor.setBackground(intfzBiblioteca.panel.getBackground());
-      tablaColor.setForeground(intfzBiblioteca.panel.getForeground());
+      tablaColor.setBackground(intfzBiblioteca.panelBiblioteca.getBackground());
+      tablaColor.setForeground(intfzBiblioteca.panelBiblioteca.getForeground());
     }
-
     return tablaColor;
   }
 }

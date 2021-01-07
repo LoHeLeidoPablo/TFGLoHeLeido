@@ -8,12 +8,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Sorts.*;
-import static com.mongodb.client.model.Updates.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +20,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static IntfzLibreria.IntfzLogin.id_Usuario;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Sorts.ascending;
 
 public class IntfzInfoLibro extends JFrame implements Interfaz {
 
@@ -40,7 +40,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   MongoCollection<Document> collecDetBiblio = DDBB.getCollection("DetallesBiblioteca");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
-  JPanel panel = new JPanel();
+  JPanel panelInfoLibro = new JPanel();
   JPanel panelGenero = new JPanel();
   JPanel panelTecnico = new JPanel();
   JPanel panelEstado = new JPanel();
@@ -121,7 +121,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   String estado = new String();
   String urlPortada = new String();
 
-  JPanel[] jPanelA = {panel, panelGenero, panelTecnico, panelEstado, panelSaga, panelAutor};
+  JPanel[] jPanelA = {
+    panelInfoLibro, panelGenero, panelTecnico, panelEstado, panelSaga, panelAutor
+  };
   JLabel[] jLabelA = {
     lblPortada,
     lblTitlo,
@@ -174,7 +176,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
   public void iniciar(Document libro) {
     getContentPane().setLayout(new GridLayout(1, 15));
     crearComponentes();
-    panel.setLayout(null);
+    panelInfoLibro.setLayout(null);
     panelGenero.setLayout(null);
     panelTecnico.setLayout(null);
     panelEstado.setLayout(null);
@@ -192,7 +194,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         30);
     if (id_Usuario.equals("Admin")) {
       btnUpdateLibro.setBounds(btnPrestamo.getBounds());
-      panel.add(btnUpdateLibro);
+      panelInfoLibro.add(btnUpdateLibro);
     }
 
     lblTitlo.setFont(fTitulo);
@@ -221,8 +223,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     txtASinopsis.setLineWrap(true);
     txtASinopsis.setWrapStyleWord(true);
     txtASinopsis.setEditable(false);
-    scrollPaneResumen.setBackground(panel.getBackground());
-    txtASinopsis.setBackground(panel.getBackground());
+    scrollPaneResumen.setBackground(panelInfoLibro.getBackground());
+    txtASinopsis.setBackground(panelInfoLibro.getBackground());
     txtASinopsis.setFont(fTResumen);
 
     lblPortada.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -233,7 +235,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     if (id_Usuario.equals("Invitado") || id_Usuario.equals("Admin")) {
     } else {
       tabbed.addTab("Estado", panelEstado);
-      panel.add(btnPrestamo);
+      panelInfoLibro.add(btnPrestamo);
     }
     tabbed.addTab("Coleccion", panelSaga);
     tabbed.addTab("Autor", panelAutor);
@@ -282,12 +284,12 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     scrollPaneObras.setBounds(0, 0, panelAutor.getWidth(), panelAutor.getHeight() - 25);
     lstSecuelas.setBounds(0, 0, scrollPaneObras.getWidth(), scrollPaneObras.getHeight());
 
-    scrollPaneSaga.setBackground(panel.getBackground());
-    lstSecuelas.setBackground(panel.getBackground());
-    scrollPaneObras.setBackground(panel.getBackground());
-    lstObras.setBackground(panel.getBackground());
+    scrollPaneSaga.setBackground(panelInfoLibro.getBackground());
+    lstSecuelas.setBackground(panelInfoLibro.getBackground());
+    scrollPaneObras.setBackground(panelInfoLibro.getBackground());
+    lstObras.setBackground(panelInfoLibro.getBackground());
 
-    getContentPane().add(panel);
+    getContentPane().add(panelInfoLibro);
 
     if (libro != null) {
       colecc = libro.getString("Saga");
@@ -299,7 +301,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       actualizarEstado(libro);
       actualizar(libro);
       cancelarEstado();
-     // temaUsuarioDefault();
+      // temaUsuarioDefault();
     }
 
     // Empaquetado, tamaño y visualizazion
@@ -454,8 +456,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       repaint();
 
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(
-          null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar" + urlPortada);
+      mensajeEmergente(9);
     }
   }
 
@@ -466,7 +467,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
           public void actionPerformed(ActionEvent e) {
             Document usuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
             String persona = usuario.getString("Nombre");
-            int nPrestado = (int) collecDetPrestamo.countDocuments(eq("Usuario",persona));
+            int nPrestado = (int) collecDetPrestamo.countDocuments(eq("Usuario", persona));
             if (nPrestado < 5) {
               Calendar calc_fecha = Calendar.getInstance();
               calc_fecha.setTime(new Date());
@@ -530,11 +531,14 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            if(jchReleido.isSelected()){
+            if (jchReleido.isSelected()) {
               spVecesRele.setEnabled(true);
-              if(spVecesRele.getValue().equals(0)){spVecesRele.setValue(1);}
-            }else{
-              spVecesRele.setEnabled(false); spVecesRele.setValue(0);
+              if (spVecesRele.getValue().equals(0)) {
+                spVecesRele.setValue(1);
+              }
+            } else {
+              spVecesRele.setEnabled(false);
+              spVecesRele.setValue(0);
             }
           }
         });
@@ -551,7 +555,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             Integer Caps = Integer.parseInt(spCapL.getValue().toString());
             Integer Releido = Integer.parseInt(spVecesRele.getValue().toString());
             Float valorNota = Float.parseFloat(spNota.getValue().toString());
-            int Nota =  (int) (valorNota * 10);
+            int Nota = (int) (valorNota * 10);
 
             Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
             Document estadoLibro =
@@ -567,10 +571,17 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
                 if (JOptionPane.OK_OPTION == confirmado) {
                   DeleteResult delRegistro = collecDetBiblio.deleteOne(estadoLibro);
-                  cancelarEstado();
+                  spPagL.setValue(0);
+                  spCapL.setValue(0);
+                  spNota.setValue(0);
+                  spVecesRele.setValue(0);
+                  spVecesRele.setEnabled(false);
+                  jchReleido.setSelected(false);
+                } else {
+                  String estadoAnterior = estadoLibro.getString("Estado");
+                  jcbEstados.setSelectedItem(estadoAnterior);
                 }
               } else {
-
                 try {
                   // Actualizar Registro
                   DeleteResult delRegistro = collecDetBiblio.deleteOne(estadoLibro);
@@ -594,17 +605,9 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
                   collecDetBiblio.insertOne(estadoActualizado);
 
-                  JOptionPane.showMessageDialog(
-                      null,
-                      "Actualizado el Estado del Libro",
-                      " Actualizado ",
-                      JOptionPane.INFORMATION_MESSAGE);
+                  mensajeEmergente(7);
                 } catch (Exception ex) {
-                  JOptionPane.showMessageDialog(
-                      null,
-                      "No Se Ha Podido Actualizar el Estado del Libro",
-                      "Actualición Interrumpida",
-                      JOptionPane.INFORMATION_MESSAGE);
+                  mensajeEmergente(8);
                 }
               }
             } else {
@@ -749,39 +752,54 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     if (mensaje == 1) {
       JOptionPane.showMessageDialog(
           null, "Libro Prestado Correctamente", "Libro Prestado", JOptionPane.INFORMATION_MESSAGE);
-    }
-    if (mensaje == 2) {
+    } else if (mensaje == 2) {
       JOptionPane.showMessageDialog(
           null,
           "Este usuario ya ha tomado prestado el limite maximo de 5 libros simultaneos ",
           "Advertencia",
           JOptionPane.INFORMATION_MESSAGE);
-    }
-    if (mensaje == 3) {
+    } else if (mensaje == 3) {
       JOptionPane.showMessageDialog(
           null,
           "El Prestamo no ha podido realizarse correctamente, por favor vuelva a intentarlo",
           "Prestamo Fallido",
           JOptionPane.INFORMATION_MESSAGE);
-    }
-    if (mensaje == 4) {
+    } else if (mensaje == 4) {
       JOptionPane.showMessageDialog(
           null,
           "Este Usuario ya tiene este libro en prestamo",
           " Ya Prestado ",
           JOptionPane.INFORMATION_MESSAGE);
-    }
-    if (mensaje == 5) {
+    } else if (mensaje == 5) {
       JOptionPane.showMessageDialog(
           null, "Libro agregado a la Biblioteca", " Agregdo ", JOptionPane.INFORMATION_MESSAGE);
-    }
-    if (mensaje == 6) {
-      JOptionPane.showMessageDialog(null, "ERROR", " ERROR ", JOptionPane.INFORMATION_MESSAGE);
+    } else if (mensaje == 6) {
+      JOptionPane.showMessageDialog(
+          null,
+          "El Libro no se ha podido agregar a la biblioteca correctamente, por favor vuelva a intentarlo",
+          " Agregación Fallida ",
+          JOptionPane.INFORMATION_MESSAGE);
+    } else if (mensaje == 7) {
+      JOptionPane.showMessageDialog(
+          null,
+          "Actualizado el Estado del Libro",
+          " Actualizado ",
+          JOptionPane.INFORMATION_MESSAGE);
+    } else if (mensaje == 8) {
+      JOptionPane.showMessageDialog(
+          null,
+          "No Se Ha Podido Actualizar el Estado del Libro",
+          "Actualición Interrumpida",
+          JOptionPane.INFORMATION_MESSAGE);
+    } else if (mensaje == 9) {
+      JOptionPane.showMessageDialog(
+          null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar" + urlPortada);
     }
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelA, null, jButtonA,jCheckBoxA, null, null, txtASinopsis,null);
+    Temas.cambioTema(
+        color, jPanelA, jLabelA, null, jButtonA, jCheckBoxA, null, null, txtASinopsis, null);
     jchReleido.setBackground(panelEstado.getBackground());
   }
 
@@ -798,7 +816,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
 
   public void crearComponentes() {
     for (JComponent jComponent : jCompPprincipalA) {
-      panel.add(jComponent);
+      panelInfoLibro.add(jComponent);
     }
     for (JCheckBox jCheckBox : jCheckBoxA) {
       panelGenero.add(jCheckBox);

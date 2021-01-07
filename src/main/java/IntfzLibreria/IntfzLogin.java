@@ -10,9 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
-import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -30,7 +28,7 @@ public class IntfzLogin extends JFrame {
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
-  JPanel panel = new JPanel();
+  JPanel panelLogin = new JPanel();
 
   JLabel lblTituloProyecto = new JLabel("¿Lo he leído?");
   JLabel lblUsuario = new JLabel("Usuario:");
@@ -67,7 +65,7 @@ public class IntfzLogin extends JFrame {
     getContentPane().setLayout(new GridLayout(1, 10));
     crearComponentes();
     existeUsuario();
-    panel.setLayout(null);
+    panelLogin.setLayout(null);
 
     lblTituloProyecto.setBounds(65, 10, 170, 25);
     Font fuenteis = new Font("Consola", 3, 22);
@@ -80,7 +78,7 @@ public class IntfzLogin extends JFrame {
     txtPassword.setEchoChar('*');
 
     cbVerPasswd.setBounds(50, 140, 175, 20);
-    cbVerPasswd.setBackground(panel.getBackground());
+    cbVerPasswd.setBackground(panelLogin.getBackground());
     cbVerPasswd.addItemListener(
         new ItemListener() {
           public void itemStateChanged(ItemEvent e) {
@@ -95,7 +93,7 @@ public class IntfzLogin extends JFrame {
         });
 
     btnLogIn.setBounds(50, 170, 200, 25);
-    panel.add(btnLogIn);
+    panelLogin.add(btnLogIn);
 
     lblRegistro.setBounds(75, 205, 150, 15);
     lblRegistro.setForeground(Color.blue);
@@ -103,7 +101,7 @@ public class IntfzLogin extends JFrame {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            panel.setVisible(false);
+            panelLogin.setVisible(false);
             dispose();
             IntfzRegistro ventana = new IntfzRegistro();
             ventana.iniciar();
@@ -124,7 +122,7 @@ public class IntfzLogin extends JFrame {
           }
         });
 
-    getContentPane().add(panel);
+    getContentPane().add(panelLogin);
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -164,7 +162,6 @@ public class IntfzLogin extends JFrame {
                   "Advertencia -> Inicio de Sesión Rechazado",
                   JOptionPane.ERROR_MESSAGE);
             }
-            // TODO Al volver a logearte por segunda vez se forma un bucle misterioso
             return;
           }
         });
@@ -172,9 +169,9 @@ public class IntfzLogin extends JFrame {
 
   public void crearComponentes() {
     for (JComponent jComponent : jComponentA) {
-      panel.add(jComponent);
+      panelLogin.add(jComponent);
     }
-    panel.setBackground(new Color(232, 218, 189));
+    panelLogin.setBackground(new Color(232, 218, 189));
   }
 
   public MenuUsuario getMenuUsuario() {

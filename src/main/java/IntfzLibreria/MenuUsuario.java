@@ -2,22 +2,29 @@ package IntfzLibreria;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.*;
-
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
 
 import static IntfzLibreria.IntfzLogin.id_Usuario;
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.ascending;
 
 public class MenuUsuario extends JFrame {
 
@@ -84,18 +91,18 @@ public class MenuUsuario extends JFrame {
   public MenuUsuario(JPanel jpanel, Interfaz interfazActiva, Boolean panelUsuarioEsDesplegable) {
     this.intfzLogin = new IntfzLogin(this);
     this.interfazActiva = interfazActiva;
-   // cambioTema("Papiro");
+    // cambioTema("Papiro");
 
     String[] colores = {"Claro", "Oscuro", "Papiro"};
 
-     /*"Amarillo Oscuro",
-      "Rojo Oscuro",
-      "Verde Oscuro",
-      "Azul Oscuro",
-      "Naranja Claro",
-      "Rojo Claro",
-      "Verde Claro",
-      "Azul Claro"};*/
+    /*"Amarillo Oscuro",
+    "Rojo Oscuro",
+    "Verde Oscuro",
+    "Azul Oscuro",
+    "Naranja Claro",
+    "Rojo Claro",
+    "Verde Claro",
+    "Azul Claro"};*/
 
     lblTituloProyecto = new JLabel("¿Lo he leído?");
     lblTituloProyecto.setBounds(20, 18, 310, 54);
@@ -111,8 +118,6 @@ public class MenuUsuario extends JFrame {
     frame.getContentPane().add(panel);
     frame.pack();
     frame.setVisible(true);*/
-
-    // TODO Pasar BUSQUEDA a una VENTANA NUEVA
 
     panelBusqueda = new JPanel();
     panelBusqueda.setBounds(txtBuscador.getX(), 15, txtBuscador.getWidth(), 500);
@@ -168,7 +173,6 @@ public class MenuUsuario extends JFrame {
     panelBusqueda.add(lblRegLibro);
     regUsuLibro();
 
-
     lblUsuario.setText(id_Usuario);
     lblUsuario.setText(lblUsuario.getText() == null ? "Invitado" : lblUsuario.getText());
     lblUsuario.setFont(fuenteUsu);
@@ -217,16 +221,17 @@ public class MenuUsuario extends JFrame {
     botonesUsuario();
     busqueda();
     mostrarLibro();
-    //cambioTema("Papiro");
+    // cambioTema("Papiro");
   }
 
-  public void regUsuLibro(){
+  public void regUsuLibro() {
     if (id_Usuario.equals("Invitado")) {
       lblRegLibro.setText(
           "Si no encuentras el libro que buscas, unete a 'Lo He Leído', para registrarlo");
       abrirRegUsuario();
     } else {
-      lblRegLibro.setText("No encunetra el libro que busca en nuestra Libreria, pulse aqui para añadirlo.");
+      lblRegLibro.setText(
+          "No encunetra el libro que busca en nuestra Libreria, pulse aqui para añadirlo.");
       abrirRegLibro();
     }
   }
@@ -239,7 +244,7 @@ public class MenuUsuario extends JFrame {
         btnCuenta.setVisible(false);
         btnBiblioteca.setVisible(false);
         btnClose.setBounds(10, 40, 180, 20);
-        jcbTemas.setBounds(10, 70, 180, 20);
+        // jcbTemas.setBounds(10, 70, 180, 20);
       } else if ("Admin".equals(lblUsuario.getText())) {
         btnLogIn.setVisible(false);
         btnCuenta.setVisible(false);
@@ -247,7 +252,7 @@ public class MenuUsuario extends JFrame {
         btnLogOut.setBounds(10, 10, 180, 20);
         btnLogOut.setVisible(true);
         btnClose.setBounds(10, 40, 180, 20);
-        jcbTemas.setBounds(10, 70, 180, 20);
+        // jcbTemas.setBounds(10, 70, 180, 20);
       } else {
         btnLogIn.setVisible(false);
         btnCuenta.setBounds(10, 10, 180, 20);
@@ -257,7 +262,7 @@ public class MenuUsuario extends JFrame {
         btnLogOut.setBounds(10, 70, 180, 20);
         btnLogOut.setVisible(true);
         btnClose.setBounds(10, 100, 180, 20);
-        jcbTemas.setBounds(10, 130, 180, 20);
+        // jcbTemas.setBounds(10, 130, 180, 20);
       }
     }
   }
@@ -282,10 +287,7 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            panelBusqueda.setVisible(false);
-            txtBuscador.setVisible(true);
-            txtBuscadorP.setText("");
-            lblPortada.setVisible(false);
+            cerrarBusqueda();
           }
         });
 
@@ -558,6 +560,13 @@ public class MenuUsuario extends JFrame {
         });
   }
 
+  public void cerrarBusqueda() {
+    panelBusqueda.setVisible(false);
+    txtBuscador.setVisible(true);
+    txtBuscadorP.setText("");
+    lblPortada.setVisible(false);
+  }
+
   public void disposeAll() {
 
     if (intfzBiblioteca.isShowing()) intfzBiblioteca.dispose();
@@ -570,6 +579,6 @@ public class MenuUsuario extends JFrame {
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null,null,null);
+    Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null, null, null);
   } // Esto no funciona
 }

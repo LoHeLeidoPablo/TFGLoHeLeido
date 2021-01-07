@@ -18,12 +18,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzActLibro extends JFrame {
@@ -39,7 +37,7 @@ public class IntfzActLibro extends JFrame {
 
   IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
 
-  private JPanel panel = new JPanel();
+  private JPanel panelActLibro = new JPanel();
   private JPanel panelGenero = new JPanel();
 
   private JLabel lblPortada = new JLabel("Portada:");
@@ -114,13 +112,23 @@ public class IntfzActLibro extends JFrame {
     datePublicacion
   };
 
-  JLabel[] jLabelA = {lblPortada,lblTitulo,lblAutor,lblColeccion,lblNColeccion,lblPaginas,lblCapitulos,lblPublicacion,lblGeneros,lblResumen,lblPortadaURL};
-  JPanel[] jPanelA = {panel,panelGenero};
-  JTextField[] jTextFieldA = {txtISBN,txtTitulo,txtAutor,txtColeccion,txtURL};
+  JLabel[] jLabelA = {
+    lblPortada,
+    lblTitulo,
+    lblAutor,
+    lblColeccion,
+    lblNColeccion,
+    lblPaginas,
+    lblCapitulos,
+    lblPublicacion,
+    lblGeneros,
+    lblResumen,
+    lblPortadaURL
+  };
+  JPanel[] jPanelA = {panelActLibro, panelGenero};
+  JTextField[] jTextFieldA = {txtISBN, txtTitulo, txtAutor, txtColeccion, txtURL};
   JButton[] jButtonA = {btnUpdateLibro};
-  JSpinner[] jSpinnerA = {spNColeccion,spCapitulos,spPaginas};
-
-
+  JSpinner[] jSpinnerA = {spNColeccion, spCapitulos, spPaginas};
 
   public IntfzActLibro() {
     this.setResizable(false);
@@ -133,7 +141,7 @@ public class IntfzActLibro extends JFrame {
     getContentPane().setLayout(new GridLayout(1, 10));
     crearComponentes();
 
-    panel.setLayout(null);
+    panelActLibro.setLayout(null);
     panelGenero.setLayout(null);
 
     lblPortada.setHorizontalAlignment(SwingConstants.CENTER);
@@ -181,7 +189,7 @@ public class IntfzActLibro extends JFrame {
     lblResumen.setBounds(350, 310, 100, 15);
     scrollPane.setBounds(350, 325, 575, 217);
     txtASinopsis.setBounds(0, 0, scrollPane.getWidth(), scrollPane.getHeight());
-    scrollPane.setBackground(panel.getBackground());
+    scrollPane.setBackground(panelActLibro.getBackground());
 
     lblPortadaURL.setBounds(350, 550, 115, 30);
     txtURL.setBounds(465, 550, 460, 30);
@@ -190,13 +198,13 @@ public class IntfzActLibro extends JFrame {
     txtASinopsis.setWrapStyleWord(true);
     txtASinopsis.setEditable(true);
 
-    getContentPane().add(panel);
+    getContentPane().add(panelActLibro);
 
     mostrarInfoLibro(actualizarLibro);
     insertarP();
     vaciarURL();
     actualizacion();
-    //temaUsuarioDefault();
+    // temaUsuarioDefault();
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -293,7 +301,7 @@ public class IntfzActLibro extends JFrame {
     if (spPaginas.getValue().equals(0) & spCapitulos.getValue().equals(0)) i++;
     if (lblPortada.getIcon() == null) i++;
     if (i > 0) {
-      mensajeEmergente(10);
+      mensajeEmergente(3);
       return false;
     }
     return true;
@@ -309,7 +317,7 @@ public class IntfzActLibro extends JFrame {
 
   public void crearComponentes() {
     for (JComponent jComponent : jComponentA) {
-      panel.add(jComponent);
+      panelActLibro.add(jComponent);
     }
     for (JCheckBox jCheckBox : jCheckBoxA) {
       panelGenero.add(jCheckBox);
@@ -383,20 +391,21 @@ public class IntfzActLibro extends JFrame {
           "Actualización Fallido",
           JOptionPane.ERROR_MESSAGE);
 
-    } else if (mensaje == 10) {
+    } else if (mensaje == 3) {
       JOptionPane.showMessageDialog(
           null,
-          "El ISBN, el Titulo, el Autor, la Portada y las Paginas o los Capitulos son campos obligatorios",
+          "El ISBN, el Titulo, el Autor, y las Paginas o los Capitulos son campos obligatorios",
           "Faltan Campos Obligatorios",
           JOptionPane.ERROR_MESSAGE);
     }
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelA, jTextFieldA, jButtonA, jCheckBoxA, null,null, null,jSpinnerA);
+    Temas.cambioTema(
+        color, jPanelA, jLabelA, jTextFieldA, jButtonA, jCheckBoxA, null, null, null, jSpinnerA);
   }
 
-/*  private void temaUsuarioDefault() {
+  /*  private void temaUsuarioDefault() {
     Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
     if (temaUsuario == null) {
       cambioTema("Papiro");
