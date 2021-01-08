@@ -637,6 +637,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       imagen.setBounds(100, 300, 600, 300);
 
       panelEstadisticas.add(imagen);*/
+
       /*       conteoLeyendo =
           (int)
               collecDetBiblio.countDocuments(

@@ -29,12 +29,15 @@ import static com.mongodb.client.model.Sorts.ascending;
 
 public class IntfzInfoLibro extends JFrame implements Interfaz {
 
+  // Direccion de la base de datos
   MongoClientURI uri =
       new MongoClientURI(
           "mongodb+srv://AdminUser:iReadIt@loheleido.idhnu.mongodb.net/LoHeLeidoDB?retryWrites=true&w=majority");
 
   MongoClient mongoClient = new MongoClient(uri);
+  // Base de Datos a la que estamos apuntando
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
+  // Colecciones que son necesarias en esta clase
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
   MongoCollection<Document> collecDetPrestamo = DDBB.getCollection("DetallesPrestamo");
   MongoCollection<Document> collecDetBiblio = DDBB.getCollection("DetallesBiblioteca");
@@ -332,15 +335,15 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             .projection(
                 include("Estado", "Paginas", "Capitulos", "Nota", "Releido", "VecesReleido"))
             .first();
+
     urlPortada = libro.getString("PortadaURL");
     añadirPortada();
     lblISBN.setText("ISBN: " + libro.getString("ISBN"));
     lblTitlo.setText(libro.getString("Titulo"));
-
     setTitle(lblTitlo == null ? "Info Libro" : lblTitlo.getText());
-
     lblAutor.setText(libro.getString("Autor"));
     lstGeneros = (List<Document>) libro.get("Generos");
+
     for (int k = 0, i = 0; k < jCheckBoxA.length; k++) {
       if (lstGeneros.contains(jCheckBoxA[k].getText())) {
         jCheckBoxA[k].setSelected(true);

@@ -124,8 +124,10 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     myBiblioTable.setBackground(new Color(232, 218, 189));
     myBiblioTable.setShowVerticalLines(false);
 
-    TableRowSorter<TableModel> modelOrdenado = new TableRowSorter<TableModel>(modelT);
-    myBiblioTable.setRowSorter(modelOrdenado);
+    // Al permitir la ordenacion por columnas el proceso de mostrado de informacion de libro no
+    // realiza correctamente su cometido
+    /*TableRowSorter<TableModel> modelOrdenado = new TableRowSorter<TableModel>(modelT);
+    myBiblioTable.setRowSorter(modelOrdenado);*/
     myBiblioTable.setBorder(null);
 
     DefaultTableCellRenderer Alinear = new DefaultTableCellRenderer();

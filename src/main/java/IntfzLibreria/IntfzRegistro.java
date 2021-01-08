@@ -142,7 +142,6 @@ public class IntfzRegistro extends JFrame {
         Document usuario = new Document();
         usuario.put("Nombre", txtUsuario.getText());
         usuario.put("fCreacionCuenta", new Date());
-        // usuario.put("Tema", "Claro");
         collecUsuario.insertOne(usuario);
         mensajeEmergente(1);
         panelRegistro.setVisible(false);
