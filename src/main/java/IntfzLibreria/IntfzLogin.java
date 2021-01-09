@@ -12,7 +12,8 @@ import java.awt.event.*;
 import java.awt.font.TextAttribute;
 import java.util.Map;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzLogin extends JFrame {
   public static String id_Usuario = "Invitado";
@@ -68,8 +69,8 @@ public class IntfzLogin extends JFrame {
     panelLogin.setLayout(null);
 
     lblTituloProyecto.setBounds(65, 10, 170, 25);
-    Font fuenteis = new Font("Consola", 3, 22);
-    lblTituloProyecto.setFont(fuenteis);
+    Font fuentelogin = new Font("Bookman Old Style", 3, 22);
+    lblTituloProyecto.setFont(fuentelogin);
 
     lblUsuario.setBounds(50, 50, 100, 15);
     txtUsuario.setBounds(50, 65, 200, 20);

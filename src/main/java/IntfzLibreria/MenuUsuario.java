@@ -74,7 +74,7 @@ public class MenuUsuario extends JFrame {
   String colorTema;
   Boolean visiblePanelMUsuario = true;
   Boolean visiblePanelBuscador = true;
-  Font fuenteis = new Font("Book Antiqua", 3, 45);
+  Font fuenteis = new Font("Bookman Old Style", 3, 45);
   Font fuenteUsu = new Font("Book Antiqua", 1, 22);
   Font font = lblRegLibro.getFont();
 
@@ -105,19 +105,14 @@ public class MenuUsuario extends JFrame {
     "Azul Claro"};*/
 
     lblTituloProyecto = new JLabel("¿Lo he leído?");
-    lblTituloProyecto.setBounds(20, 18, 310, 54);
+    lblTituloProyecto.setBounds(20, 18, 350, 54);
     lblTituloProyecto.setFont(fuenteis);
     jpanel.add(lblTituloProyecto);
 
     txtBuscador = new JTextField("Buscar por ISBN, Titulo, Autor, Serie, Saga, Autor...");
-    txtBuscador.setBounds(375, 30, 850, 30);
+    txtBuscador.setBounds(420, 30, 850, 30);
     txtBuscador.setFocusable(false);
     jpanel.add(txtBuscador);
-
-    /*JDialog frame = new JDialog(jpanel);
-    frame.getContentPane().add(panel);
-    frame.pack();
-    frame.setVisible(true);*/
 
     panelBusqueda = new JPanel();
     panelBusqueda.setBounds(txtBuscador.getX(), 15, txtBuscador.getWidth(), 500);
@@ -580,5 +575,5 @@ public class MenuUsuario extends JFrame {
 
   public void cambioTema(String color) {
     Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null, null, null);
-  } // Esto no funciona
+  }
 }

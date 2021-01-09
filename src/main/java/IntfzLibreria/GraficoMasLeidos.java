@@ -20,7 +20,12 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
 
 import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
@@ -37,6 +42,8 @@ public class GraficoMasLeidos extends ApplicationFrame {
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
   MongoCollection<Document> collecDetBiblio = DDBB.getCollection("DetallesBiblioteca");
 
+  IntfzCuenta intfzCuenta = new IntfzCuenta();
+
   String[] titulos = new String[10];
   int[] repeticiones = new int[10];
 
@@ -45,17 +52,20 @@ public class GraficoMasLeidos extends ApplicationFrame {
 
     final JFreeChart chart = crearChart();
     final ChartPanel chartPanel = new ChartPanel(chart);
+    chart.setBackgroundPaint(new Color(232, 218, 189));
     chartPanel.setPreferredSize(new Dimension(600, 450));
     setContentPane(chartPanel);
-    /*    IntfzCuenta intfzCuenta = new IntfzCuenta();
-    chartPanel.setBounds(0,500,600,450);
-    intfzCuenta.panelEstadisticas.add(chartPanel);*/
+    try {
+      BufferedImage image = chart.createBufferedImage(600, 400);
+      ImageIO.write(image, "png", new File("src/main/resources/GraficoMasLeidos.png"));
+    } catch (Exception e) {
+    }
   }
 
   public String[] losMasLeidos() {
     MongoCursor<Document> biblioteca =
         collecDetBiblio
-            .find(eq("Usuario", id_Usuario))
+            .find(eq("Usuario", "Pablo"))
             .sort(descending("VecesReleido"))
             .limit(10)
             .iterator();
@@ -70,7 +80,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
       i++;
     }
     return titulos;
-  }
+  } // Aqui Creamos los datos
 
   public int[] losMasLeidosNumeric() {
     MongoCursor<Document> biblioteca =
@@ -86,7 +96,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
       i++;
     }
     return repeticiones;
-  }
+  } // Aqui Creamos los datos
 
   final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
@@ -99,7 +109,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
       dataset.addValue(repeticiones[i], "Libro", titulos[i]);
     }
     return dataset;
-  }
+  } // Aqui Mostramos los Datos
 
   private JFreeChart crearChart() {
 
@@ -109,7 +119,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
     BarRenderer renderer = new BarRenderer();
     renderer.setSeriesPaint(0, new Color(255, 0, 0));
     renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
-    CategoryAxis ejePrinipal = new CategoryAxis("Los Más Leidos");
+    CategoryAxis ejePrinipal = new CategoryAxis("");
     CategoryPlot subplot = new CategoryPlot(titulosDataset, null, ejeTitulo, renderer);
     subplot.setDomainGridlinesVisible(true);
 
@@ -120,18 +130,10 @@ public class GraficoMasLeidos extends ApplicationFrame {
     plot.add(subplot, 1);
 
     final JFreeChart chart =
-        new JFreeChart("Los Más Leidos", new Font("SansSerif", Font.BOLD, 18), plot, false);
+        new JFreeChart("Libros Más Leidos", new Font("Bookman Old Style", Font.BOLD, 18), plot, false);
     CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
     axis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+
     return chart;
-  }
-
-  public static void main(String[] args) {
-    String title = "Los Más Leidos";
-    GraficoMasLeidos chart = new GraficoMasLeidos(title);
-
-    chart.pack();
-    RefineryUtilities.centerFrameOnScreen(chart);
-    chart.setVisible(true);
   }
 }

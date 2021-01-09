@@ -222,7 +222,7 @@ public class Temas extends JFrame {
   public static void cambiarColorOscuro(
       JPanel[] jPanelA,
       JLabel[] jlabelA,
-      JTextField[] jTextFieldA, /*JComboBox[] jComboBoxeA,*/
+      JTextField[] jTextFieldA,
       JButton[] jButtonA,
       JCheckBox[] jCheckBoxA,
       JTable jTable,

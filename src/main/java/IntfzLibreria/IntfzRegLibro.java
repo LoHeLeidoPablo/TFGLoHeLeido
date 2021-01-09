@@ -77,7 +77,7 @@ public class IntfzRegLibro extends JFrame {
   private JDateChooser datePublicacion = new JDateChooser();
   private JScrollPane scrollPane = new JScrollPane(txtASinopsis);
 
-  Font fuente = new Font(lblGeneros.getFont().getFamily(), Font.BOLD, 12);
+  Font fuente = new Font("Bookman Old Style", Font.BOLD, 12);
 
   JPanel[] jPanelA = {panelRegLibro, panelGenero};
   JLabel[] jLabelA = {

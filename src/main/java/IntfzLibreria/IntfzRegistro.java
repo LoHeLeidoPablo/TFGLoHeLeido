@@ -84,8 +84,8 @@ public class IntfzRegistro extends JFrame {
     panelRegistro.setLayout(null);
 
     lblTituloProyecto.setBounds(50, 10, 185, 25);
-    Font fuenteis = new Font("Consola", 3, 22);
-    lblTituloProyecto.setFont(fuenteis);
+    Font fuentelogin = new Font("Bookman Old Style", 3, 22);
+    lblTituloProyecto.setFont(fuentelogin);
 
     lblUsuario.setBounds(20, 50, 100, 15);
     txtUsuario.setBounds(20, 65, 235, 20);

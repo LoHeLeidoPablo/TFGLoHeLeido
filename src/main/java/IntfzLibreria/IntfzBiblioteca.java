@@ -254,6 +254,10 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     conteoLeyendo =
         (int)
             collecDetBiblio.countDocuments(and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
+    conteoQuieroLeer =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "Pendiente"), eq("Usuario", id_Usuario)));
     conteoLeido =
         (int)
             collecDetBiblio.countDocuments(
@@ -262,17 +266,13 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
         (int)
             collecDetBiblio.countDocuments(
                 and(eq("Estado", "XinTerminar"), eq("Usuario", id_Usuario)));
-    conteoQuieroLeer =
-        (int)
-            collecDetBiblio.countDocuments(
-                and(eq("Estado", "Pendiente"), eq("Usuario", id_Usuario)));
 
-    conteoTotal = conteoLeyendo + conteoLeido + conteoAbandonado + conteoQuieroLeer;
+    conteoTotal = conteoLeyendo + conteoQuieroLeer + conteoLeido + conteoAbandonado;
 
     lblLeyendo.setText("Leyendo: " + conteoLeyendo);
+    lblQuieroLeer.setText("Quiero Leer: " + conteoQuieroLeer);
     lblLeidos.setText("Leidos: " + conteoLeido);
     lblAbandonados.setText("Abandonados: " + conteoAbandonado);
-    lblQuieroLeer.setText("Quiero Leer: " + conteoQuieroLeer);
     lblTotal.setText("Total de Libros en la biblioteca: " + conteoTotal);
 
     lblLeyendo.setBounds(125, 925, 100, 20);

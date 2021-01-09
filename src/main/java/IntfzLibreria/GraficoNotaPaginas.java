@@ -21,12 +21,15 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.ApplicationFrame;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.eq;
 
-public class GraficoLibrosNotas extends ApplicationFrame {
+public class GraficoNotaPaginas extends ApplicationFrame {
 
   MongoClientURI uri =
       new MongoClientURI(
@@ -54,16 +57,19 @@ public class GraficoLibrosNotas extends ApplicationFrame {
   float rangoNotaPags5 = 0;
   float rangoNotaPags6 = 0;
 
-  public GraficoLibrosNotas(String titulo) {
+  public GraficoNotaPaginas(String titulo) {
     super(titulo);
 
     final JFreeChart chart = crearChart();
+    chart.setBackgroundPaint(new Color(232, 218, 189));
     final ChartPanel chartPanel = new ChartPanel(chart);
     chartPanel.setPreferredSize(new java.awt.Dimension(600, 450));
     setContentPane(chartPanel);
-    /*    IntfzCuenta intfzCuenta = new IntfzCuenta();
-    chartPanel.setBounds(0,500,600,450);
-    intfzCuenta.panelEstadisticas.add(chartPanel);*/
+    try {
+      BufferedImage image = chart.createBufferedImage(600, 400);
+      ImageIO.write(image, "png", new File("src/main/resources/GraficoNotaPaginas.png"));
+    } catch (Exception e) {
+    }
   }
 
   public int[] cuentaPaginas() {
@@ -110,25 +116,26 @@ public class GraficoLibrosNotas extends ApplicationFrame {
       Document libroDetLibro = (Document) detLibro.get("Libro");
 
       Integer paginas = libroDetLibro.getInteger("Paginas");
-
-      if (paginas == null) {
-        rangoNotaPags6 += (float) detLibro.getInteger("Nota") / 10;
-        i6++;
-      } else if (paginas < 251) {
-        rangoNotaPags1 += (float) detLibro.getInteger("Nota") / 10;
-        i1++;
-      } else if (paginas < 501) {
-        rangoNotaPags2 += (float) detLibro.getInteger("Nota") / 10;
-        i2++;
-      } else if (paginas < 751) {
-        rangoNotaPags3 += (float) detLibro.getInteger("Nota") / 10;
-        i3++;
-      } else if (paginas < 1001) {
-        rangoNotaPags4 += (float) detLibro.getInteger("Nota") / 10;
-        i4++;
-      } else {
-        rangoNotaPags5 += (float) detLibro.getInteger("Nota") / 10;
-        i5++;
+      if (detLibro.getInteger("Nota") != null) {
+        if (paginas == null) {
+          rangoNotaPags6 += (float) detLibro.getInteger("Nota") / 10;
+          i6++;
+        } else if (paginas < 251) {
+          rangoNotaPags1 += (float) detLibro.getInteger("Nota") / 10;
+          i1++;
+        } else if (paginas < 501) {
+          rangoNotaPags2 += (float) detLibro.getInteger("Nota") / 10;
+          i2++;
+        } else if (paginas < 751) {
+          rangoNotaPags3 += (float) detLibro.getInteger("Nota") / 10;
+          i3++;
+        } else if (paginas < 1001) {
+          rangoNotaPags4 += (float) detLibro.getInteger("Nota") / 10;
+          i4++;
+        } else {
+          rangoNotaPags5 += (float) detLibro.getInteger("Nota") / 10;
+          i5++;
+        }
       }
     }
 
@@ -204,7 +211,7 @@ public class GraficoLibrosNotas extends ApplicationFrame {
     plot.add(subplot, 1);
 
     final JFreeChart chart =
-        new JFreeChart("Biblioteca", new Font("SansSerif", Font.BOLD, 18), plot, true);
+        new JFreeChart("Nota Media por Paginas", new Font("Bookman Old Style", Font.BOLD, 18), plot, true);
     return chart;
   }
 }

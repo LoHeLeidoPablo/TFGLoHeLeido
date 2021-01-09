@@ -102,10 +102,10 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
           "Cancelar"); // Este boton devuelve los datos a como esta guardado en la base de datos |
   // si es nul lo devuelve al estado base
 
-  Font fTitulo = new Font("Console", Font.BOLD, 40);
-  Font fAutor = new Font("Console", Font.ITALIC, 30);
-  Font fResumen = new Font("Console", Font.PLAIN, 20);
-  Font fTResumen = new Font("Console", Font.PLAIN, 14);
+  Font fTitulo = new Font("Bookman Old Style", Font.BOLD, 40);
+  Font fAutor = new Font("Bookman Old Style", Font.ITALIC, 30);
+  Font fResumen = new Font("Bookman Old Style", Font.PLAIN, 20);
+  Font fTResumen = new Font("Bookman Old Style", Font.PLAIN, 14);
 
   JButton btnPrestamo = new JButton("Prestar");
   JButton btnUpdateLibro = new JButton("Actualizar Libro");
