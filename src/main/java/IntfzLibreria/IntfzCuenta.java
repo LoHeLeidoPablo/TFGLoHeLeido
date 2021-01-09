@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.jfree.ui.RefineryUtilities;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -96,7 +98,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   JButton[] btnDevolver = {btnDevolver1, btnDevolver2, btnDevolver3, btnDevolver4, btnDevolver5};
 
   JLabel lblAntiguedad = new JLabel("Fecha de Registro");
-  Font antiguedad = new Font(lblAntiguedad.getFont().getFamily(), 0, 25);
+  Font antiguedad = new Font("Bookman Old Style", 0, 25);
+  Font estadisticas = new Font("Bookman Old Style", 3, 25);
 
   JLabel[] jLabelsA = {
     lblPortada1,
@@ -138,10 +141,15 @@ public class IntfzCuenta extends JFrame implements Interfaz {
   JLabel lblQuieroLeer = new JLabel();
   JLabel lblTotalGuardados = new JLabel();
 
-  JLabel lblCapitulosTotales = new JLabel("Capitulos: " + 100.000);
-  JLabel lblColecciones = new JLabel("Colecciones: " + 1.000);
-  JLabel lblAutores = new JLabel("Autores: " + 100);
-  JLabel lblNotaMedia = new JLabel("Nota Media: " + 7.84);
+  JLabel lblNotaMedia = new JLabel();
+  JLabel lblCapitulos = new JLabel();
+  JLabel lblPaginas = new JLabel();
+  JLabel lblValorPaginas = new JLabel();
+
+  JLabel lblTotalLibrosLeidos = new JLabel();
+
+  JLabel graficoMasLeidos;
+  JLabel graficoLibrosNotas;
 
   JButton btnRecargar = new JButton("Actualizar Datos");
 
@@ -411,20 +419,141 @@ public class IntfzCuenta extends JFrame implements Interfaz {
 
   ///////// Prestamo Terminado || Queda Estadisticas
   private void crearComponentesEstadistica() {
-    panelEstadisticas.setBounds(550, 100, 1000, 850);
+    panelEstadisticas.setBounds(450, 100, 1100, 850);
     panelEstadisticas.setBorder(BorderFactory.createLineBorder(Color.black));
     panelCuenta.add(panelEstadisticas);
 
-    lblEstadisticas.setBounds(550, 80, 100, 20);
+    lblEstadisticas.setBounds(455, 80, 100, 20);
     panelCuenta.add(lblEstadisticas);
 
     coloresEstadistica();
     tiempoRegistrado();
     grafico();
+    datosEstadisticos();
+  }
+
+  private void coloresEstadistica() {
+
+    lblVerde.setBackground(verde);
+    lblVerde.setOpaque(true);
+    lblVerde.setBorder(BorderFactory.createLineBorder(lblVerde.getBackground(), 2));
+    lblGris.setBackground(Color.GRAY);
+    lblGris.setOpaque(true);
+    lblGris.setBorder(BorderFactory.createLineBorder(lblGris.getBackground(), 2));
+    lblAzul.setBackground(Color.BLUE);
+    lblAzul.setOpaque(true);
+    lblAzul.setBorder(BorderFactory.createLineBorder(lblAzul.getBackground(), 2));
+    lblRojo.setBackground(Color.RED);
+    lblRojo.setOpaque(true);
+    lblRojo.setBorder(BorderFactory.createLineBorder(lblRojo.getBackground(), 2));
+
+    conteoLeyendo =
+        (int)
+            collecDetBiblio.countDocuments(and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
+    conteoQuieroLeer =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "Pendiente"), eq("Usuario", id_Usuario)));
+    conteoLeido =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "Terminado"), eq("Usuario", id_Usuario)));
+    conteoAbandonado =
+        (int)
+            collecDetBiblio.countDocuments(
+                and(eq("Estado", "XinTerminar"), eq("Usuario", id_Usuario)));
+
+    conteoTotal = conteoLeyendo + conteoQuieroLeer + conteoLeido + conteoAbandonado;
+
+    if (conteoTotal > 0) {
+      valorLeyendoVerde = conteoLeyendo * 500 / conteoTotal;
+      valorLeidoAzul = conteoLeido * 500 / conteoTotal;
+      valorAbandonadoRojo = conteoAbandonado * 500 / conteoTotal;
+      valorQuieroGris = conteoQuieroLeer * 500 / conteoTotal;
+    }
+
+    lblVerde.setBounds(20, 15, valorLeyendoVerde, 30);
+    lblGris.setBounds(
+        lblVerde.getX() + valorLeyendoVerde,
+        lblVerde.getY(),
+        valorQuieroGris,
+        lblVerde.getHeight());
+    lblAzul.setBounds(
+        lblGris.getX() + valorQuieroGris, lblVerde.getY(), valorLeidoAzul, lblVerde.getHeight());
+    lblRojo.setBounds(
+        lblAzul.getX() + valorLeidoAzul,
+        lblVerde.getY(),
+        valorAbandonadoRojo,
+        lblVerde.getHeight());
+
+    lblLeyendo.setText("Leyendo: " + conteoLeyendo);
+    lblQuieroLeer.setText("Quiero Leer: " + conteoQuieroLeer);
+    lblLeidos.setText("Leidos: " + conteoLeido);
+    lblAbandonados.setText("Abandonados: " + conteoAbandonado);
+    lblTotalGuardados.setText("Todos los Libros: " + conteoTotal);
+
+    lblLeyendo.setBounds(30, 55, 100, 20);
+    lblQuieroLeer.setBounds(
+        lblLeyendo.getX() + lblLeyendo.getWidth() - 15,
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+
+    lblLeidos.setBounds(
+        lblQuieroLeer.getX() + lblLeyendo.getWidth() + 10,
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+
+    lblAbandonados.setBounds(
+        lblLeidos.getX() + lblQuieroLeer.getWidth() - 30,
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+
+    lblTotalGuardados.setBounds(
+        lblAbandonados.getX() + lblLeyendo.getWidth() + 10,
+        lblLeyendo.getY(),
+        200,
+        lblLeyendo.getHeight());
+    /*lblLeidos.setBounds(
+        lblLeyendo.getX() + lblLeyendo.getWidth(),
+        lblLeyendo.getY(),
+        lblLeyendo.getWidth(),
+        lblLeyendo.getHeight());
+    lblAbandonados.setBounds(
+        lblLeidos.getX() + lblLeyendo.getWidth(), lblLeyendo.getY(), lblLeyendo.getWidth(), lblLeyendo.getHeight());
+    lblQuieroLeer.setBounds(
+        lblAbandonados.getX() + lblAbandonados.getWidth() + 10,
+        lblLeyendo.getY(),
+        lblAbandonados.getWidth(),
+        lblLeyendo.getHeight());
+    lblTotalGuardados.setBounds(
+        lblQuieroLeer.getX() + lblAbandonados.getWidth(),
+        lblLeyendo.getY(),
+        lblAbandonados.getWidth() + 40,
+        lblLeyendo.getHeight());*/
+
+    lblLeyendo.setForeground(lblVerde.getBackground());
+    lblQuieroLeer.setForeground(lblGris.getBackground());
+    lblLeidos.setForeground(lblAzul.getBackground());
+    lblAbandonados.setForeground(lblRojo.getBackground());
+
+    panelEstadisticas.add(lblVerde);
+    panelEstadisticas.add(lblGris);
+    panelEstadisticas.add(lblAzul);
+    panelEstadisticas.add(lblRojo);
+
+    panelEstadisticas.add(lblLeyendo);
+    panelEstadisticas.add(lblQuieroLeer);
+    panelEstadisticas.add(lblLeidos);
+    panelEstadisticas.add(lblAbandonados);
+    panelEstadisticas.add(lblTotalGuardados);
   }
 
   private void tiempoRegistrado() {
-    lblAntiguedad.setBounds(550, 30, 450, 30);
+    lblAntiguedad.setBounds(550, 15, 545, 30);
+    lblAntiguedad.setHorizontalAlignment(SwingConstants.CENTER);
     panelEstadisticas.add(lblAntiguedad);
     lblAntiguedad.setFont(antiguedad);
     Document tiempoRegistro =
@@ -445,6 +574,106 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         lblAntiguedad.setText("Antiguedad en Lo he Leído: " + dias + " días ");
       }
     }
+  }
+
+  public void grafico() {
+
+    GraficoNotaPaginas chart = new GraficoNotaPaginas("GraficoNotaPaginas");
+    graficoLibrosNotas = new JLabel(new ImageIcon("src/main/resources/GraficoNotaPaginas.png"));
+    graficoLibrosNotas.setBounds(485, 20, 600, 500);
+    panelEstadisticas.add(graficoLibrosNotas);
+    graficoLibrosNotas.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            String titulo = "Valoración por Numero de Paginas";
+            GraficoNotaPaginas chartNotasPags = new GraficoNotaPaginas(titulo);
+            chartNotasPags.pack();
+            RefineryUtilities.centerFrameOnScreen(chartNotasPags);
+            chartNotasPags.setVisible(true);
+            chartNotasPags.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+          }
+        });
+
+    GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos("GraficoMasLeidos");
+    graficoMasLeidos = new JLabel(new ImageIcon("src/main/resources/GraficoMasLeidos.png"));
+    graficoMasLeidos.setBounds(5, 395, 600, 500);
+    panelEstadisticas.add(graficoMasLeidos);
+    graficoMasLeidos.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            String titulo = "Valoración por Numero de Paginas";
+            GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos(titulo);
+            chartMasLeidos.pack();
+            RefineryUtilities.centerFrameOnScreen(chartMasLeidos);
+            chartMasLeidos.setVisible(true);
+            chartMasLeidos.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+          }
+        });
+  }
+
+  public void datosEstadisticos() {
+    DecimalFormat fPuntoMil = new DecimalFormat("###,###.##");
+    lblNotaMedia.setBounds(100, 180, 250, 30);
+    lblNotaMedia.setText("Nota Media: " + notaMedia());
+    lblNotaMedia.setFont(estadisticas);
+    lblNotaMedia.setHorizontalAlignment(SwingConstants.CENTER);
+    panelEstadisticas.add(lblNotaMedia);
+
+    lblPaginas.setBounds(100, 280, 250, 30);
+    lblPaginas.setText("Paginas Leidas");
+    lblPaginas.setFont(estadisticas);
+    lblPaginas.setHorizontalAlignment(SwingConstants.CENTER);
+    panelEstadisticas.add(lblPaginas);
+
+    lblValorPaginas.setBounds(100, 310, 250, 30);
+    lblValorPaginas.setText(fPuntoMil.format(sumPagsLeidas()));
+    lblValorPaginas.setFont(estadisticas);
+    lblValorPaginas.setHorizontalAlignment(SwingConstants.CENTER);
+    panelEstadisticas.add(lblValorPaginas);
+
+    lblTotalLibrosLeidos.setBounds(625, 600, 475, 30);
+    lblTotalLibrosLeidos.setText("Libros leidos y releidos: " + fPuntoMil.format(sumReLeidosTotales()));
+    lblTotalLibrosLeidos.setFont(estadisticas);
+    lblPaginas.setHorizontalAlignment(SwingConstants.CENTER);
+    panelEstadisticas.add(lblTotalLibrosLeidos);
+  }
+
+  private String notaMedia() {
+    MongoCursor<Document> notas = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
+    int i = 0;
+    int notaMedia = 0;
+    while (notas.hasNext()) {
+      Document nota = notas.next();
+      if (nota.getInteger("Nota") != null) {
+        i++;
+        notaMedia += nota.getInteger("Nota");
+      }
+    }
+    DecimalFormat f1Decimal = new DecimalFormat("#.#");
+    Float notaMediaDecimal = (float) notaMedia / i;
+    return f1Decimal.format(notaMediaDecimal / 10);
+  }
+
+  private int sumPagsLeidas() {
+    MongoCursor<Document> paginas = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
+    int pagsTotales = 0;
+    while (paginas.hasNext()) {
+      Document pagina = paginas.next();
+      pagsTotales += pagina.getInteger("Paginas");
+    }
+    return pagsTotales;
+  }
+
+  private int sumReLeidosTotales() {
+    MongoCursor<Document> paginas = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
+    int releidos = 0;
+    while (paginas.hasNext()) {
+      Document pagina = paginas.next();
+      releidos += pagina.getInteger("VecesReleido");
+    }
+    return releidos;
   }
 
   private int calculoDias(Date f_Devolucion) {
@@ -472,204 +701,6 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     if (incluirFin) dias++;
 
     return dias;
-  }
-
-  private void coloresEstadistica() {
-
-    lblVerde.setBackground(verde);
-    lblVerde.setOpaque(true);
-    lblVerde.setBorder(BorderFactory.createLineBorder(lblVerde.getBackground(), 2));
-    lblAzul.setBackground(Color.BLUE);
-    lblAzul.setOpaque(true);
-    lblAzul.setBorder(BorderFactory.createLineBorder(lblAzul.getBackground(), 2));
-    lblRojo.setBackground(Color.RED);
-    lblRojo.setOpaque(true);
-    lblRojo.setBorder(BorderFactory.createLineBorder(lblRojo.getBackground(), 2));
-    lblGris.setBackground(Color.GRAY);
-    lblGris.setOpaque(true);
-    lblGris.setBorder(BorderFactory.createLineBorder(lblGris.getBackground(), 2));
-
-    conteoLeyendo =
-        (int)
-            collecDetBiblio.countDocuments(and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
-    conteoLeido =
-        (int)
-            collecDetBiblio.countDocuments(
-                and(eq("Estado", "Terminado"), eq("Usuario", id_Usuario)));
-    conteoAbandonado =
-        (int)
-            collecDetBiblio.countDocuments(
-                and(eq("Estado", "XinTerminar"), eq("Usuario", id_Usuario)));
-    conteoQuieroLeer =
-        (int)
-            collecDetBiblio.countDocuments(
-                and(eq("Estado", "Pendiente"), eq("Usuario", id_Usuario)));
-
-    conteoTotal = conteoLeyendo + conteoLeido + conteoAbandonado + conteoQuieroLeer;
-
-    if (conteoTotal > 0) {
-      valorLeyendoVerde = conteoLeyendo * 500 / conteoTotal;
-      valorLeidoAzul = conteoLeido * 500 / conteoTotal;
-      valorAbandonadoRojo = conteoAbandonado * 500 / conteoTotal;
-      valorQuieroGris = conteoQuieroLeer * 500 / conteoTotal;
-    }
-
-    lblVerde.setBounds(30, 30, valorLeyendoVerde, 30);
-    lblAzul.setBounds(
-        lblVerde.getX() + valorLeyendoVerde, lblVerde.getY(), valorLeidoAzul, lblVerde.getHeight());
-    lblRojo.setBounds(
-        lblAzul.getX() + valorLeidoAzul,
-        lblVerde.getY(),
-        valorAbandonadoRojo,
-        lblVerde.getHeight());
-    lblGris.setBounds(
-        lblRojo.getX() + valorAbandonadoRojo,
-        lblVerde.getY(),
-        valorQuieroGris,
-        lblVerde.getHeight());
-
-    lblLeyendo.setText("Leyendo: " + conteoLeyendo);
-    lblLeidos.setText("Leidos: " + conteoLeido);
-    lblAbandonados.setText("Abandonados: " + conteoAbandonado);
-    lblQuieroLeer.setText("Quiero Leer: " + conteoQuieroLeer);
-    lblTotalGuardados.setText("Todos los Libros: " + conteoTotal);
-
-    lblLeyendo.setBounds(40, 70, 75, 20);
-    lblLeidos.setBounds(
-        lblLeyendo.getX() + lblLeyendo.getWidth(),
-        lblLeyendo.getY(),
-        lblLeyendo.getWidth(),
-        lblLeyendo.getHeight());
-    lblAbandonados.setBounds(
-        lblLeidos.getX() + lblLeyendo.getWidth(), lblLeyendo.getY(), 100, lblLeyendo.getHeight());
-    lblQuieroLeer.setBounds(
-        lblAbandonados.getX() + lblAbandonados.getWidth() + 10,
-        lblLeyendo.getY(),
-        lblAbandonados.getWidth(),
-        lblLeyendo.getHeight());
-    lblTotalGuardados.setBounds(
-        lblQuieroLeer.getX() + lblAbandonados.getWidth(),
-        lblLeyendo.getY(),
-        lblAbandonados.getWidth() + 40,
-        lblLeyendo.getHeight());
-
-    lblLeyendo.setForeground(lblVerde.getBackground());
-    lblLeidos.setForeground(lblAzul.getBackground());
-    lblAbandonados.setForeground(lblRojo.getBackground());
-    lblQuieroLeer.setForeground(lblGris.getBackground());
-
-    panelEstadisticas.add(lblVerde);
-    panelEstadisticas.add(lblAzul);
-    panelEstadisticas.add(lblRojo);
-    panelEstadisticas.add(lblGris);
-
-    panelEstadisticas.add(lblLeyendo);
-    panelEstadisticas.add(lblLeidos);
-    panelEstadisticas.add(lblAbandonados);
-    panelEstadisticas.add(lblQuieroLeer);
-    panelEstadisticas.add(lblTotalGuardados);
-  }
-
-  public void grafico() {
-
-    try {
-
-      /*    String title = "Valoración por Numero de Paginas";
-            GraficoLibrosNotas chart = new GraficoLibrosNotas(title);
-
-            chart.pack();
-            RefineryUtilities.centerFrameOnScreen(chart);
-            chart.setVisible(true);
-
-            String titulo = "Libros Más Leidos";
-            GraficoMasLeidos chartMasLeidos = new GraficoMasLeidos(title);
-
-            chartMasLeidos.pack();
-            RefineryUtilities.centerFrameOnScreen(chartMasLeidos);
-            chartMasLeidos.setVisible(true);
-      */
-      /*       DefaultXYDataset dataset = new DefaultXYDataset();
-      dataset.addSeries(
-          "firefox",
-          new double[][] {
-            {2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017},
-            {25, 29.1, 32.1, 32.9, 31.9, 25.5, 20.1, 18.4, 15.3, 11.4, 9.5}
-          });
-      dataset.addSeries(
-          "ie",
-          new double[][] {
-            {2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017},
-            {67.7, 63.1, 60.2, 50.6, 41.1, 31.8, 27.6, 20.4, 17.3, 12.3, 8.1}
-          });
-      dataset.addSeries(
-          "chrome",
-          new double[][] {
-            {2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017},
-            {0.2, 6.4, 14.6, 25.3, 30.1, 34.3, 43.2, 47.3, 58.4}
-          });
-
-      XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-      renderer.setSeriesPaint(0, Color.ORANGE);
-      renderer.setSeriesPaint(1, Color.BLUE);
-      renderer.setSeriesPaint(2, Color.GREEN);
-      renderer.setSeriesStroke(0, new BasicStroke(2));
-      renderer.setSeriesStroke(1, new BasicStroke(2));
-      renderer.setSeriesStroke(2, new BasicStroke(2));
-
-      JFreeChart chart =
-          ChartFactory.createXYLineChart(
-              "Browser Quota",
-              "Year",
-              "Quota",
-              dataset,
-              PlotOrientation.VERTICAL,
-              true,
-              false,
-              false);
-      chart.getXYPlot().getRangeAxis().setRange(0, 100);
-      ((NumberAxis) chart.getXYPlot().getRangeAxis())
-          .setNumberFormatOverride(new DecimalFormat("#'%'"));
-      chart.getXYPlot().setRenderer(renderer);
-
-      BufferedImage image = chart.createBufferedImage(600, 400);
-      ImageIO.write(image, "png", new File("xy-chart.png"));
-      JLabel imagen = new JLabel(new ImageIcon(image));
-      imagen.setBounds(100, 300, 600, 300);
-
-      panelEstadisticas.add(imagen);*/
-
-      /*       conteoLeyendo =
-          (int)
-              collecDetBiblio.countDocuments(
-                  and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
-      conteoLeido =
-          (int)
-              collecDetBiblio.countDocuments(
-                  and(eq("Estado", "Terminado"), eq("Usuario", id_Usuario)));
-      conteoAbandonado =
-          (int)
-              collecDetBiblio.countDocuments(
-                  and(eq("Estado", "XinTerminar"), eq("Usuario", id_Usuario)));
-      conteoQuieroLeer =
-          (int)
-              collecDetBiblio.countDocuments(
-                  and(eq("Estado", "Pendiente"), eq("Usuario", id_Usuario)));
-
-      DefaultPieDataset pieDataset = new DefaultPieDataset();
-
-      pieDataset.setValue("Leyendo " + conteoLeyendo, conteoLeyendo);
-      pieDataset.setValue("Leído " + conteoLeido, conteoLeido);
-      pieDataset.setValue("Abandonado " + conteoAbandonado, conteoAbandonado);
-      pieDataset.setValue("Quiero Leer " + conteoQuieroLeer, conteoQuieroLeer);
-
-      JFreeChart chart = ChartFactory.createPieChart("Biblioteca", pieDataset, true, true, false);
-      chart.setBackgroundPaint(panelCuenta.getBackground());
-      ChartPanel panelGrafico = new ChartPanel(chart);
-      panelGrafico.setBounds(100, 350, 700, 400);
-      panelEstadisticas.add(panelGrafico);*/
-
-    } catch (Exception e) {
-    }
   }
 
   public void cambioTema(String color) {
