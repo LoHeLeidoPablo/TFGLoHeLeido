@@ -222,7 +222,7 @@ public class MenuUsuario extends JFrame {
   public void regUsuLibro() {
     if (id_Usuario.equals("Invitado")) {
       lblRegLibro.setText(
-          "Si no encuentras el libro que buscas, unete a 'Lo He Leído', para registrarlo");
+          "Si no encuentras el libro que buscas, unete a \"Lo he Leído\", para registrarlo");
       abrirRegUsuario();
     } else {
       lblRegLibro.setText(

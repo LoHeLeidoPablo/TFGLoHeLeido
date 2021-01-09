@@ -305,6 +305,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
       i++;
       devolverPrestamo(jButton, i);
     }
+    autodevolucion();
   }
 
   public void añadirPortada(String urlPortada, int posi) {
@@ -415,6 +416,16 @@ public class IntfzCuenta extends JFrame implements Interfaz {
             }
           }
         });
+  }
+
+  public void autodevolucion() {
+    int i = -1;
+    for (JLabel jLabel : lblDiasRestantes) {
+      i++;
+      if (jLabel.getText().contains(" 0 ")) {
+        devolverPrestamo(btnDevolver[i], i);
+      }
+    }
   }
 
   ///////// Prestamo Terminado || Queda Estadisticas
@@ -566,7 +577,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     if (tiempoRegistro != null) {
       Date regUSuario = tiempoRegistro.getDate("fCreacionCuenta");
       int dias = Math.abs(calculoDias(regUSuario));
-      lblAntiguedad.setText("Antiguedad en 'Lo he Leído': " + dias + " días ");
+      lblAntiguedad.setText("Antiguedad en \"Lo he Leído\": " + dias + " días ");
 
       if (dias > 365) {
         int anios = dias / 365;
@@ -634,7 +645,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     panelEstadisticas.add(lblValorPaginas);
 
     lblTotalLibrosLeidos.setBounds(625, 600, 475, 30);
-    lblTotalLibrosLeidos.setText("Libros leidos y releidos: " + fPuntoMil.format(sumReLeidosTotales()));
+    lblTotalLibrosLeidos.setText(
+        "Libros leidos y releidos: " + fPuntoMil.format(sumReLeidosTotales()));
     lblTotalLibrosLeidos.setFont(estadisticas);
     lblPaginas.setHorizontalAlignment(SwingConstants.CENTER);
     panelEstadisticas.add(lblTotalLibrosLeidos);

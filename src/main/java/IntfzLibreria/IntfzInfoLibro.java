@@ -568,7 +568,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
                 int confirmado =
                     JOptionPane.showConfirmDialog(
                         btnUpdate,
-                        "Al dejar el Estado en 'Sin Añadir' esta eliminando este libro de su biblioteca personal. ¿Desea Continuar? ",
+                        "Al dejar el Estado en \"Sin Añadir\" esta eliminando este libro de su biblioteca personal. ¿Desea Continuar? ",
                         "Alerta",
                         JOptionPane.YES_NO_OPTION);
 
