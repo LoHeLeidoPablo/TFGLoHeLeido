@@ -29,6 +29,7 @@ public class IntfzPntCarga extends JFrame {
   Font fuentei = new Font("", 3, 25);
 
   public IntfzPntCarga() {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     this.setUndecorated(true);
     this.setLocationRelativeTo(null);
