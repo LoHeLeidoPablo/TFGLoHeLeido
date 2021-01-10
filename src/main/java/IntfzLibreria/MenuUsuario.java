@@ -12,13 +12,19 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Sorts.*;
+import static IntfzLibreria.IntfzLogin.id_Usuario;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.ascending;
 
 public class MenuUsuario extends JFrame {
 
@@ -32,7 +38,8 @@ public class MenuUsuario extends JFrame {
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
 
   IntfzInfoLibro infoLibro = new IntfzInfoLibro();
-  IntfzLogin intfzLogin = new IntfzLogin();
+  IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
+  IntfzLogin intfzLogin;
   IntfzBiblioteca intfzBiblioteca = new IntfzBiblioteca();
   IntfzCuenta intfzCuenta = new IntfzCuenta();
   IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
@@ -43,7 +50,7 @@ public class MenuUsuario extends JFrame {
   JPanel panelBusqueda;
 
   JLabel lblTituloProyecto;
-  JLabel lblUsuario = new JLabel();
+  JLabel lblUsuario = new JLabel("", SwingConstants.CENTER);
   JLabel lblPortada = new JLabel();
   JLabel lblRegLibro =
       new JLabel("No encunetra el libro que busca en nuestra Libreria, pulse aqui para añadirlo.");
@@ -67,11 +74,12 @@ public class MenuUsuario extends JFrame {
   String colorTema;
   Boolean visiblePanelMUsuario = true;
   Boolean visiblePanelBuscador = true;
-  Font fuenteis = new Font("Book Antiqua", 3, 45);
+  Font fuenteis = new Font("Bookman Old Style", 3, 45);
   Font fuenteUsu = new Font("Book Antiqua", 1, 22);
   Font font = lblRegLibro.getFont();
 
   String elemento = "Titulo";
+  String urlPortada = "";
 
   MongoCursor<Document> coleccion;
 
@@ -80,32 +88,29 @@ public class MenuUsuario extends JFrame {
   JLabel[] jLabelA = {lblTituloProyecto, lblUsuario};
   JButton[] jButtonA = {btnLogIn, btnCuenta, btnBiblioteca, btnLogOut, btnClose};
 
-  public MenuUsuario() {}
-  ;
-
   public MenuUsuario(JPanel jpanel, Interfaz interfazActiva, Boolean panelUsuarioEsDesplegable) {
+    this.intfzLogin = new IntfzLogin(this);
     this.interfazActiva = interfazActiva;
+    // cambioTema("Papiro");
 
-    String[] colores = {
-      "Claro",
-      "Oscuro",
-      "Amarillo Oscuro",
-      "Rojo Oscuro",
-      "Verde Oscuro",
-      "Azul Oscuro",
-      "Naranja Claro",
-      "Rojo Claro",
-      "Verde Claro",
-      "Azul Claro",
-    };
+    String[] colores = {"Claro", "Oscuro", "Papiro"};
+
+    /*"Amarillo Oscuro",
+    "Rojo Oscuro",
+    "Verde Oscuro",
+    "Azul Oscuro",
+    "Naranja Claro",
+    "Rojo Claro",
+    "Verde Claro",
+    "Azul Claro"};*/
 
     lblTituloProyecto = new JLabel("¿Lo he leído?");
-    lblTituloProyecto.setBounds(20, 18, 310, 54);
+    lblTituloProyecto.setBounds(20, 18, 350, 54);
     lblTituloProyecto.setFont(fuenteis);
     jpanel.add(lblTituloProyecto);
 
     txtBuscador = new JTextField("Buscar por ISBN, Titulo, Autor, Serie, Saga, Autor...");
-    txtBuscador.setBounds(375, 30, 850, 30);
+    txtBuscador.setBounds(420, 30, 850, 30);
     txtBuscador.setFocusable(false);
     jpanel.add(txtBuscador);
 
@@ -117,7 +122,7 @@ public class MenuUsuario extends JFrame {
     jpanel.add(panelBusqueda);
 
     txtBuscadorP = new JTextField();
-    txtBuscadorP.setBounds(100, 15, 500, 25);
+    txtBuscadorP.setBounds(100, 23, 500, 30);
     panelBusqueda.add(txtBuscadorP);
     String[] elementos = {"ISBN", "Titulo", "Autor", "Saga"};
     jcbElementos = new JComboBox<>(elementos);
@@ -135,6 +140,7 @@ public class MenuUsuario extends JFrame {
             queryLike();
           }
         });
+
     panelBusqueda.add(jcbElementos);
     btnEscape = new JButton();
     btnEscape.setBounds(5, 5, 25, 25);
@@ -149,7 +155,7 @@ public class MenuUsuario extends JFrame {
     btnEscape.setIcon(icono);
 
     scrollPaneResultados.setBounds(
-        50, 75, (panelBusqueda.getWidth() - 100) / 2, panelBusqueda.getHeight() - 100);
+        50, 58, (panelBusqueda.getWidth() - 100) / 2, panelBusqueda.getHeight() - 98);
     lstCoincidencias.setBounds(
         0, 0, scrollPaneResultados.getWidth(), scrollPaneResultados.getHeight());
     scrollPaneResultados.setBackground(panelBusqueda.getBackground());
@@ -160,24 +166,18 @@ public class MenuUsuario extends JFrame {
     lblRegLibro.setBounds(200, 475, 600, 20);
     lblRegLibro.setForeground(Color.blue);
     panelBusqueda.add(lblRegLibro);
-    if (IntfzLogin.id_Usuario.equals("Invitado")) {
-      lblRegLibro.setText(
-          "Si no encuentras el libro que buscas, unete a 'Lo He Leído', para registrarlo");
-      abrirRegUsuario();
-    } else {
-      abrirRegLibro();
-    }
+    regUsuLibro();
 
-    lblUsuario.setText(IntfzLogin.UsuCuenta.getString("Nombre"));
+    lblUsuario.setText(id_Usuario);
     lblUsuario.setText(lblUsuario.getText() == null ? "Invitado" : lblUsuario.getText());
     lblUsuario.setFont(fuenteUsu);
-    lblUsuario.setBounds(1400, 23, 100, 27);
+    lblUsuario.setBounds(1300, 23, 250, 40);
     jpanel.add(lblUsuario);
 
     if (panelUsuarioEsDesplegable) {
 
       panelMenuUsuario = new JPanel();
-      panelMenuUsuario.setBounds(1350, 35, 200, 155);
+      panelMenuUsuario.setBounds(1350, 50, 200, 155);
       panelMenuUsuario.setLayout(null);
       panelMenuUsuario.setOpaque(false);
       panelMenuUsuario.hide();
@@ -199,7 +199,7 @@ public class MenuUsuario extends JFrame {
             }
           });
 
-      jcbTemas = new JComboBox<String>(colores);
+      /*jcbTemas = new JComboBox<String>(colores);
       panelMenuUsuario.add(jcbTemas);
       jcbTemas.addActionListener(
           new ActionListener() {
@@ -208,15 +208,51 @@ public class MenuUsuario extends JFrame {
               colorTema = jcbTemas.getSelectedItem().toString();
               interfazActiva.cambioTema(colorTema);
             }
-          });
+          });*/
       btnLog();
     }
 
-    // crearComponentes(jpanel);
     despliegePaneles();
     botonesUsuario();
     busqueda();
     mostrarLibro();
+    // cambioTema("Papiro");
+  }
+
+  public void regUsuLibro() {
+    if (id_Usuario.equals("Invitado")) {
+      lblRegLibro.setText(
+          "Si no encuentras el libro que buscas, unete a \"Lo he Leído\", para registrarlo");
+    } else {
+      lblRegLibro.setText(
+          "No encunetra el libro que busca en nuestra libreria, pulse aqui para añadirlo.");
+    }
+    lblRegLibro.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            cerrarBusqueda();
+            if (id_Usuario.equals("Invitado")) {
+              intfzRegistro.iniciar();
+            } else {
+              intfzRegLibro.iniciar();
+            }
+          }
+
+          @Override
+          public void mouseEntered(MouseEvent e) {
+            lblRegLibro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            Font subrayado = lblRegLibro.getFont();
+            Map attributes = subrayado.getAttributes();
+            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+            lblRegLibro.setFont(subrayado.deriveFont(attributes));
+          }
+
+          @Override
+          public void mouseExited(MouseEvent e) {
+            lblRegLibro.setFont(font);
+          }
+        });
   }
 
   public void btnLog() {
@@ -227,22 +263,27 @@ public class MenuUsuario extends JFrame {
         btnCuenta.setVisible(false);
         btnBiblioteca.setVisible(false);
         btnClose.setBounds(10, 40, 180, 20);
-        jcbTemas.setBounds(10, 70, 180, 20);
-
+        // jcbTemas.setBounds(10, 70, 180, 20);
+      } else if ("Admin".equals(lblUsuario.getText())) {
+        btnLogIn.setVisible(false);
+        btnCuenta.setVisible(false);
+        btnBiblioteca.setVisible(false);
+        btnLogOut.setBounds(10, 10, 180, 20);
+        btnLogOut.setVisible(true);
+        btnClose.setBounds(10, 40, 180, 20);
+        // jcbTemas.setBounds(10, 70, 180, 20);
       } else {
         btnLogIn.setVisible(false);
         btnCuenta.setBounds(10, 10, 180, 20);
+        btnCuenta.setVisible(true);
         btnBiblioteca.setBounds(10, 40, 180, 20);
+        btnBiblioteca.setVisible(true);
         btnLogOut.setBounds(10, 70, 180, 20);
+        btnLogOut.setVisible(true);
         btnClose.setBounds(10, 100, 180, 20);
-        jcbTemas.setBounds(10, 130, 180, 20);
+        // jcbTemas.setBounds(10, 130, 180, 20);
       }
     }
-  }
-
-  public void setLblUsuario(String newUsuario) {
-    lblUsuario.setText(newUsuario);
-    btnLog();
   }
 
   public void despliegePaneles() {
@@ -254,6 +295,7 @@ public class MenuUsuario extends JFrame {
             panelBusqueda.setVisible(true);
             txtBuscador.setVisible(false);
             jcbElementos.setSelectedIndex(1);
+            txtBuscadorP.requestFocus();
           }
         });
   }
@@ -264,10 +306,7 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            panelBusqueda.setVisible(false);
-            txtBuscador.setVisible(true);
-            txtBuscadorP.setText("");
-            lblPortada.setVisible(false);
+            cerrarBusqueda();
           }
         });
 
@@ -275,8 +314,8 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            IntfzLogin ventana = new IntfzLogin();
-            ventana.iniciar();
+            intfzLogin.iniciar();
+            panelMenuUsuario.setVisible(false);
           }
         });
 
@@ -284,8 +323,8 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            // disposeAll();
-            intfzCuenta.iniciar(intfzPrincipal);
+            disposeAll();
+            intfzCuenta.iniciar();
           }
         });
 
@@ -293,9 +332,8 @@ public class MenuUsuario extends JFrame {
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            // disposeAll();
-
-            intfzBiblioteca.iniciar(intfzPrincipal);
+            disposeAll();
+            intfzBiblioteca.iniciar();
           }
         });
 
@@ -304,10 +342,11 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             disposeAll();
+            id_Usuario = "Invitado";
             lblUsuario.setText("Invitado");
-            intfzPrincipal.iniciar();
             btnLogIn.setVisible(true);
             btnLog();
+            regUsuLibro();
           }
         });
 
@@ -316,58 +355,6 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             System.exit(0);
-          }
-        });
-  }
-
-  public void abrirRegLibro() {
-    lblRegLibro.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-            panelBusqueda.setVisible(false);
-            txtBuscador.setVisible(true);
-            intfzRegLibro.iniciar();
-          }
-
-          @Override
-          public void mouseEntered(MouseEvent e) {
-            lblRegLibro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            Font subrayado = lblRegLibro.getFont();
-            Map attributes = subrayado.getAttributes();
-            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-            lblRegLibro.setFont(subrayado.deriveFont(attributes));
-          }
-
-          @Override
-          public void mouseExited(MouseEvent e) {
-            lblRegLibro.setFont(font);
-          }
-        });
-  }
-
-  public void abrirRegUsuario() {
-    lblRegLibro.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-            panelBusqueda.setVisible(false);
-            txtBuscador.setVisible(true);
-            intfzRegistro.iniciar();
-          }
-
-          @Override
-          public void mouseEntered(MouseEvent e) {
-            lblRegLibro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            Font subrayado = lblRegLibro.getFont();
-            Map attributes = subrayado.getAttributes();
-            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-            lblRegLibro.setFont(subrayado.deriveFont(attributes));
-          }
-
-          @Override
-          public void mouseExited(MouseEvent e) {
-            lblRegLibro.setFont(font);
           }
         });
   }
@@ -425,7 +412,6 @@ public class MenuUsuario extends JFrame {
   }
 
   public void añadirPortada() {
-    String elemento = jcbElementos.getSelectedItem().toString();
     lblPortada.setText("Portada no encontrada");
     lblPortada.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
     lblPortada.setBounds(
@@ -434,9 +420,22 @@ public class MenuUsuario extends JFrame {
         scrollPaneResultados.getWidth() - 50,
         scrollPaneResultados.getHeight());
     panelBusqueda.add(lblPortada);
+
+    String elemento = jcbElementos.getSelectedItem().toString();
     String enlace = lstCoincidencias.getSelectedValue().toString();
     Document portadaLibro = collecLibro.find(eq(elemento, enlace)).first();
-    String urlPortada = portadaLibro.getString("PortadaURL");
+    urlPortada = portadaLibro.getString("PortadaURL");
+
+    if (elemento.equals("Autor")) {
+      MongoCursor<Document> librosAutor = collecLibro.find(eq(elemento, enlace)).iterator();
+      ArrayList<String> obras = new ArrayList<String>();
+      while (librosAutor.hasNext()) {
+        Document ejemplar = librosAutor.next();
+        obras.add(ejemplar.getString("PortadaURL"));
+        urlPortada = obras.get(new Random().nextInt(obras.size()));
+      }
+    }
+
     try {
       URL url = new URL(urlPortada);
       Image portada = ImageIO.read(url);
@@ -453,7 +452,7 @@ public class MenuUsuario extends JFrame {
 
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(
-          null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar" + urlPortada);
+          null, "Lo Sentimos, no es posible mostrar la portada de este ejemplar " + urlPortada);
     }
   }
 
@@ -464,14 +463,9 @@ public class MenuUsuario extends JFrame {
         new MouseAdapter() {
           public void mouseClicked(MouseEvent evt) {
             lstCoincidencias = (JList) evt.getSource();
-            if (!jcbElementos.getSelectedItem().equals("Autor")) {
-              lblPortada.setVisible(true);
-              añadirPortada();
-            } else {
-              lblPortada.setIcon(null);
-              lblPortada.setText("Este elemento no tiene Portada");
-              lblPortada.setHorizontalAlignment(SwingConstants.CENTER);
-            }
+            lblPortada.setVisible(true);
+            añadirPortada();
+
             if (evt.getClickCount() == 2) {
               String enlace = lstCoincidencias.getSelectedValue().toString();
               Document libro = collecLibro.find(eq(elemento, enlace)).first();
@@ -485,46 +479,74 @@ public class MenuUsuario extends JFrame {
                 infoLibro.iniciar(libro);
               }
               if (elemento.equals("Autor")) {
-                Document libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+                Document libroAutor = null;
+                try {
+                  libroAutor = collecLibro.find(eq("PortadaURL", urlPortada)).first();
+                } catch (Exception exception) {
+                  libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+                }
+                infoLibro.iniciar(libroAutor);
+                infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
               }
               if (elemento.equals("Saga")) {
                 infoLibro.iniciar(libro);
-                infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
+                infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 2);
               }
+            }
+          }
+        });
+
+    lblPortada.addMouseListener(
+        new MouseAdapter() {
+          public void mouseClicked(MouseEvent evt) {
+            String enlace = lstCoincidencias.getSelectedValue().toString();
+            Document libro = collecLibro.find(eq(elemento, enlace)).first();
+
+            if (elemento.equals("ISBN")) {
+              String isbn = enlace.substring(0, enlace.indexOf(" "));
+              Document libroISBN = collecLibro.find(eq(elemento, isbn)).first();
+              infoLibro.iniciar(libroISBN);
+            }
+            if (elemento.equals("Titulo")) {
+              infoLibro.iniciar(libro);
+            }
+            if (elemento.equals("Autor")) {
+              Document libroAutor = null;
+              try {
+                libroAutor = collecLibro.find(eq("PortadaURL", urlPortada)).first();
+              } catch (Exception exception) {
+                libroAutor = collecLibro.find(eq(elemento, enlace)).first();
+              }
+              infoLibro.iniciar(libroAutor);
+              infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 1);
+            }
+            if (elemento.equals("Saga")) {
+              infoLibro.iniciar(libro);
+              infoLibro.tabbed.setSelectedIndex(infoLibro.tabbed.getTabCount() - 2);
             }
           }
         });
   }
 
-  public void disposeAll() {
+  public void cerrarBusqueda() {
+    panelBusqueda.setVisible(false);
+    txtBuscador.setVisible(true);
+    txtBuscadorP.setText("");
+    lblPortada.setVisible(false);
+  }
 
-    if (intfzPrincipal.isShowing()) {
-      intfzPrincipal.dispose();
-    }
+  public void disposeAll() {
 
     if (intfzBiblioteca.isShowing()) intfzBiblioteca.dispose();
 
     if (intfzCuenta.isShowing()) intfzCuenta.dispose();
 
-    if (intfzRegistro.isShowing()) intfzRegistro.dispose();
+    if (intfzInfoLibro.isShowing()) intfzInfoLibro.dispose();
 
     if (intfzRegLibro.isShowing()) intfzRegLibro.dispose();
   }
 
-  /*public void crearComponentes(JPanel jpanel) {
-    for (JPanel jPanelE : jPanelA) {
-      jpanel.add(jPanelE);
-      jPanelE.setVisible(false);
-    }
-    for (JLabel jLabel : jLabelA) {
-      jpanel.add(jLabel);
-    }
-    for (JButton jButton : jButtonA) {
-      panelMenuUsuario.add(jButton);
-    }
-  } */
-
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null);
-  } // Esto no funciona
+    Temas.cambioTema(color, jPanelA, jLabelA, null, null, null, null, null, null, null);
+  }
 }

@@ -10,16 +10,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextAttribute;
-import java.util.Date;
 import java.util.Map;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzLogin extends JFrame {
   public static String id_Usuario = "Invitado";
-  public static Document UsuCuenta = new Document();
 
-  IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
+  MenuUsuario menuUsuario;
 
   MongoClientURI uri =
       new MongoClientURI(
@@ -30,9 +29,7 @@ public class IntfzLogin extends JFrame {
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
-  // MenuUsuario menuUsuario = new MenuUsuario(); // TODO Esto hace petar la aplicación entera
-
-  JPanel panel = new JPanel();
+  JPanel panelLogin = new JPanel();
 
   JLabel lblTituloProyecto = new JLabel("¿Lo he leído?");
   JLabel lblUsuario = new JLabel("Usuario:");
@@ -57,9 +54,11 @@ public class IntfzLogin extends JFrame {
 
   Font font = lblRegistro.getFont();
 
-  public IntfzLogin() {
+  public IntfzLogin(MenuUsuario menuUsuario) {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     this.setLocation(100, 100);
+    this.menuUsuario = menuUsuario;
   }
 
   public void iniciar() {
@@ -67,11 +66,11 @@ public class IntfzLogin extends JFrame {
     getContentPane().setLayout(new GridLayout(1, 10));
     crearComponentes();
     existeUsuario();
-    panel.setLayout(null);
+    panelLogin.setLayout(null);
 
     lblTituloProyecto.setBounds(65, 10, 170, 25);
-    Font fuenteis = new Font("Consola", 3, 22);
-    lblTituloProyecto.setFont(fuenteis);
+    Font fuentelogin = new Font("Bookman Old Style", 3, 22);
+    lblTituloProyecto.setFont(fuentelogin);
 
     lblUsuario.setBounds(50, 50, 100, 15);
     txtUsuario.setBounds(50, 65, 200, 20);
@@ -80,7 +79,7 @@ public class IntfzLogin extends JFrame {
     txtPassword.setEchoChar('*');
 
     cbVerPasswd.setBounds(50, 140, 175, 20);
-    cbVerPasswd.setBackground(panel.getBackground());
+    cbVerPasswd.setBackground(panelLogin.getBackground());
     cbVerPasswd.addItemListener(
         new ItemListener() {
           public void itemStateChanged(ItemEvent e) {
@@ -95,7 +94,7 @@ public class IntfzLogin extends JFrame {
         });
 
     btnLogIn.setBounds(50, 170, 200, 25);
-    panel.add(btnLogIn);
+    panelLogin.add(btnLogIn);
 
     lblRegistro.setBounds(75, 205, 150, 15);
     lblRegistro.setForeground(Color.blue);
@@ -103,7 +102,7 @@ public class IntfzLogin extends JFrame {
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            panel.setVisible(false);
+            panelLogin.setVisible(false);
             dispose();
             IntfzRegistro ventana = new IntfzRegistro();
             ventana.iniciar();
@@ -124,7 +123,7 @@ public class IntfzLogin extends JFrame {
           }
         });
 
-    getContentPane().add(panel);
+    getContentPane().add(panelLogin);
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -132,6 +131,7 @@ public class IntfzLogin extends JFrame {
     setVisible(true);
   }
 
+  // Comprueba si el usuario existe y es correcto antes de logearlo
   public void existeUsuario() {
     btnLogIn.addActionListener(
         new ActionListener() {
@@ -141,46 +141,41 @@ public class IntfzLogin extends JFrame {
                 collecAuth
                     .find(
                         and(
-                            or(
-                                eq("Nombre", txtUsuario.getText()),
-                                eq("Email", txtUsuario.getText())),
+                            eq("Nombre", txtUsuario.getText()),
                             eq("Contraseña", txtPassword.getText())))
                     .first();
             if (usuAuth != null) {
-              UsuCuenta =
-                  collecUsuario
-                      .find(
-                          and(
-                              eq("Nombre", usuAuth.getString("Nombre")),
-                              eq("Email", usuAuth.getString("Email"))))
-                      .first();
-              if (UsuCuenta == null) {
-                UsuCuenta.put("Nombre", usuAuth.getString("Nombre"));
-                UsuCuenta.put("Email", usuAuth.getString("Email"));
-                UsuCuenta.put("fCreacionCuenta", new Date());
-                UsuCuenta.put("NPrestados", 0);
-                // UsuCuenta.put("Tema", "Claro");
-                collecUsuario.insertOne(UsuCuenta);
-              }
+              Document UsuCuenta =
+                  collecUsuario.find(eq("Nombre", usuAuth.getString("Nombre"))).first();
               id_Usuario = UsuCuenta.getString("Nombre");
+              txtPassword.setText("");
+              cbVerPasswd.setSelected(false);
               dispose();
-              // menuUsuario.setLblUsuario(id_Usuario);
-              intfzPrincipal.iniciar();
 
+              MenuUsuario menuUsuarioPrincipal = getMenuUsuario();
+              menuUsuarioPrincipal.lblUsuario.setText(id_Usuario);
+              menuUsuarioPrincipal.btnLog();
+              menuUsuarioPrincipal.regUsuLibro();
             } else {
               JOptionPane.showMessageDialog(
                   null,
-                  "Credenciales Incorrectas, por favor vuelve a intentarlo",
-                  "Advertencia",
+                  "Credenciales Incorrectas,  por favor vuelve a intentarlo",
+                  "Advertencia -> Inicio de Sesión Rechazado",
                   JOptionPane.ERROR_MESSAGE);
             }
+            return;
           }
         });
   }
 
   public void crearComponentes() {
     for (JComponent jComponent : jComponentA) {
-      panel.add(jComponent);
+      panelLogin.add(jComponent);
     }
+    panelLogin.setBackground(new Color(232, 218, 189));
+  }
+
+  public MenuUsuario getMenuUsuario() {
+    return this.menuUsuario;
   }
 }

@@ -20,8 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static IntfzLibreria.IntfzLogin.id_Usuario;
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzRegLibro extends JFrame {
 
@@ -35,7 +34,7 @@ public class IntfzRegLibro extends JFrame {
 
   IntfzInfoLibro intfzInfoLibro = new IntfzInfoLibro();
 
-  private JPanel panel = new JPanel();
+  private JPanel panelRegLibro = new JPanel();
   private JPanel panelGenero = new JPanel();
 
   private JLabel lblPortada = new JLabel("Portada:");
@@ -49,7 +48,7 @@ public class IntfzRegLibro extends JFrame {
   private JLabel lblPublicacion = new JLabel("F. Publicación");
   private JLabel lblGeneros = new JLabel("Genero");
   private JLabel lblResumen = new JLabel("Resumen");
-  private JLabel lblPortadaURL = new JLabel("URL de la Portada*");
+  private JLabel lblPortadaURL = new JLabel("URL de la Portada");
 
   private JTextField txtISBN = new JTextField();
   private JTextField txtTitulo = new JTextField();
@@ -78,8 +77,24 @@ public class IntfzRegLibro extends JFrame {
   private JDateChooser datePublicacion = new JDateChooser();
   private JScrollPane scrollPane = new JScrollPane(txtASinopsis);
 
-  Font fuente = new Font(lblGeneros.getFont().getFamily(), Font.BOLD, 12);
+  Font fuente = new Font("Bookman Old Style", Font.BOLD, 12);
+
+  JPanel[] jPanelA = {panelRegLibro, panelGenero};
+  JLabel[] jLabelA = {
+    lblPortada,
+    lblTitulo,
+    lblAutor,
+    lblResumen,
+    lblGeneros,
+    lblPublicacion,
+    lblISBN,
+    lblCapitulos,
+    lblPaginas,
+    lblColeccion,
+    lblPublicacion
+  };
   JCheckBox[] jCheckBoxA = {ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8, ch9, ch10, ch11, ch12};
+  JButton[] jButtonA = {btnAddLibro};
 
   JComponent[] jComponentA = {
     panelGenero,
@@ -110,6 +125,8 @@ public class IntfzRegLibro extends JFrame {
 
   public IntfzRegLibro() {
     this.setResizable(false);
+    cambioTema("Papiro");
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
   }
 
   public void iniciar() {
@@ -120,7 +137,7 @@ public class IntfzRegLibro extends JFrame {
     insertarP();
     vaciarURL();
 
-    panel.setLayout(null);
+    panelRegLibro.setLayout(null);
     panelGenero.setLayout(null);
 
     lblPortada.setHorizontalAlignment(SwingConstants.CENTER);
@@ -168,7 +185,7 @@ public class IntfzRegLibro extends JFrame {
     lblResumen.setBounds(350, 310, 100, 15);
     scrollPane.setBounds(350, 325, 575, 217);
     txtASinopsis.setBounds(0, 0, scrollPane.getWidth(), scrollPane.getHeight());
-    scrollPane.setBackground(panel.getBackground());
+    scrollPane.setBackground(panelRegLibro.getBackground());
 
     lblPortadaURL.setBounds(350, 550, 115, 30);
     txtURL.setBounds(465, 550, 460, 30);
@@ -177,7 +194,7 @@ public class IntfzRegLibro extends JFrame {
     txtASinopsis.setWrapStyleWord(true);
     txtASinopsis.setEditable(true);
 
-    getContentPane().add(panel);
+    getContentPane().add(panelRegLibro);
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -185,6 +202,7 @@ public class IntfzRegLibro extends JFrame {
     setVisible(true);
   }
 
+  // Guarda el libro en la base de datos
   public void registrarLibro() {
     btnAddLibro.addActionListener(
         new ActionListener() {
@@ -203,27 +221,18 @@ public class IntfzRegLibro extends JFrame {
         });
   }
 
+  // Crea el docuemento con la informacion del nuevo libro
   public void añadirLibro() {
     Integer Tomo = (Integer) spNColeccion.getValue();
     Integer Capitulo;
     Integer Pagina;
 
-    if (spCapitulos.getValue().equals(0)) {
-      Capitulo = null;
-    } else {
-      Capitulo = (Integer) spCapitulos.getValue();
-    }
-    if (spPaginas.getValue().equals(0)) {
-      Pagina = null;
-    } else {
-      Pagina = (Integer) spPaginas.getValue();
-    }
+    Capitulo = spCapitulos.getValue().equals(0) ? null : (Integer) spCapitulos.getValue();
+    Pagina = spPaginas.getValue().equals(0) ? null : (Integer) spPaginas.getValue();
 
     ArrayList<String> valoresCB = new ArrayList<String>();
     for (JCheckBox jCheckBox : jCheckBoxA) {
-      if (jCheckBox.isSelected()) {
-        valoresCB.add(jCheckBox.getText());
-      }
+      if (jCheckBox.isSelected()) valoresCB.add(jCheckBox.getText());
     }
     try {
       Document libro = new Document();
@@ -246,6 +255,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  // Comprueba si ya existe un libro con ese ISBN
   public boolean existeLibro() {
     Boolean existe = false;
     try {
@@ -260,6 +270,7 @@ public class IntfzRegLibro extends JFrame {
     return existe;
   }
 
+  // Se asegura que los campos obligatorios se cumplan
   public boolean obligatorios() {
     int i = 0;
     if (txtISBN.getText().length() < 10 | txtISBN.getText().length() > 13) i++;
@@ -270,14 +281,17 @@ public class IntfzRegLibro extends JFrame {
       if (spNColeccion.getValue().equals(0)) spNColeccion.setValue(spNColeccion.getNextValue());
     }
     if (spPaginas.getValue().equals(0) & spCapitulos.getValue().equals(0)) i++;
-    if (lblPortada.getIcon() == null) i++;
+    if (lblPortada.getIcon() == null) {
+      txtURL.setText("https://edit.org/images/cat/portadas-libros-big-2019101610.jpg");
+    }
     if (i > 0) {
-      mensajeEmergente(10);
+      mensajeEmergente(3);
       return false;
     }
     return true;
   }
 
+  // Elimina los espacio iniciales y finales para evitar discordancias en los datos
   public void sinEspacios() {
     txtISBN.setText(txtISBN.getText().trim());
     txtTitulo.setText(txtTitulo.getText().trim());
@@ -288,13 +302,14 @@ public class IntfzRegLibro extends JFrame {
 
   public void crearComponentes() {
     for (JComponent jComponent : jComponentA) {
-      panel.add(jComponent);
+      panelRegLibro.add(jComponent);
     }
     for (JCheckBox jCheckBox : jCheckBoxA) {
       panelGenero.add(jCheckBox);
     }
   }
 
+  //Metodo que actua a cada cambio en el campo URL para intentar insertar una imagen
   public void insertarP() {
     EscuchaPortada insertarP = new EscuchaPortada();
     javax.swing.text.Document url = txtURL.getDocument();
@@ -318,6 +333,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  //Añade la imagen a la portada correspondiente
   public void añadirPortada() {
     try {
       URL url = new URL(txtURL.getText());
@@ -338,6 +354,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  // Vacia el campo URL
   public void vaciarURL() {
     lblPortadaURL.addMouseListener(
         new MouseAdapter() {
@@ -356,17 +373,22 @@ public class IntfzRegLibro extends JFrame {
           "Libro añadido Correctamente",
           "Registro Completado",
           JOptionPane.INFORMATION_MESSAGE);
-    } else if (mensaje == 10) {
-      JOptionPane.showMessageDialog(
-          null,
-          "El ISBN, el Titulo, el Autor, la Portada y las Paginas o los Capitulos son campos obligatorios",
-          "Registro Fallido",
-          JOptionPane.ERROR_MESSAGE);
-    } else
+    } else if (mensaje == 2) {
       JOptionPane.showMessageDialog(
           null,
           "Ya existe un libro con este ISBN, esta es la informacion del libro relacionado a este ISBN ",
           "Registro Fallido",
           JOptionPane.ERROR_MESSAGE);
+    } else if (mensaje == 3) {
+      JOptionPane.showMessageDialog(
+          null,
+          "El ISBN, el Titulo, el Autor y las Paginas o los Capitulos son campos obligatorios",
+          "Registro Fallido",
+          JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
+  public void cambioTema(String color) {
+    Temas.cambioTema(color, jPanelA, jLabelA, null, jButtonA, jCheckBoxA, null, null, null, null);
   }
 }

@@ -30,6 +30,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   MongoClient mongoClient = new MongoClient(uri);
   MongoDatabase DDBB = mongoClient.getDatabase("LoHeLeidoDB");
   MongoCollection<Document> collecLibro = DDBB.getCollection("Libro");
+  MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
   static final int NUMERO_LABELS = 12;
 
@@ -39,13 +40,18 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
 
   Document libro;
 
-  JPanel panel = new JPanel();
-  JPanel[] jPanelA = {panel};
+  JPanel panelPrincipal = new JPanel();
+
+  JPanel[] jPanelA = {panelPrincipal};
 
   public IntfzPrincipal() {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setSize(1600, 1000);
     inicializarLabels();
+    cambioTema("Papiro");
+    recarga();
   }
 
   private void inicializarLabels() {
@@ -59,10 +65,12 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
 
   public void iniciar() {
     setTitle("¿Lo he leído?");
+    setSize(1600, 1000);
     getContentPane().setLayout(new GridLayout(1, 10));
-    menuUsuario = new MenuUsuario(panel, this,true);
+    menuUsuario = new MenuUsuario(panelPrincipal, this, true);
     crearComponentes();
-    panel.setLayout(null);
+    panelPrincipal.setLayout(null);
+
     int poslbl = -1;
     for (JLabel jLabel : lblsPortadas) {
       poslbl++;
@@ -78,6 +86,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         lblsPortadas[0].getY() + lblsPortadas[0].getHeight() + 15,
         lblsPortadas[0].getWidth(),
         25);
+
     int portadasPorFila = 6;
     for (int i = 1; i < NUMERO_LABELS; i++) {
       if (i % portadasPorFila == 0) {
@@ -102,7 +111,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     }
 
     ultimosAgregados();
-    getContentPane().add(panel);
+    getContentPane().add(panelPrincipal);
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -110,6 +119,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     setVisible(true);
   }
 
+  // Muestra los ultimos libros agregados a la base de datos
   public void ultimosAgregados() {
     ultimosTitulos = new String[NUMERO_LABELS];
     MongoCursor<Document> ultimoAgregados =
@@ -151,12 +161,25 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     }
   }
 
+  // Recarga la pantalla para mostrar los ultimos cambios
+  public void recarga() {
+    panelPrincipal.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            ultimosAgregados();
+          }
+        });
+  }
+
+  // Abre la ventana con la informacion del libro de la portada pulsada
   private void irLibro(JLabel jLabel, int posicion) {
     jLabel.addMouseListener(
         new MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent e) {
-            if (menuUsuario.panelBusqueda.isVisible() == false) {
+            if (menuUsuario.panelBusqueda.isVisible() == false
+                && menuUsuario.panelMenuUsuario.isVisible() == false) {
               libro = collecLibro.find(eq("Titulo", ultimosTitulos[posicion].toString())).first();
               intfzInfoLibro.dispose();
               intfzInfoLibro.iniciar(libro);
@@ -165,6 +188,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         });
   }
 
+  // Abre la ventana con la informacion del libro del titulo pulsado
   private void irLibroT(JLabel jLabel) {
     jLabel.addMouseListener(
         new MouseAdapter() {
@@ -181,18 +205,18 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
 
   public void crearComponentes() {
     for (JLabel jLabel : lblsPortadas) {
-      panel.add(jLabel);
+      panelPrincipal.add(jLabel);
       jLabel.setBorder(BorderFactory.createLineBorder(Color.black));
       jLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
     for (JLabel jLabel : lblsTitulos) {
-      panel.add(jLabel);
+      panelPrincipal.add(jLabel);
       jLabel.setBorder(BorderFactory.createLineBorder(Color.black));
       jLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
   }
 
   public void cambioTema(String color) {
-    Temas.cambioTema(color, jPanelA, lblsTitulos, null, null, null, null, null);
+    Temas.cambioTema(color, jPanelA, lblsTitulos, null, null, null, null, null, null, null);
   }
 }

@@ -13,8 +13,6 @@ import java.awt.event.ActionListener;
 
 public class IntfzPntCarga extends JFrame {
 
-  IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
-
   JPanel panel = new JPanel();
   private JLabel lbltituloProyecto = new JLabel("¿Lo he leído?");
   private JProgressBar progreso = new JProgressBar(0, 100);
@@ -31,6 +29,7 @@ public class IntfzPntCarga extends JFrame {
   Font fuentei = new Font("", 3, 25);
 
   public IntfzPntCarga() {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     this.setUndecorated(true);
     this.setLocationRelativeTo(null);
@@ -90,6 +89,7 @@ public class IntfzPntCarga extends JFrame {
     setVisible(true);
   }
 
+  // Comprueba si hay conexion a internet antes de lanzar la aplicaccion
   public void conexion() {
     accion =
         new ActionListener() {
@@ -110,6 +110,7 @@ public class IntfzPntCarga extends JFrame {
                 t.stop();
                 panel.setVisible(false);
                 dispose();
+                IntfzPrincipal intfzPrincipal = new IntfzPrincipal();
                 intfzPrincipal.iniciar();
               } catch (Exception exception) {
                 t.stop();
@@ -120,6 +121,7 @@ public class IntfzPntCarga extends JFrame {
         };
   }
 
+  //Diseño principal de la aplicación
   public void pantallalog() {
     lbltituloProyecto.setText("¿Lo he leído?");
     lbltituloProyecto.setBounds(50, 50, 300, 50);
@@ -133,6 +135,7 @@ public class IntfzPntCarga extends JFrame {
     t.start();
   }
 
+  // Diseño de la ventana si no hay conexion a internet
   public void pantallaError() {
     lbltituloProyecto.setText("Sin Conexión a Internet");
     lbltituloProyecto.setBounds(30, 25, 340, 50);

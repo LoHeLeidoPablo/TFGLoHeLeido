@@ -6,13 +6,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-import static com.mongodb.client.model.Filters.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.ParseException;
 import java.util.Date;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class IntfzRegistro extends JFrame {
 
@@ -25,22 +25,17 @@ public class IntfzRegistro extends JFrame {
   MongoCollection<Document> collecAuth = DDBB.getCollection("Auth");
   MongoCollection<Document> collecUsuario = DDBB.getCollection("Usuario");
 
-  IntfzLogin intfzLogin = new IntfzLogin();
-
-  JPanel panel = new JPanel();
+  JPanel panelRegistro = new JPanel();
 
   JLabel lblTituloProyecto = new JLabel("Unete a Nosotros");
   JLabel lblUsuario = new JLabel("Usuario:");
   JLabel lblObUsuario = new JLabel("Obligatorio");
-  JLabel lblEmail = new JLabel("Email:");
-  JLabel lblObEmail = new JLabel("Obligatorio");
   JLabel lblPassword = new JLabel("Contraseña:");
   JLabel lblObPassword = new JLabel("La contraseña debe contener al menos 8 caracteres");
-  JLabel lblPassword2 = new JLabel("Contraseña:");
+  JLabel lblPassword2 = new JLabel("Repertir Contraseña:");
   JLabel lblObPassword2 = new JLabel("La contraseña debe coincidir con la otra contraseña");
 
   JTextField txtUsuario = new JTextField("");
-  JTextField txtEmail = new JTextField("");
   JPasswordField txtPassword = new JPasswordField("");
   JPasswordField txtRepPassword = new JPasswordField("");
   JButton btnRegistro = new JButton("Registrar");
@@ -51,21 +46,18 @@ public class IntfzRegistro extends JFrame {
   Boolean obligatorios;
 
   JCheckBox cbVerPasswd = new JCheckBox("Mostrar Contraseñas");
-  JLabel[] jLabelObli = {lblObUsuario, lblObEmail, lblObPassword, lblObPassword2};
+  JLabel[] jLabelObli = {lblObUsuario, lblObPassword, lblObPassword2};
   JComponent[] jComponentA = {
     lblTituloProyecto,
     lblUsuario,
-    lblEmail,
     lblPassword,
     lblPassword,
     lblPassword2,
     lblObUsuario,
-    lblObEmail,
     lblObPassword,
     lblObPassword2,
     btnRegistro,
     txtUsuario,
-    txtEmail,
     txtPassword,
     txtRepPassword,
     cbVerPasswd
@@ -74,10 +66,11 @@ public class IntfzRegistro extends JFrame {
   Font fuenteObligatoria = new Font(lblUsuario.getFont().getFamily(), Font.ITALIC, 9);
 
   public IntfzRegistro() {
+    setIconImage(new ImageIcon("src/main/resources/appIcon.png").getImage());
     this.setResizable(false);
     this.setLocation(100, 100);
   }
-  // TODO Implementar correo Email
+
   public void iniciar() {
     setTitle("Registrar - ¿Lo he leído?");
     getContentPane().setLayout(new GridLayout(1, 10));
@@ -85,31 +78,27 @@ public class IntfzRegistro extends JFrame {
     mostrarContraseña(txtPassword);
     mostrarContraseña(txtRepPassword);
     rescribirCampo(txtUsuario, lblObUsuario);
-    rescribirCampo(txtEmail, lblObEmail);
     rescribirCampo(txtPassword, lblObPassword);
     rescribirCampo(txtRepPassword, lblObPassword2);
 
-    panel.setLayout(null);
+    panelRegistro.setLayout(null);
 
-    lblTituloProyecto.setBounds(15, 10, 250, 25);
-    Font fuenteis = new Font("Consola", 3, 22);
-    lblTituloProyecto.setFont(fuenteis);
+    lblTituloProyecto.setBounds(10, 10, 275, 25);
+    Font fuentelogin = new Font("Bookman Old Style", 3, 22);
+    lblTituloProyecto.setHorizontalAlignment(SwingConstants.CENTER);
+    lblTituloProyecto.setFont(fuentelogin);
 
     lblUsuario.setBounds(20, 50, 100, 15);
     txtUsuario.setBounds(20, 65, 235, 20);
     lblObUsuario.setBounds(20, 85, 160, 15);
 
-    lblEmail.setBounds(20, 110, 100, 15);
-    txtEmail.setBounds(20, 125, 235, 20);
-    lblObEmail.setBounds(20, 145, 160, 15);
+    lblPassword.setBounds(20, 110, 100, 15);
+    txtPassword.setBounds(20, 125, 235, 20);
+    lblObPassword.setBounds(20, 145, 235, 15);
 
-    lblPassword.setBounds(20, 170, 100, 15);
-    txtPassword.setBounds(20, 185, 235, 20);
-    lblObPassword.setBounds(10, 205, 255, 15);
-
-    lblPassword2.setBounds(20, 230, 100, 15);
-    txtRepPassword.setBounds(20, 245, 235, 20);
-    lblObPassword2.setBounds(10, 265, 255, 15);
+    lblPassword2.setBounds(20, 170, 200, 15);
+    txtRepPassword.setBounds(20, 185, 235, 20);
+    lblObPassword2.setBounds(20, 205, 235, 15);
 
     for (JLabel jLabel : jLabelObli) {
       jLabel.setVisible(false);
@@ -117,12 +106,13 @@ public class IntfzRegistro extends JFrame {
       jLabel.setFont(fuenteObligatoria);
     }
 
-    cbVerPasswd.setBounds(20, 285, 230, 20);
-    cbVerPasswd.setBackground(panel.getBackground());
+    cbVerPasswd.setBounds(20, 235, 230, 20);
+    cbVerPasswd.setBackground(panelRegistro.getBackground());
     mostrarContraseña(txtPassword);
     mostrarContraseña(txtRepPassword);
 
-    btnRegistro.setBounds(10, 315, 255, 25);
+    btnRegistro.setBounds(7, 260, 255, 25);
+
     btnRegistro.addActionListener(
         new ActionListener() {
           @Override
@@ -135,40 +125,36 @@ public class IntfzRegistro extends JFrame {
           }
         });
 
-    getContentPane().add(panel);
-
     // Empaquetado, tamaño y visualizazion
+    getContentPane().add(panelRegistro);
     pack();
-    setSize(285, 385);
+    setSize(285, 335);
     setVisible(true);
   }
 
+  // Guarda los datos del usuario en la based de datos cada uno con sus datos correspondientes
   public void creacionUsuario() throws ParseException {
     if (obligatorios() == true) {
       if (existeUsuario() == false) {
         Document auth = new Document();
         auth.put("Nombre", txtUsuario.getText());
-        auth.put("Email", txtEmail.getText());
         auth.put("Contraseña", txtPassword.getText());
         collecAuth.insertOne(auth);
 
         Document usuario = new Document();
         usuario.put("Nombre", txtUsuario.getText());
-        usuario.put("Email", txtEmail.getText());
         usuario.put("fCreacionCuenta", new Date());
-        usuario.put("NPrestados", 0);
-        // usuario.put("Tema", "Claro");
         collecUsuario.insertOne(usuario);
         mensajeEmergente(1);
-        panel.setVisible(false);
+        panelRegistro.setVisible(false);
         dispose();
-        intfzLogin.iniciar();
       } else {
         mensajeEmergente(2);
       }
     }
   }
 
+  // Se asegura que los campos obligatorios se cumplan
   public boolean obligatorios() {
     contra1 = txtPassword.getText();
     contra2 = txtRepPassword.getText();
@@ -180,13 +166,7 @@ public class IntfzRegistro extends JFrame {
       i++;
     }
 
-    if (!txtEmail.getText().isEmpty()) {
-    } else {
-      lblObEmail.setVisible(true);
-      i++;
-    }
-    if (txtPassword.getText().length() >= 2) {
-
+    if (txtPassword.getText().length() >= 8) {
     } else {
       lblObPassword.setVisible(true);
       i++;
@@ -198,26 +178,21 @@ public class IntfzRegistro extends JFrame {
       i++;
     }
 
-    if (i == 0) {
-      obligatorios = true;
-    } else {
-      obligatorios = false;
-    }
+    obligatorios = i == 0 ? true : false;
+
     return obligatorios;
   }
 
+  // Comprueba si ya existe un usuario con ese nombre
   public boolean existeUsuario() {
     existe = false;
-    Document existeReg =
-        collecAuth
-            .find(or(eq("Nombre", txtUsuario.getText()), eq("Email", txtEmail.getText())))
-            .first();
-    if (existeReg != null) {
-      existe = true;
-    }
+    Document existeReg = collecAuth.find(eq("Nombre", txtUsuario.getText())).first();
+    if (existeReg != null) existe = true;
+
     return existe;
   }
 
+  // Elimina el mensaje de incumplimeiento de los parametros obligatorios
   public void rescribirCampo(JTextField jTextField, JLabel jLabel) {
     jTextField.addMouseListener(
         new MouseAdapter() {
@@ -228,6 +203,7 @@ public class IntfzRegistro extends JFrame {
         });
   }
 
+  // Hace visible o invisible la contraseña
   public void mostrarContraseña(JPasswordField jPasswordField) {
     cbVerPasswd.addItemListener(
         new ItemListener() {
@@ -253,15 +229,16 @@ public class IntfzRegistro extends JFrame {
     } else if (mensaje == 2) {
       JOptionPane.showMessageDialog(
           null,
-          "Ya existe un usuario con este Nombre o correo electronico",
-          "Registro Fallido",
+          "Ya existe un usuario con este Nombre",
+          "Usuario ya existente",
           JOptionPane.ERROR_MESSAGE);
     }
   }
 
   public void crearComponentes() {
     for (JComponent jComponent : jComponentA) {
-      panel.add(jComponent);
+      panelRegistro.add(jComponent);
     }
+    panelRegistro.setBackground(new Color(232, 218, 189));
   }
 }
