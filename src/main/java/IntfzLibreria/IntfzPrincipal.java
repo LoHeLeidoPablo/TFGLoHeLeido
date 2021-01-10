@@ -119,6 +119,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     setVisible(true);
   }
 
+  // Muestra los ultimos libros agregados a la base de datos
   public void ultimosAgregados() {
     ultimosTitulos = new String[NUMERO_LABELS];
     MongoCursor<Document> ultimoAgregados =
@@ -160,6 +161,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
     }
   }
 
+  // Recarga la pantalla para mostrar los ultimos cambios
   public void recarga() {
     panelPrincipal.addMouseListener(
         new MouseAdapter() {
@@ -170,6 +172,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         });
   }
 
+  // Abre la ventana con la informacion del libro de la portada pulsada
   private void irLibro(JLabel jLabel, int posicion) {
     jLabel.addMouseListener(
         new MouseAdapter() {
@@ -185,6 +188,7 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
         });
   }
 
+  // Abre la ventana con la informacion del libro del titulo pulsado
   private void irLibroT(JLabel jLabel) {
     jLabel.addMouseListener(
         new MouseAdapter() {
@@ -215,14 +219,4 @@ public class IntfzPrincipal extends JFrame implements Interfaz {
   public void cambioTema(String color) {
     Temas.cambioTema(color, jPanelA, lblsTitulos, null, null, null, null, null, null, null);
   }
-
-  /*private void temaUsuarioDefault() {
-    Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
-    if (temaUsuario == null) {
-      cambioTema("Papiro");
-    } else {
-      cambioTema(temaUsuario.getString("Tema"));
-    }
-  }*/
-
 }

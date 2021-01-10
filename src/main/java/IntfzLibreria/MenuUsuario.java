@@ -223,12 +223,36 @@ public class MenuUsuario extends JFrame {
     if (id_Usuario.equals("Invitado")) {
       lblRegLibro.setText(
           "Si no encuentras el libro que buscas, unete a \"Lo he Leído\", para registrarlo");
-      abrirRegUsuario();
     } else {
       lblRegLibro.setText(
-          "No encunetra el libro que busca en nuestra Libreria, pulse aqui para añadirlo.");
-      abrirRegLibro();
+          "No encunetra el libro que busca en nuestra libreria, pulse aqui para añadirlo.");
     }
+    lblRegLibro.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            cerrarBusqueda();
+            if (id_Usuario.equals("Invitado")) {
+              intfzRegistro.iniciar();
+            } else {
+              intfzRegLibro.iniciar();
+            }
+          }
+
+          @Override
+          public void mouseEntered(MouseEvent e) {
+            lblRegLibro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            Font subrayado = lblRegLibro.getFont();
+            Map attributes = subrayado.getAttributes();
+            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+            lblRegLibro.setFont(subrayado.deriveFont(attributes));
+          }
+
+          @Override
+          public void mouseExited(MouseEvent e) {
+            lblRegLibro.setFont(font);
+          }
+        });
   }
 
   public void btnLog() {
@@ -322,6 +346,7 @@ public class MenuUsuario extends JFrame {
             lblUsuario.setText("Invitado");
             btnLogIn.setVisible(true);
             btnLog();
+            regUsuLibro();
           }
         });
 
@@ -330,58 +355,6 @@ public class MenuUsuario extends JFrame {
           @Override
           public void actionPerformed(ActionEvent e) {
             System.exit(0);
-          }
-        });
-  }
-
-  public void abrirRegLibro() {
-    lblRegLibro.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-            panelBusqueda.setVisible(false);
-            txtBuscador.setVisible(true);
-            intfzRegLibro.iniciar();
-          }
-
-          @Override
-          public void mouseEntered(MouseEvent e) {
-            lblRegLibro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            Font subrayado = lblRegLibro.getFont();
-            Map attributes = subrayado.getAttributes();
-            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-            lblRegLibro.setFont(subrayado.deriveFont(attributes));
-          }
-
-          @Override
-          public void mouseExited(MouseEvent e) {
-            lblRegLibro.setFont(font);
-          }
-        });
-  }
-
-  public void abrirRegUsuario() {
-    lblRegLibro.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-            panelBusqueda.setVisible(false);
-            txtBuscador.setVisible(true);
-            intfzRegistro.iniciar();
-          }
-
-          @Override
-          public void mouseEntered(MouseEvent e) {
-            lblRegLibro.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            Font subrayado = lblRegLibro.getFont();
-            Map attributes = subrayado.getAttributes();
-            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-            lblRegLibro.setFont(subrayado.deriveFont(attributes));
-          }
-
-          @Override
-          public void mouseExited(MouseEvent e) {
-            lblRegLibro.setFont(font);
           }
         });
   }

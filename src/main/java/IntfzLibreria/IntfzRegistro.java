@@ -83,8 +83,9 @@ public class IntfzRegistro extends JFrame {
 
     panelRegistro.setLayout(null);
 
-    lblTituloProyecto.setBounds(50, 10, 185, 25);
+    lblTituloProyecto.setBounds(10, 10, 275, 25);
     Font fuentelogin = new Font("Bookman Old Style", 3, 22);
+    lblTituloProyecto.setHorizontalAlignment(SwingConstants.CENTER);
     lblTituloProyecto.setFont(fuentelogin);
 
     lblUsuario.setBounds(20, 50, 100, 15);
@@ -131,6 +132,7 @@ public class IntfzRegistro extends JFrame {
     setVisible(true);
   }
 
+  // Guarda los datos del usuario en la based de datos cada uno con sus datos correspondientes
   public void creacionUsuario() throws ParseException {
     if (obligatorios() == true) {
       if (existeUsuario() == false) {
@@ -152,6 +154,7 @@ public class IntfzRegistro extends JFrame {
     }
   }
 
+  // Se asegura que los campos obligatorios se cumplan
   public boolean obligatorios() {
     contra1 = txtPassword.getText();
     contra2 = txtRepPassword.getText();
@@ -180,6 +183,7 @@ public class IntfzRegistro extends JFrame {
     return obligatorios;
   }
 
+  // Comprueba si ya existe un usuario con ese nombre
   public boolean existeUsuario() {
     existe = false;
     Document existeReg = collecAuth.find(eq("Nombre", txtUsuario.getText())).first();
@@ -188,6 +192,7 @@ public class IntfzRegistro extends JFrame {
     return existe;
   }
 
+  // Elimina el mensaje de incumplimeiento de los parametros obligatorios
   public void rescribirCampo(JTextField jTextField, JLabel jLabel) {
     jTextField.addMouseListener(
         new MouseAdapter() {
@@ -198,6 +203,7 @@ public class IntfzRegistro extends JFrame {
         });
   }
 
+  // Hace visible o invisible la contraseña
   public void mostrarContraseña(JPasswordField jPasswordField) {
     cbVerPasswd.addItemListener(
         new ItemListener() {

@@ -130,6 +130,10 @@ public class IntfzActLibro extends JFrame {
   JButton[] jButtonA = {btnUpdateLibro};
   JSpinner[] jSpinnerA = {spNColeccion, spCapitulos, spPaginas};
 
+  /**
+   * Esta clase se nos muestra una interfaz que nos permite actualizar la informacion de los libros
+   * que esta introducida incorrectamente
+   */
   public IntfzActLibro() {
     this.setResizable(false);
     cambioTema("Papiro");
@@ -204,7 +208,6 @@ public class IntfzActLibro extends JFrame {
     insertarP();
     vaciarURL();
     actualizacion();
-    // temaUsuarioDefault();
 
     // Empaquetado, tamaño y visualizazion
     pack();
@@ -212,6 +215,7 @@ public class IntfzActLibro extends JFrame {
     setVisible(true);
   }
 
+  // Rellenamos la informacion del libro que queremos modificar
   public void mostrarInfoLibro(Document libro) {
     txtISBN.setText(libro.getString("ISBN"));
     isbn = libro.getString("ISBN");
@@ -243,6 +247,7 @@ public class IntfzActLibro extends JFrame {
     añadirPortada();
   }
 
+  // Este metodo guarda los cambios de la informacion actualizada
   public void actualizacion() {
     btnUpdateLibro.addActionListener(
         new ActionListener() {
@@ -289,6 +294,7 @@ public class IntfzActLibro extends JFrame {
         });
   }
 
+  // Comprueba que los datos obligatorios sigan se mantengan
   public boolean obligatorios() {
     int i = 0;
     if (txtISBN.getText().length() < 10 | txtISBN.getText().length() > 13) i++;
@@ -299,7 +305,9 @@ public class IntfzActLibro extends JFrame {
       if (spNColeccion.getValue().equals(0)) spNColeccion.setValue(spNColeccion.getNextValue());
     }
     if (spPaginas.getValue().equals(0) & spCapitulos.getValue().equals(0)) i++;
-    if (lblPortada.getIcon() == null) i++;
+    if (lblPortada.getIcon() == null) {
+      txtURL.setText("https://edit.org/images/cat/portadas-libros-big-2019101610.jpg");
+    }
     if (i > 0) {
       mensajeEmergente(3);
       return false;
@@ -307,6 +315,7 @@ public class IntfzActLibro extends JFrame {
     return true;
   }
 
+  // Este metodo lo usamos para evitar que se nos cuelen espacios indeseados en los campos
   public void sinEspacios() {
     txtISBN.setText(txtISBN.getText().trim());
     txtTitulo.setText(txtTitulo.getText().trim());
@@ -404,13 +413,4 @@ public class IntfzActLibro extends JFrame {
     Temas.cambioTema(
         color, jPanelA, jLabelA, jTextFieldA, jButtonA, jCheckBoxA, null, null, null, jSpinnerA);
   }
-
-  /*  private void temaUsuarioDefault() {
-    Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
-    if (temaUsuario == null) {
-      cambioTema("Papiro");
-    } else {
-      cambioTema(temaUsuario.getString("Tema"));
-    }
-  }*/
 }

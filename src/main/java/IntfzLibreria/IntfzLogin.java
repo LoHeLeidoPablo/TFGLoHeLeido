@@ -131,6 +131,7 @@ public class IntfzLogin extends JFrame {
     setVisible(true);
   }
 
+  // Comprueba si el usuario existe y es correcto antes de logearlo
   public void existeUsuario() {
     btnLogIn.addActionListener(
         new ActionListener() {
@@ -155,7 +156,6 @@ public class IntfzLogin extends JFrame {
               menuUsuarioPrincipal.lblUsuario.setText(id_Usuario);
               menuUsuarioPrincipal.btnLog();
               menuUsuarioPrincipal.regUsuLibro();
-
             } else {
               JOptionPane.showMessageDialog(
                   null,

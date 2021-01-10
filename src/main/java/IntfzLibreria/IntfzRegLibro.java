@@ -202,6 +202,7 @@ public class IntfzRegLibro extends JFrame {
     setVisible(true);
   }
 
+  // Guarda el libro en la base de datos
   public void registrarLibro() {
     btnAddLibro.addActionListener(
         new ActionListener() {
@@ -220,6 +221,7 @@ public class IntfzRegLibro extends JFrame {
         });
   }
 
+  // Crea el docuemento con la informacion del nuevo libro
   public void añadirLibro() {
     Integer Tomo = (Integer) spNColeccion.getValue();
     Integer Capitulo;
@@ -253,6 +255,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  // Comprueba si ya existe un libro con ese ISBN
   public boolean existeLibro() {
     Boolean existe = false;
     try {
@@ -267,6 +270,7 @@ public class IntfzRegLibro extends JFrame {
     return existe;
   }
 
+  // Se asegura que los campos obligatorios se cumplan
   public boolean obligatorios() {
     int i = 0;
     if (txtISBN.getText().length() < 10 | txtISBN.getText().length() > 13) i++;
@@ -287,6 +291,7 @@ public class IntfzRegLibro extends JFrame {
     return true;
   }
 
+  // Elimina los espacio iniciales y finales para evitar discordancias en los datos
   public void sinEspacios() {
     txtISBN.setText(txtISBN.getText().trim());
     txtTitulo.setText(txtTitulo.getText().trim());
@@ -304,6 +309,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  //Metodo que actua a cada cambio en el campo URL para intentar insertar una imagen
   public void insertarP() {
     EscuchaPortada insertarP = new EscuchaPortada();
     javax.swing.text.Document url = txtURL.getDocument();
@@ -327,6 +333,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  //Añade la imagen a la portada correspondiente
   public void añadirPortada() {
     try {
       URL url = new URL(txtURL.getText());
@@ -347,6 +354,7 @@ public class IntfzRegLibro extends JFrame {
     }
   }
 
+  // Vacia el campo URL
   public void vaciarURL() {
     lblPortadaURL.addMouseListener(
         new MouseAdapter() {

@@ -62,6 +62,7 @@ public class GraficoMasLeidos extends ApplicationFrame {
     }
   }
 
+  // Con este metodo recogemos los libros que más veces se han leido
   public String[] losMasLeidos() {
     MongoCursor<Document> biblioteca =
         collecDetBiblio
@@ -80,8 +81,10 @@ public class GraficoMasLeidos extends ApplicationFrame {
       i++;
     }
     return titulos;
-  } // Aqui Creamos los datos
+  }
 
+  // Con este metodo recogemos el numero de veces que se han releido los titulo obtenidos en el
+  // metodo anterior
   public int[] losMasLeidosNumeric() {
     MongoCursor<Document> biblioteca =
         collecDetBiblio
@@ -96,23 +99,23 @@ public class GraficoMasLeidos extends ApplicationFrame {
       i++;
     }
     return repeticiones;
-  } // Aqui Creamos los datos
+  }
 
+  // Ahora los pintamos en nuestro Grafico
   final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
   private CategoryDataset crearTitulosDataset() {
-    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
+    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     String[] titulos = losMasLeidos();
     int[] repeticiones = losMasLeidosNumeric();
     for (int i = 0; i < titulos.length; i++) {
       dataset.addValue(repeticiones[i], "Libro", titulos[i]);
     }
     return dataset;
-  } // Aqui Mostramos los Datos
+  }
 
+ // Este metodo es el que crea el grafico en le que luego se muestran los datos obtenidos
   private JFreeChart crearChart() {
-
     CategoryDataset titulosDataset = crearTitulosDataset();
     NumberAxis ejeTitulo = new NumberAxis("Veces Releido");
     ejeTitulo.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -130,7 +133,8 @@ public class GraficoMasLeidos extends ApplicationFrame {
     plot.add(subplot, 1);
 
     final JFreeChart chart =
-        new JFreeChart("Libros Más Leidos", new Font("Bookman Old Style", Font.BOLD, 18), plot, false);
+        new JFreeChart(
+            "Libros Más Leidos", new Font("Bookman Old Style", Font.BOLD, 18), plot, false);
     CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
     axis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 

@@ -301,8 +301,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       urlPortada = libro.getString("PortadaURL");
       mostrarInfoLibro(libro);
       prestarLibro(libro);
-      actualizarEstado(libro);
-      actualizar(libro);
+      actualizarEstado();
+      actualizar();
       cancelarEstado();
       // temaUsuarioDefault();
     }
@@ -313,6 +313,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     setVisible(true);
   }
 
+  // Metodo que rellena el resumen en caso de que el libro sea nulo
   public String loreIpsum() {
     return " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris lacinia porttitor libero in commodo. Integer erat metus, condimentum ut mattis quis, pretium sit amet orci. Aenean faucibus eu lacus eget iaculis. Aenean placerat ultrices suscipit. Etiam venenatis nulla ut pharetra scelerisque. Suspendisse scelerisque efficitur elit, id consequat ex tempus at. Nam odio erat, gravida at ante in, pellentesque porttitor ante. Maecenas semper a turpis et euismod.\n"
         + "Integer sed ultricies sapien. Etiam scelerisque justo at dapibus gravida. Vestibulum sit amet nisi elit. Nam scelerisque magna nibh, feugiat dictum magna blandit at. Praesent dictum mi nec fermentum consequat. Maecenas molestie urna et lorem auctor mollis vitae mollis eros. Phasellus interdum tortor sed venenatis porta. Mauris hendrerit quis neque id aliquet. In a scelerisque urna, in fringilla tortor. Fusce in sodales enim, id iaculis leo. Nulla in laoreet urna, et sodales sem. + \"\\n\"\n"
@@ -328,6 +329,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         + " \"Integer sed ultricies sapien. Etiam scelerisque justo at dapibus gravida. Vestibulum sit amet nisi elit. Nam scelerisque magna nibh, feugiat dictum magna blandit at. Praesent dictum mi nec fermentum consequat. Maecenas molestie urna et lorem auctor mollis vitae mollis eros. Phasellus interdum tortor sed venenatis porta. Mauris hendrerit quis neque id aliquet. In a scelerisque urna, in fringilla tortor. Fusce in sodales enim, id iaculis leo. Nulla in laoreet urna, et sodales sem. ";
   }
 
+  // Muesta la informacion del libro con los datos obtenidos de la base de datos
   public void mostrarInfoLibro(Document libro) {
     Document estado =
         collecDetBiblio
@@ -438,11 +440,11 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
       listModelObras.addElement(libroAutorString);
     }
     lstObras.setModel(listModelObras);
-
     isbn = libro.getString("ISBN");
     leido();
   }
 
+  // Añade la portada del libro, desde una url de internet
   public void añadirPortada() {
     try {
       URL url = new URL(urlPortada);
@@ -463,12 +465,14 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     }
   }
 
+  // Presta el libro al usuario
   public void prestarLibro(Document libro) {
     btnPrestamo.addActionListener(
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
             Document usuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
+            Document libro = collecLibro.find(eq("ISBN", isbn)).first();
             String persona = usuario.getString("Nombre");
             int nPrestado = (int) collecDetPrestamo.countDocuments(eq("Usuario", persona));
             if (nPrestado < 5) {
@@ -501,11 +505,14 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         });
   }
 
-  public void actualizar(Document libro) {
+  // Abre la ventana de actualizacion del libro solo disponible para el Administrador
+  public void actualizar() {
     btnUpdateLibro.addActionListener(
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
+            // String isbnLibro = lblISBN.getText().substring(lblISBN.getText().indexOf(" ") + 1);
+            Document libro = collecLibro.find(eq("ISBN", isbn)).first();
             IntfzActLibro intfzActLibro = new IntfzActLibro();
             intfzActLibro.iniciar(libro);
             dispose();
@@ -513,6 +520,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         });
   }
 
+  // Modifica los datos del estado en caso de marcar el libro como leido
   public void leido() {
     jcbEstados.addActionListener(
         new ActionListener() {
@@ -529,6 +537,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         });
   }
 
+  /// Modifica algunos datos del estado en caso de marcar el libro como releido
   public void repeticion() {
     jchReleido.addActionListener(
         new ActionListener() {
@@ -547,20 +556,19 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         });
   }
 
-  public void actualizarEstado(Document libro) {
+  // Agrega o actualiza el estado de un libro en la biblioteca
+  public void actualizarEstado() {
     btnUpdate.addActionListener(
         new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-
-            String isbnLibro = lblISBN.getText().substring(lblISBN.getText().indexOf(" ") + 1);
             Integer Pags = Integer.parseInt(spPagL.getValue().toString());
             Integer Caps = Integer.parseInt(spCapL.getValue().toString());
             Integer Releido = Integer.parseInt(spVecesRele.getValue().toString());
             Float valorNota = Float.parseFloat(spNota.getValue().toString());
             int Nota = (int) (valorNota * 10);
 
-            Document libro = collecLibro.find(eq("ISBN", isbnLibro)).first();
+            Document libro = collecLibro.find(eq("ISBN", isbn)).first();
             Document estadoLibro =
                 collecDetBiblio.find(and(eq("Usuario", id_Usuario), eq("Libro", libro))).first();
             if (estadoLibro != null) {
@@ -647,6 +655,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         });
   }
 
+  // Transforma los nombres del JComboBox para facilitar la posterior ordenacion en la base de datos
   public String nombrEstado(String estado) {
 
     if (estado.equals("Leído")) estado = "Terminado";
@@ -658,6 +667,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     return estado;
   }
 
+  // Transforma los nombres de la base de datos a los nombres guardados por el JComboBox
   public String nombrJcbEstado(String estado) {
 
     if (estado.equals("Terminado")) estado = "Leído";
@@ -669,6 +679,8 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
     return estado;
   }
 
+  // Devuelve al estado al ultimo guardado por la base de datos o lo pone todos los datos a cero en
+  // caso de no existir dicho registro
   public void cancelarEstado() {
     btnCancelar.addActionListener(
         new ActionListener() {
@@ -706,6 +718,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         });
   }
 
+  // Cambia entre los distintos libros de la misma coleccion, o entre las distintas obras de un autor
   public void cambiarTomo() {
     lstSecuelas.addMouseListener(
         new MouseAdapter() {
@@ -805,17 +818,6 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
         color, jPanelA, jLabelA, null, jButtonA, jCheckBoxA, null, null, txtASinopsis, null);
     jchReleido.setBackground(panelEstado.getBackground());
   }
-
-  /*  private void temaUsuarioDefault() {
-    Document temaUsuario = collecUsuario.find(eq("Nombre", id_Usuario)).first();
-    if (temaUsuario == null) {
-      System.out.println("Null");
-      cambioTema("Papiro");
-    } else {
-      System.out.println("Oscuro");
-      cambioTema(temaUsuario.getString("Tema"));
-    }
-  }*/
 
   public void crearComponentes() {
     for (JComponent jComponent : jCompPprincipalA) {

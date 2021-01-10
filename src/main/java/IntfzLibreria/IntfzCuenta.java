@@ -308,6 +308,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     autodevolucion();
   }
 
+  //Añade las portadas de los prestamos
   public void añadirPortada(String urlPortada, int posi) {
     for (JLabel jLabel : lblPortada) {
       jLabel.setBounds(10, 10, 100, 150);
@@ -336,6 +337,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     }
   }
 
+  // Muestra los prestamos del usuario
   public void mostrarPrestamo() {
 
     MongoCursor<Document> prestamosUsuario =
@@ -375,6 +377,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     }
   }
 
+  // Devuelve el prestamo del boton seleccionado
   public void devolverPrestamo(JButton jButton, int posicion) {
     jButton.addActionListener(
         new ActionListener() {
@@ -398,6 +401,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         });
   }
 
+  // Abre la informacion de libro prestado
   public void irLibroPrestado(JPanel jPanel, int posicion) {
     jPanel.addMouseListener(
         new MouseAdapter() {
@@ -418,6 +422,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         });
   }
 
+  // Devuelve los libros una vez que ha vencido el plazo de prestamo
   public void autodevolucion() {
     int i = -1;
     for (JLabel jLabel : lblDiasRestantes) {
@@ -428,7 +433,6 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     }
   }
 
-  ///////// Prestamo Terminado || Queda Estadisticas
   private void crearComponentesEstadistica() {
     panelEstadisticas.setBounds(450, 100, 1100, 850);
     panelEstadisticas.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -443,8 +447,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     datosEstadisticos();
   }
 
+  // Dibuja y calcula el grafico de colores de los estados de los libros de la biblioteca
   private void coloresEstadistica() {
-
     lblVerde.setBackground(verde);
     lblVerde.setOpaque(true);
     lblVerde.setBorder(BorderFactory.createLineBorder(lblVerde.getBackground(), 2));
@@ -527,23 +531,6 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         lblLeyendo.getY(),
         200,
         lblLeyendo.getHeight());
-    /*lblLeidos.setBounds(
-        lblLeyendo.getX() + lblLeyendo.getWidth(),
-        lblLeyendo.getY(),
-        lblLeyendo.getWidth(),
-        lblLeyendo.getHeight());
-    lblAbandonados.setBounds(
-        lblLeidos.getX() + lblLeyendo.getWidth(), lblLeyendo.getY(), lblLeyendo.getWidth(), lblLeyendo.getHeight());
-    lblQuieroLeer.setBounds(
-        lblAbandonados.getX() + lblAbandonados.getWidth() + 10,
-        lblLeyendo.getY(),
-        lblAbandonados.getWidth(),
-        lblLeyendo.getHeight());
-    lblTotalGuardados.setBounds(
-        lblQuieroLeer.getX() + lblAbandonados.getWidth(),
-        lblLeyendo.getY(),
-        lblAbandonados.getWidth() + 40,
-        lblLeyendo.getHeight());*/
 
     lblLeyendo.setForeground(lblVerde.getBackground());
     lblQuieroLeer.setForeground(lblGris.getBackground());
@@ -562,6 +549,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     panelEstadisticas.add(lblTotalGuardados);
   }
 
+  // Calcula la Antiguedad del usuario en la aplicacion
   private void tiempoRegistrado() {
     lblAntiguedad.setBounds(550, 15, 545, 30);
     lblAntiguedad.setHorizontalAlignment(SwingConstants.CENTER);
@@ -587,8 +575,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     }
   }
 
+  // Plasma los graficos creados en las otras clases
   public void grafico() {
-
     GraficoNotaPaginas chart = new GraficoNotaPaginas("GraficoNotaPaginas");
     graficoLibrosNotas = new JLabel(new ImageIcon("src/main/resources/GraficoNotaPaginas.png"));
     graficoLibrosNotas.setBounds(485, 20, 600, 500);
@@ -624,6 +612,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
         });
   }
 
+  // Metodo Grafico para mostara los datos obtenidos en otros metodos
   public void datosEstadisticos() {
     DecimalFormat fPuntoMil = new DecimalFormat("###,###.##");
     lblNotaMedia.setBounds(100, 180, 250, 30);
@@ -652,6 +641,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     panelEstadisticas.add(lblTotalLibrosLeidos);
   }
 
+  // Este metodo recopila las notas de los libros que han sido calificados en la biblioteca y
+  // calcula su media aritmetica
   private String notaMedia() {
     MongoCursor<Document> notas = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
     int i = 0;
@@ -668,6 +659,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     return f1Decimal.format(notaMediaDecimal / 10);
   }
 
+  // Aqui calculamos el número total de paginas que hemos leido segun el registro de la biblioteca
   private int sumPagsLeidas() {
     MongoCursor<Document> paginas = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
     int pagsTotales = 0;
@@ -678,6 +670,8 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     return pagsTotales;
   }
 
+  // Aqui calculamos el número total de libros que hemos leido contando aquellos que hemos relieido
+  // varias veces
   private int sumReLeidosTotales() {
     MongoCursor<Document> paginas = collecDetBiblio.find(eq("Usuario", id_Usuario)).iterator();
     int releidos = 0;
@@ -688,6 +682,7 @@ public class IntfzCuenta extends JFrame implements Interfaz {
     return releidos;
   }
 
+  // Con este metodo realizamos operaciones de fechas
   private int calculoDias(Date f_Devolucion) {
 
     Calendar devolucion = Calendar.getInstance();

@@ -24,7 +24,6 @@ import static IntfzLibreria.IntfzLogin.id_Usuario;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Sorts.ascending;
-// import static java.awt.event.KeyEvent.VK_F5;
 
 public class IntfzBiblioteca extends JFrame implements Interfaz {
 
@@ -203,6 +202,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     }
   }*/
 
+  // Rellena los datos con los datos de la biblioteca
   public void rellenarTabla() {
     modelT.setRowCount(0);
     MongoCursor<Document> biblioteca =
@@ -249,8 +249,8 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     }
   }
 
+  // Genera la leyenda de colores de la tabla
   public void leyendaTabla() {
-
     conteoLeyendo =
         (int)
             collecDetBiblio.countDocuments(and(eq("Estado", "Leyendo"), eq("Usuario", id_Usuario)));
@@ -313,6 +313,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     panelBiblioteca.add(lblTotal);
   }
 
+  // Nos muesta la portada del libro seleccionado
   public void añadirPortada(String urlPortada) {
     try {
       URL url = new URL(urlPortada);
@@ -334,6 +335,7 @@ public class IntfzBiblioteca extends JFrame implements Interfaz {
     }
   }
 
+  // Nos muesta la información del libro seleccionado
   public void irLibro() {
     myBiblioTable.addMouseListener(
         new MouseListener() {

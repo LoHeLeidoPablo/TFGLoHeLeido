@@ -6,6 +6,11 @@ import java.awt.*;
 
 public class ColorEstadoTabla extends JTable {
 
+  /**
+   * Esta clase se encarga de pintar la primera columna de la JTabla de IntfzBiblioteca Dependiendo
+   * del estado de los libros se pintan de un color u otro Coloreamos tambien la letra para hacerlo
+   * "invisible" y que solo quede el el rectangulo liso
+   */
   IntfzBiblioteca intfzBiblioteca = new IntfzBiblioteca();
 
   @Override
@@ -32,6 +37,7 @@ public class ColorEstadoTabla extends JTable {
         tablaColor.setForeground(Color.GRAY);
       }
     } else {
+      // En caso de no pertenercer a ningun estado lo deja del color del panel de la IntfzBiblioteca
       tablaColor.setBackground(intfzBiblioteca.panelBiblioteca.getBackground());
       tablaColor.setForeground(intfzBiblioteca.panelBiblioteca.getForeground());
     }
