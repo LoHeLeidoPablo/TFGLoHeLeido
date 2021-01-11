@@ -476,6 +476,7 @@ public class IntfzInfoLibro extends JFrame implements Interfaz {
             String persona = usuario.getString("Nombre");
             int nPrestado = (int) collecDetPrestamo.countDocuments(eq("Usuario", persona));
             if (nPrestado < 5) {
+              // Aqui calculamos la fecha de devolución a partir del dia en que tomamos prestado el libro
               Calendar calc_fecha = Calendar.getInstance();
               calc_fecha.setTime(new Date());
               calc_fecha.set(Calendar.DAY_OF_YEAR, calc_fecha.get(Calendar.DAY_OF_YEAR) + 30);
