@@ -49,7 +49,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>mains.PntCarga</mainClass>
+                            <mainClass>IntfzLibreria.P</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

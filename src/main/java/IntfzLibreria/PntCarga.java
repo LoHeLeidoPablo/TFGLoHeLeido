@@ -1,6 +1,4 @@
-package mains;
-
-import IntfzLibreria.IntfzPntCarga;
+package IntfzLibreria;
 
 public class PntCarga {
   public static void main(String[] args) {
